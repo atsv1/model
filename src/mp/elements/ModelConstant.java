@@ -1,0 +1,41 @@
+package mp.elements;
+
+
+import mp.parser.ScriptException;
+import mp.parser.Variable;
+
+/**
+ * User: саша
+ * Date: 04.05.2008
+ */
+
+public class ModelConstant extends ModelBlockParam implements ModelForReadInterface {
+
+  public void SetConstantDescr( String aConstName, String aConstType, String aConstValue ) throws ModelException{
+    try {
+      //FVariable = Variable.CreateNewInstance( aConstName, aConstType, aConstValue );
+      this.SetVarInfo( aConstType, aConstValue );
+    } catch (Exception e) {
+      e.printStackTrace();
+      ModelException e1 = new ModelException( e.getMessage() );
+      throw e1;
+    }
+  }
+
+   public ModelConstant(ModelElement aOwner, String aElementName, int aElementId) {
+    super(aOwner, aElementName, aElementId);
+  }
+
+  protected void UpdateParam() throws ScriptException, ModelException {
+    //ничего здесь не делаем, в константе не может быть выполняемого кода
+  }
+
+  public boolean IsNeedRuntimeUpdate() {
+    return false;
+  }
+
+  public void SetVariable (Variable aVariable){
+  	FVariable = aVariable;
+  }
+
+}
