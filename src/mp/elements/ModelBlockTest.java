@@ -1906,7 +1906,6 @@ public class ModelBlockTest extends TestCase {
       e.printStackTrace();
     }
     assertTrue( f );
-
   }
 
 }
