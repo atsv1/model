@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Model5" delay = "10">
+
+  <FunctionList>
+    <Function name = "func" type = "integer">
+      <Param number = "0" name = "inpVar" type = "integer" valuetype = "integer"/>
+      <InnerParamList>
+        <Param name = "var" type = "integer" initvalue = "0"/>
+      </InnerParamList>
+      <Formula>
+            <![CDATA[
+               var := 10;
+                func := inpVar + var + 1;
+           ]]>
+          </Formula>
+    </Function>
+  </FunctionList>
+
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "funcVar" type = "integer" initvalue = "7">
+        </Param>
+        <Param name = "var" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+                 var := func(funcVar) ;
+           ]]>
+          </Formula>
+        </Param>
+
+      </OutParamList>
+    </Block>
+  </BlockList>
+
+ </Model>

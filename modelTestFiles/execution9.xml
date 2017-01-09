@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1" delay = "10">
+
+  <BlockList>
+    <Block name = "block1" count = "1">
+      <OutParamList>
+        <Param name = "var2" type = "integer" initvalue = "2">
+          <Formula>
+            <![CDATA[
+              var2 := var1 * 10;
+              if ( var2 > 100 ) then
+               begin
+                 SetToInitCondition( "Модель1" );
+                 StopExecution( "Модель1" );
+               end;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "var1" type = "integer" initvalue = "1">
+          <Formula>
+            <![CDATA[
+               var1 := var1 + 1;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "var3" type = "integer" initvalue = "3">
+          <Formula>
+            <![CDATA[
+               var3 := var3 + 5;
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

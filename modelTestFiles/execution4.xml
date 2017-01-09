@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1" delay = "10">
+  <ModelList>
+    <SubModel file = "execution4_sub1.xml"/>
+  </ModelList>
+  
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "var1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              var1 := var1 + 1;
+              if ( var1 >= 5 ) then
+               begin
+                 StartModel("Модель2");
+                 StopExecution("Модель1");
+               end;
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

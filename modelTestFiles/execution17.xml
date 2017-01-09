@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель11" delay = "10">
+  <ModelList>
+    <ParallelModel file = "execution17_1.xml"/>
+    <ParallelModel file = "execution17_2.xml"/>
+  </ModelList>
+
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "var" type = "integer" initvalue = "0"/>
+        <Param name = "var1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

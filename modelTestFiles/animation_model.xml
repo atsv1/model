@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "Блок1" count = "1">
+      <InnerParamList>
+        <Param name = "f" type = "real" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              f := f + 0.05;
+              if ( f >= 2 * pi ) then
+               begin
+                 f := 0;
+               end;
+           ]]>
+          </Formula>
+        </Param>
+
+        <Param name = "x" type = "real" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              x := r * cos( f );
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "y" type = "real" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              y := r * sin( f );
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "r" type = "integer" initvalue = "10"/>
+        <Param name = "circleSize" type = "real" initvalue = "1"/>
+        <Param name = "colour" type = "integer" initvalue = "2500">
+          <Formula>
+            <![CDATA[
+              if ( x > 0) then
+               begin
+                 colour := 5000;
+               end else
+               begin
+                 colour := 1290;
+               end;
+           ]]>
+          </Formula>
+        </Param>
+      </InnerParamList>
+
+
+    </Block>
+
+    <Block name = "Блок2">
+     <InnerParamList>
+       <Param name = "f" type = "real" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              f := f + 0.1;
+              if ( f >= pi * 2 ) then
+               begin
+                 f := 0;
+               end;
+           ]]>
+          </Formula>
+        </Param>
+
+        <Param name = "x" type = "real" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              x := r * cos( f );
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "y" type = "real" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              y := r * sin( f ) / 2;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "r" type = "real" initvalue = "10">
+          <Formula>
+            <![CDATA[
+               r := r + 0.0;
+           ]]>
+          </Formula>
+         </Param>
+        <Param name = "circleSize" type = "real" initvalue = "1">
+           <Formula>
+            <![CDATA[
+              circleSize := circleSize + 0.1;
+              if ( circleSize > 5 ) then circleSize := 1;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "colour" type = "integer" initvalue = "1290">
+          <Formula>
+            <![CDATA[
+              if y > 0 then
+               begin
+                  colour := 1290;
+               end else
+               begin
+                 colour := 5000;
+               end;
+           ]]>
+          </Formula>
+        </Param>
+     </InnerParamList>
+    </Block>
+
+    <Block name = "Квадрат" count = "1">
+      <InnerParamList>
+        <Param name = "x" type = "real" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              x := 0;
+           ]]>  
+          </Formula>
+        </Param>
+        <Param name = "y" initvalue = "0" type = "real">
+          <Formula>
+            <![CDATA[
+              y := y + 1;
+              if ( y > 10 ) then y := 0-10;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "height" type = "real" initvalue = "0.05">
+          <Formula>
+            <![CDATA[
+              height := 0.05;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "width" type = "real" initvalue = "0.05">
+          <Formula>
+            <![CDATA[
+              width := 0.03;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "colour" type = "integer" initvalue = "3000"/>
+      </InnerParamList>
+    </Block>
+
+    <Block name = "_Квадрат" count = "1">
+          <InnerParamList>
+            <Param name = "x" type = "real" initvalue = "0">
+              <Formula>
+                <![CDATA[
+                  x := 0;
+               ]]>
+              </Formula>
+            </Param>
+            <Param name = "y" initvalue = "0" type = "real">
+              <Formula>
+                <![CDATA[
+                  y := 0;
+               ]]>
+              </Formula>
+            </Param>
+            <Param name = "height" type = "real" initvalue = "5">
+              <Formula>
+                <![CDATA[
+                  height := 7;
+               ]]>
+              </Formula>
+            </Param>
+            <Param name = "width" type = "real" initvalue = "5">
+              <Formula>
+                <![CDATA[
+                  width := 3;
+               ]]>
+              </Formula>
+            </Param>
+            <Param name = "colour" type = "integer" initvalue = "3000"/>
+          </InnerParamList>
+        </Block>
+
+
+  </BlockList>
+
+ </Model>

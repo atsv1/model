@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "Блок1" count = "1">
+      <InnerParamList>
+        <!-- Параметр source1 - простейший материальный параметр. У него нет никаких источников. На его выходе
+          поддерживается постоянное количество
+        -->
+        <Param name = "material1" type = "material" valuetype = "real" initvalue = "10">
+          <!--<Formula type = "out" >
+             <![CDATA[
+                material1 := 10;
+             ]]>
+          </Formula>-->
+        </Param>
+        
+        <Param name = "var2" type = "real" initvalue = "0">
+          <Formula type = "out" >
+             <![CDATA[
+                var2 := material1 + 10;
+             ]]>
+          </Formula>
+        </Param>
+      </InnerParamList>
+    </Block>
+
+  </BlockList>
+
+ </Model>

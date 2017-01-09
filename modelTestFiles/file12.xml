@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "etalon" count = "6" >
+      <OutParamList>
+        <Param name = "etalonParam1" type = "integer" initvalue = "0"/>
+        <Param name = "etalonParam2" type = "real" initvalue = "1"/>
+        <Param name = "linkParam1" type = "integer" initvalue = "10"/>
+        <Param name = "linkParam2" type = "integer" initvalue = "15"/>
+        <Param name = "testLink" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               testLink := selfIndex;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+    <Block name = "owner" count = "1">
+      <InputParamList>
+        <Param name = "input1" type = "integer" blockLink = "mux1" 
+             paramLink = "linkParam1"/>
+        <Param name = "input2" type = "integer" blockLink = "mux1"
+             paramLink = "linkParam2" />
+        <Param name = "testLink" type = "integer" blockLink = "mux1"
+             paramLink = "testLink" />
+      </InputParamList>
+      <OutParamList>
+        <Param name = "fakeParam" type = "integer" initvalue = "0"/>
+      </OutParamList>
+    </Block>
+    
+    <Multiplexor name = "mux1" count  = "1" ownername = "owner" etalonname = "etalon" >
+      <Code type = "Enable">
+        <![CDATA[
+           enable := true;
+        ]]>
+      </Code>
+      <Code type = "Criteria">
+        <![CDATA[
+           criteria := etalonParam1 + etalonParam2 + testLink;
+        ]]>
+      </Code>
+
+    </Multiplexor>
+    
+  </BlockList>
+ </Model>

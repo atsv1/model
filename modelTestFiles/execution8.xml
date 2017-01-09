@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1" delay = "10">
+  <ModelList>
+    <SubModel file = "execution8_sub1.xml"/>
+  </ModelList>
+
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "var2" type = "integer" initvalue = "0"/>
+        <Param name = "var1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               StartModel("Модель2");
+               Stopexecution("Модель1");
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

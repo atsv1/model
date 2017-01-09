@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1" step = "1" delay = "1" printDurationInterval = "1000">
+    <BlockList>
+      <Block name = "block1">
+        <OutParamList>
+          <Param name = "switchParameter" type = "integer" initvalue = "0"/>
+
+          <Param name = "param1" type = "integer" initvalue = "0" switchparam = "switchParameter">
+          <Formula >
+            <![CDATA[
+              param1 :=  1;
+            ]]>
+          </Formula>
+            <Formula switchvalue = "2">
+            <![CDATA[
+              param1 :=  3;
+            ]]>
+          </Formula>
+            <Formula switchvalue = "3">
+            <![CDATA[
+              param1 :=  3;
+            ]]>
+          </Formula>
+        </Param>
+
+
+        </OutParamList>
+
+
+      </Block>
+    </BlockList>
+</Model>

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "TimeIndependentBlock" >
+      <InnerParamList>
+        <Param name = "param1" type = "integer" initvalue = "10000"/>
+        <Param name = "param2" type = "real" initvalue = "0"/>
+        <Param name = "param3" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              param3 := param3 + param1 / param1;
+            ]]>
+          </Formula>
+        </Param>
+      </InnerParamList>
+    </Block>
+
+  </BlockList>
+</Model>

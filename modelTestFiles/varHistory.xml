@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "param1" type = "integer" initvalue = "0" storeHistory = "true"/>
+        <Param name = "param2" type = "integer" initvalue = "2"/>
+      </OutParamList>
+    </Block>
+
+
+
+  </BlockList>
+
+ </Model>

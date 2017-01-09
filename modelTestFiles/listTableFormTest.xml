@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Form classname = "mp.gui.StandartForm"
+  title = "Моделирование работы автобусного маршрута"
+  sizex = "" sizey = ""
+  model = "Автобусы">
+ <TabSheets>
+   <TabSheet title = "Управление">
+     <ListTable caption = "Заголовок таблицы"
+       x = "20"
+       y = "20"
+       width = "300"
+       height = "300">
+       <RowsList>
+         <Row caption = "параметр1" param = "param1"/>
+         <Row caption = "Параметр2" param = "param2"/>
+         <Row caption = "Параметр3" param = "param3"/>
+       </RowsList>
+
+       <BlockList>
+         <Block name = "Block" blockIndex = "0"/>
+         <Block name = "Block" blockIndex = "1"/>
+       </BlockList>
+     </ListTable>
+     
+     <Label caption = "param1" block = "Block" blockindex = "0" param = "param1"
+             x = "20" y = "400" width = "100" height = "20"/>
+   </TabSheet>
+ </TabSheets>
+</Form>

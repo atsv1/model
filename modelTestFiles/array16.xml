@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <ConstantList>
+    <Const name = "arrayDimension" type = "integer" initvalue = "5"/>
+    <Const name = "arrayInitValue" type = "integer" initvalue = "-1"/>
+  </ConstantList>
+
+
+  <BlockList>
+    <Block name = "block" count = "5">
+      <OutParamList>
+        <Param name = "arrValue" type = "integer" initvalue = "0"/>
+        <Param name = "arrayParam" type = "array" valuetype = "integer" initvalue = "arrayInitValue"
+               dimension = "arrayDimension">
+          <ForEach arrayvalue = "arrValue">
+            <![CDATA[
+              arrValue := selfIndex;
+            ]]>
+          </ForEach>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель2" delay = "10">
+  <BlockList>
+    <Block name = "block1" count = "1">
+      <OutParamList>
+        <Param name = "var11" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              var11 := var11 + 1;
+              if ( var11 >= 5 ) then
+               begin
+                 StopExecution("Модель2");
+               end;
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

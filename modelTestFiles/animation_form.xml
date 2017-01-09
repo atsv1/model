@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Form classname = "mp.gui.StandartForm"
+  model = "Автобусы">
+ <TabSheets>
+   <TabSheet title = "Анимация">
+     <Label caption = "Х" block = "Блок1"  param = "x"
+             x = "20" y = "400" width = "100" height = "20"/>
+     <Label caption = "Y" block = "Блок1"  param = "y"
+             x = "200" y = "400" width = "100" height = "20"/>
+     <Label caption = "R" block = "Блок2"  param = "r"
+             x = "300" y = "400" width = "100" height = "20"/>
+     <Label caption = "цвет" block = "Блок1"  param = "colour"
+             x = "200" y = "430" width = "100" height = "20"/>
+     <Animation name = "Заголовок для анимации"
+       x = "1"
+       y = "70"
+       width = "400"
+       height = "300"
+       initXCoord = "-20"
+       initYCoord = "-20"
+       initWidth = "40"
+       initHeight = "40"
+       resizeFlag = "true"
+             >
+
+       <Figure caption = "название фигуры" type = "circle"
+               x = "x"
+               y = "y"
+               size = "circleSize"
+               width = "circleSize"
+               height = "circleSize"
+               colour = "colour"
+               block = "Блок1"
+               >
+       </Figure>
+       <Figure caption = "название фигуры" type = "circle"
+               x = "x"
+               y = "y"
+               size = "circleSize"
+               colour = "colour"
+               block = "Блок2"
+               >
+       </Figure>
+      <!-- <Figure caption = "название фигуры" type = "rectangle"
+               x = "x"
+               y = "y"
+               width = "width"
+               height = "height" 
+               colour = "colour"
+               block = "Квадрат">
+
+       </Figure>-->
+
+      <!-- <Figure caption = "название фигуры" type = "rectangle"
+                      x = "x"
+                      y = "y"
+                      width = "width"
+                      height = "height"
+                      colour = "colour"
+                      block = "_Квадрат">
+
+              </Figure>-->
+
+
+     </Animation>
+
+   </TabSheet>
+   <TabSheet title = "2">
+
+   </TabSheet>
+ </TabSheets>
+</Form>

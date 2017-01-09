@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Model1" delay = "10">
+   <ConstantList>
+       <Const name = "mas" type = "array" valuetype = "integer" initvalue = "0"
+               dimension = "10"  />
+   </ConstantList>
+
+   <BlockList>
+     <Block name = "block" count = "1">
+        <OutParamList>
+          <Param name = "i" type = "integer"/>
+        </OutParamList>
+        <Statechart name = "Инициализация массива">
+          <State name = "begin">
+            <Code type = "Init">
+            <![CDATA[
+                i := 0;
+                while (i < 10) do
+                 begin
+                   mas[i] := i+1;
+                   i := i + 1;
+                 end;
+
+             ]]>
+          </Code>
+          </State>
+        </Statechart>
+     </Block>
+     <Block name = "block1" coount = "1">
+       <OutParamList>
+         <Param name = "var" type = "integer" initvalue = "0"/>
+       </OutParamList>
+       <Statechart name = "st">
+         <State name = "begin">
+             <Transition name = "trans1" type = "Timeout" value = "1" nextstate = "begin">
+            <![CDATA[
+               var := mas[2];
+
+            ]]>
+            </Transition>
+
+         </State>
+       </Statechart>
+     </Block>
+   </BlockList>
+</Model>

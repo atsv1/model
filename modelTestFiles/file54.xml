@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1" step = "0.1" delay = "50">
+  <ConstantList>
+    <Const name = "skipFirstConst" initvalue = "2" type = "integer"/>
+  </ConstantList>
+
+  <BlockList>
+
+    <Block name = "reciever" count = "10">
+      <InputParamList>
+        <Param name = "input2" type = "integer" initvalue = "-1"
+               blockLink = "mux" paramLink = "param2_1" />
+      </InputParamList>
+      <OutParamList>
+        <Param name = "criteria1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              criteria1 := selfIndex * 2;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "recieverNum" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              recieverNum := selfIndex ;
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+    <Multiplexor name = "mux" count = "1" ownername = "source2" etalonname = "reciever"
+       skipfirst = "skipFirstConst">
+      <Code type = "enable">
+        <![CDATA[
+           enable := (recieverNum < 5);
+        ]]>
+      </Code>
+      <Code type = "criteria">
+        <![CDATA[
+           criteria := recieverNum;
+        ]]>
+      </Code>
+    </Multiplexor>
+
+    <Block name = "source2" count = "1">
+      <InputParamList>
+        <Param name = "fakeInputParam1" type = "integer" initvalue = "0"/>
+      </InputParamList>
+      <OutParamList>
+        <Param name = "param2_1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              param2_1 := selfIndex + 5;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "criteria2" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              criteria2 := 2;
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+</Model>

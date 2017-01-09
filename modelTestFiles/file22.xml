@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "Bus" count = "5">
+      <OutParamList>
+        <Param name = "position" type = "integer" initvalue = "-1"/>
+        <Param name = "Пассажиры в автобусе" type = "integer" initvalue = "0"/>
+        <Param name = "busNumber" type = "integer" initvalue = "-1">
+          <Formula>
+             <![CDATA[
+               busNumber := selfIndex;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+      <InputParamList>
+        <Param name = "stationNumber" type = "integer" initvalue = "-1" blockLink = "Bus-station"
+               paramLink = "stationNumber" blockIndex = "selfIndex"/>
+        <Param name = "пассажиры на остановке" type = "integer" initvalue = "-1" blockLink = "Bus-station"
+                paramLink = "Количество пассажиров" blockIndex = "selfIndex"/>/>
+      </InputParamList>
+
+
+    </Block>
+
+    <Multiplexor name = "Bus-station" ownername = "Bus" etalonname = "BusStation" count = "5">
+      <Code type = "Enable">
+        <![CDATA[
+           enable := busNumber = stationNumber;
+        ]]>
+      </Code>
+
+    </Multiplexor>
+
+    <Block name = "BusStation" count = "5">
+      <OutParamList>
+        <Param name = "stationPosition" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              stationPosition := selfIndex * 50;
+            ]]>
+          </Formula>
+        </Param>
+        <Param name = "stationNumber" type = "integer" initvalue = "-1">
+          <Formula>
+            <![CDATA[
+               stationNumber := selfIndex;
+            ]]>
+          </Formula>
+        </Param>
+        <Param name = "Количество пассажиров" type = "integer" initvalue = "10" />
+      </OutParamList>
+    </Block>
+
+  </BlockList>
+</Model>

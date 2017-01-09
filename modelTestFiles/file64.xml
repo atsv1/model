@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Денежный потог" delay = "100" printDurationInterval = "50000" >
+  <BlockList>
+
+    <Block name = "block1" count = "5">
+      <InnerParamList>
+      <Param name = "param1" type = "material" valuetype ="integer"  initvalue = "10">
+
+      </Param>
+      </InnerParamList>
+    </Block>
+
+    <Block name = "block2" >
+       <InputParamList>
+          <Param name = "inpParam" type = "material" valuetype = "integer" initvalue = "0"/>
+       </InputParamList>
+      <InnerParamList>
+        <Param name = "linkIndex" type = "integer" initvalue = "0">
+        </Param>
+      </InnerParamList>
+      <Statechart name = "reconnect">
+         <State name = "begin">
+           <Transition name = "tr1" type = "timeout" value = "1" nextstate = "begin">
+             <![CDATA[
+               ReLinkParam("Денежный потог", "block2", 0, "inpparam",
+                            "Денежный потог", "block1", linkIndex, "param1"
+                           );
+               linkIndex := linkIndex + 1;
+             ]]>
+           </Transition>
+         </State>
+      </Statechart>
+    </Block>
+
+  </BlockList>
+
+</Model>

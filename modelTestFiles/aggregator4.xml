@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Aggregator name = "aggr1" count = "1" ownername = "owner"
+                etalonname = "etalon">
+      <Code type = "enable">
+        <![CDATA[
+          enable := ownerParam1 >= param1;
+          {print( enable );
+          print( ownerParam1 );
+          print( param1 );}
+        ]]>
+      </Code>
+
+      <Value name = "value1" type = "real" initvalue = "0">
+        <![CDATA[
+          value1 := param1 + param2;
+          {print( value1 );}
+        ]]>
+      </Value>
+
+    </Aggregator>
+
+    <Block name = "etalon" count = "10">
+      <OutParamList>
+        <Param name = "param1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              param1 := selfIndex;
+              {print("update param1");}
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "param2" type = "integer" initvalue = "2">
+          <Formula>
+            <![CDATA[
+              param2 := selfIndex;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+    <Block name = "owner">
+      <OutParamList>
+        <Param name = "ownerParam1" type = "integer" initvalue = "2"/>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

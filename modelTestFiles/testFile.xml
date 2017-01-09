@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "Блок1" count = "1">
+      <OutParamList>
+        <Param name = "var1" type = "real" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              var1 := var1 + 0.5;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "var2" type = "real" initvalue = "0">
+          <Formula>
+              <![CDATA[
+                  var2 := sin( var1*3.14/360 ) ;
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+      <InnerParamList>
+      </InnerParamList>
+
+    </Block>
+  </BlockList>
+</Model>

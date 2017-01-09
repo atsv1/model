@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "Блок1" count = "1">
+      <InputParamList>
+        <Param name = "inp1" type = "integer" initvalue = "1">
+        </Param>
+        <Param name = "inp2" type = "integer" initvalue = "2">
+        </Param>
+      </InputParamList>
+      <OutParamList>
+        <Param name = "var1" type = "integer" initvalue = "1">
+          <Formula>
+            <![CDATA[
+            var1 := inp1 + inp2 + 5;
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+      <InnerParamList></InnerParamList>
+
+    </Block>
+
+  </BlockList>
+
+ </Model>

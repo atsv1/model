@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+      </OutParamList>
+      <InnerParamList>
+        <Param name = "x" type = "integer" initvalue = "0"/>
+
+        <Param name = "y" type = "integer" initvalue = "0"/>
+      </InnerParamList>
+
+      <Statechart name = "Изменение направления движения">
+        <State name = "begin">
+          <Transition name = "tr1" type = "timeout" value = "5" nextstate = "state2">
+            <![CDATA[
+              y := 1;
+            ]]>
+          </Transition>
+        </State>
+        <State name = "state2">
+          <Transition name = "tr2" type = "timeout" value = "5" nextstate = "begin">
+            <![CDATA[
+              y := 0;
+            ]]>
+          </Transition>
+        </State>
+      </Statechart>
+      <Statechart name = "Движение">
+        <State name = "begin">
+          <Transition name = "tr1" type = "timeout" value = "1" nextstate = "begin">
+             <![CDATA[
+               x := x + 1;
+            ]]>
+          </Transition>
+        </State>
+      </Statechart>
+    </Block>
+
+
+  </BlockList>
+
+
+</Model>

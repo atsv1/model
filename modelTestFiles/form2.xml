@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<!-- Пример описания файла пользовательской формы-->
+<!-- -->
+<Form classname = "mp.gui.StandartForm"
+  title = ""
+  sizex = "" sizey = ""
+  model = "Название модели">
+ <TabSheets>
+   <TabSheet title = "Закладка 1">
+     <Graphic name = "name2" caption = "График 1"
+       x = "1"
+       y = "1"
+       width = "300"
+       height = "200"
+       >
+       <Func caption= "F1(x,y)">
+         <AxisX block = "блок1" blockindex = "-1" param = "x" min = "0" max = "21" increment = "2"/>
+         <AxisY block = "блок1" blockindex = "-1" param = "y1" min = "-12" max = "12" increment = "1"/>
+       </Func>
+       <Func caption= "F2(x,y)">
+         <AxisX block = "блок1" blockindex = "-1" param = "x" min = "-1" max = "20" increment = "2"/>
+         <AxisY block = "блок1" blockindex = "-1" param = "y2" min = "-14" max = "12" increment = "2"/>
+       </Func>
+     </Graphic>
+     <Graphic name = "name3" caption = "График2" x = "1"
+       y = "252"
+       width = "300"
+       height = "200">
+       <Func caption= "F1(x,y)">
+         <AxisX block = "блок1" blockindex = "-1" param = "x" min = "0" max = "21" increment = "2"/>
+         <AxisY block = "блок1" blockindex = "-1" param = "y1" min = "-12" max = "12" increment = "1"/>
+       </Func>
+
+     </Graphic>
+
+   </TabSheet>
+   <TabSheet title = "Закладка 2">
+
+   </TabSheet>
+ </TabSheets>
+
+</Form>

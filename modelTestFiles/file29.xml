@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "Приемник" >
+      <OutParamList>
+        <Param name = "recieverId" type = "integer">
+          <Formula>
+            <![CDATA[
+              recieverId := elementId;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+      <InputParamList>
+        <Param name = "materialInput" type = "material" valuetype = "integer" initvalue = "0"
+               blockLink = "mux" paramLink = "materialOut">
+         <RecieveQuantity value = "5"/>
+        </Param>
+      </InputParamList>
+    </Block>
+
+    <Multiplexor name = "mux" count = "1" ownername = "Приемник" etalonname = "Источник" >
+      <Code type = "Criteria">
+        <![CDATA[
+          criteria := criteriaValue;
+        ]]>
+      </Code>
+    </Multiplexor>
+
+    <Block name = "Источник" count = "5">
+      <OutParamList>
+        <Param name = "materialOut" type = "material" valuetype = "integer" initvalue = "100">
+        </Param>
+         <Param name = "criteriaValue" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               criteriaValue := selfIndex;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+      
+    </Block>
+
+  </BlockList>
+ </Model>

@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "Источник" count = "5">
+      <OutParamList>
+        <Param name = "testLink" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               testLink := selfIndex;
+            ]]>
+          </Formula>
+        </Param>
+        <Param name = "источник1" type = "integer" initvalue = "0"/>
+        <Param name = "источник2" type = "integer" initvalue = "0"/>
+        <Param name = "criteriaParam" type = "boolean" initvalue = "true" />
+      </OutParamList>
+    </Block>
+
+
+    <Block name = "Приемник" count = "1">
+      <InputParamList>
+        <Param name = "inp1" type = "integer" blockLink = "mux" paramLink = "источник1"/>
+        <Param name = "inp2" type = "integer" blockLink = "mux" paramLink = "источник2"/>
+        <Param name = "inp3" type = "integer" initvalue = "0"  blockLink = "mux" paramLink = "queueSize" />
+      </InputParamList>
+      <OutParamList>
+        <Param name = "fake" type = "integer" initvalue = "0"/>
+      </OutParamList>
+    </Block>
+
+    <Multiplexor name = "mux" count  = "1" ownername = "Приемник"
+                etalonname = "Источник" >
+      <Code type = "Enable">
+        <![CDATA[
+           enable := criteriaParam;
+        ]]>
+      </Code>
+      <Code type = "Criteria">
+        <![CDATA[
+           if ( testlink = 3 ) then
+            begin
+              criteria := 20;
+            end else
+            begin
+              criteria := 8;
+            end
+        ]]>
+      </Code>
+    </Multiplexor>
+  </BlockList>
+
+ </Model>

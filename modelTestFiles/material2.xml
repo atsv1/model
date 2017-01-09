@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "Приемник" count = "1">
+      <InputParamList>
+        <Param name = "material1" type = "material" valuetype = "real" initvalue = "10" blockLink = "Источник"
+                paramLink = "noMaterial">
+
+        </Param>
+      </InputParamList>
+    </Block>
+
+    <Block name = "Источник">
+      <OutParamList>
+        <Param name = "noMaterial" type = "integer" initvalue = "0">
+        </Param>
+      </OutParamList>
+    </Block>
+
+  </BlockList>
+
+ </Model>

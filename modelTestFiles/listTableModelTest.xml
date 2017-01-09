@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "Block" count = "5">
+      <OutParamList>
+        <Param name = "param1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              param1 := selfindex;
+            ]]>
+          </Formula>
+        </Param>
+        <Param name = "param2" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              param2 := selfindex + 5;
+            ]]>
+          </Formula>
+        </Param>
+        <Param name = "param3" type = "string" initvalue = "strvalue"/>
+      </OutParamList>
+      <Statechart name = "timer">
+        <State name = "begin">
+          <Transition name = "timer" type = "timeout" value = "10" nextstate = "begin">
+            <![CDATA[
+               param2 := param2 + 1;
+            ]]>
+          </Transition>
+        </State>
+      </Statechart>
+    </Block>
+  </BlockList>
+</Model>

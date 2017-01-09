@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "Блок1" count = "1">
+
+    </Block>
+    <Block name = "Блок2">
+
+    </Block>
+    <Block name = "Блок3" count = "3">
+
+    </Block>
+  </BlockList>
+
+ </Model>

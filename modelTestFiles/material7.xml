@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "Источник" count = "1">
+      <OutParamList>
+        <Param name = "material1" type = "material" valuetype = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              material1 := material1 + 1;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+
+  </BlockList>
+
+ </Model>

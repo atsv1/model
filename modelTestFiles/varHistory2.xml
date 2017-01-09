@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "param1" type = "integer" initvalue = "0" />
+        <Param name = "param2" type = "material" valuetype = "integer" initvalue = "2"/>
+      </OutParamList>
+    </Block>
+
+    <Block name = "block2" count = "1">
+      <InputParamList>
+          <Param name = "inpMaterialParam" type = "material" valuetype = "integer" initvalue = "0"
+              blockLink = "block"   paramLink = "param2" blockIndex = "selfIndex" storeHistory = "true"/>
+      </InputParamList>
+    </Block>
+
+
+
+  </BlockList>
+
+ </Model>

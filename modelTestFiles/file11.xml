@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Multiplexor name = "mux1" count  = "1" >
+
+    </Multiplexor>
+  </BlockList>
+ </Model> 

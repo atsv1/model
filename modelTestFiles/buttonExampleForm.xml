@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Form classname = "mp.gui.StandartForm"
+  title = ""
+  sizex = "" sizey = ""
+  model = "df">
+ <TabSheets>
+
+   <TabSheet title = "Товары">
+
+     <Label caption = "param1" block = "block"   param = "param1"  blockindex = "0"
+             x = "10" y = "10" width = "80" height = "20"/>
+     <Label caption = "param2" block = "block"   param = "param2"  blockindex = "0"
+             x = "10" y = "30" width = "80" height = "20"/>
+     <Label caption = "param3" block = "block"   param = "param3"  blockindex = "0"
+             x = "10" y = "50" width = "80" height = "20"/>
+
+     <EditBox caption = "sendparam1" block = "block"   param = "param1"  blockindex = "0"
+             x = "100" y = "10" width = "130" height = "20"/>
+     <EditBox caption = "sendparam2" block = "block"   param = "param2"  blockindex = "0"
+             x = "100" y = "30" width = "130" height = "20"/>
+     <EditBox caption = "param3" block = "block"   param = "param3"  blockindex = "0"
+             x = "100" y = "50" width = "130" height = "20"/>
+
+     <Button caption = "button" x = "10" y = "80" width = "80" height = "20">
+       <Send caption = "sendparam1"/>
+       <Send caption = "sendparam2"/>
+       <Event block = "block"   param = "param3"  blockindex = "0" eventname = "событие для проверки кнопки"/>
+
+     </Button>
+
+
+   </TabSheet>
+
+ </TabSheets>
+</Form>

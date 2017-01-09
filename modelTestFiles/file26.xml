@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "Источник" count = "5">
+      <OutParamList>
+        <Param name = "testLink" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               testLink := selfIndex;
+            ]]>
+          </Formula>
+        </Param>
+        <Param name = "источник1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               источник1 := selfIndex * 10;
+            ]]>
+          </Formula>
+        </Param>
+        <Param name = "источник2" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               источник2 := selfIndex * 15;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+      <InnerParamList>
+        <Param name = "maxCriteriaFlag" type = "integer" initvalue = "0"/>
+        <Param name = "notmaxCriteriaFlag" type = "integer" initvalue = "0"/>
+      </InnerParamList>
+      <EventProcessors>
+        <Event name = "maxcriteria_event">
+          <![CDATA[
+            maxCriteriaFlag := maxCriteriaFlag + 1;
+          ]]>
+        </Event>
+        <Event name = "notmaxcriteria_event">
+          <![CDATA[
+            notmaxCriteriaFlag := notmaxCriteriaFlag + 1;
+          ]]>
+        </Event>
+      </EventProcessors>
+    </Block>
+
+
+    <Block name = "Приемник" count = "1">
+      <InputParamList>
+        <Param name = "inp1" type = "integer" blockLink = "mux" paramLink = "источник1"/>
+        <Param name = "inp2" type = "integer" blockLink = "mux" paramLink = "источник2"/>
+      </InputParamList>
+      <OutParamList>
+        <Param name = "recieverCriteria" type = "integer" initvalue = "1"/>
+      </OutParamList>
+    </Block>
+
+    <Multiplexor name = "mux" count  = "1" ownername = "Приемник"
+                etalonname = "Источник" >
+      <!--<Code type = "Enable">
+        <![CDATA[
+           enable := (testLink = 1);
+        ]]>
+      </Code>-->
+      <Code type = "Criteria">
+        <![CDATA[
+           if ( testlink = recieverCriteria ) then
+            begin
+              criteria := 20;
+            end else
+            begin
+              criteria := 8;
+            end
+        ]]>
+      </Code>
+      <EventList>
+        <Event type = "maxCriteria" name = "maxcriteria_event" />
+        <Event type = "notmaxCriteria" name = "notmaxcriteria_event"/>
+      </EventList>
+    </Multiplexor>
+  </BlockList>
+
+ </Model>

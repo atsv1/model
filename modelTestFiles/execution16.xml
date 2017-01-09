@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1" delay = "10">
+
+  <BlockList>
+
+    <Block name = "block2" count = "10">
+      <OutParamList>
+        <Param name = "testVar" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              testVar := selfIndex;
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "var" type = "integer" initvalue = "3"/>
+        <Param name = "var1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               var1 := Get( "Модель1", "Block2", var, "selfIndex" );
+               StopExecution("Модель1");
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

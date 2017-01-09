@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "Блок1" count = "1">
+      <InnerParamList>
+        <Param name = "par1" type = "integer" initvalue = "0">
+           <Formula>
+          <![CDATA[
+             par1 := par2 + 2;
+            ]]>
+          </Formula>
+        </Param>
+        <Param name = "par2" type = "integer" initvalue = "0"/>
+      </InnerParamList>
+      <Statechart name = "chart1">
+        <State name = "Begin">
+          <Transition name = "tr1" type = "Timeout" value = "1" nextstate = "Begin">
+            <![CDATA[
+             par2 := par2 + 1;
+            ]]>
+          </Transition>
+
+        </State>
+
+      </Statechart>
+    </Block>
+  </BlockList>
+</Model>

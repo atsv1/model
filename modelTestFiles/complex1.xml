@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "BusStation" count = "1">
+      <InnerParamList>
+        <Param name = "КоличествоПассажиров" type = "integer" initvalue = "0">
+
+        </Param>
+        <Param name = "CurrentTime" type = "real" initvalue = "0"/>
+        <Param name = "ВремяПоявленияПервогоПассажира" type = "real" initvalue = "0"/>
+      </InnerParamList>
+
+      <Statechart name = "chart2">
+        <State name = "begin">
+          <Transition name = "tr2" nextstate = "Begin" type = "ByValuet" value = "true">
+            <![CDATA[
+               {КоличествоПассажиров := КоличествоПассажиров + 1;}
+               if ( КоличествоПассажиров > 3 ) then
+                begin
+                  ВремяПоявленияПервогоПассажира := CurrentTime;
+                end;
+                КоличествоПассажиров := КоличествоПассажиров + 1;
+             ]]>
+          </Transition>
+
+        </State>
+      </Statechart>
+      <Statechart name = "chart3">
+        <State name = "begin" >
+          <Transition name = "tr3" nextstate = "Begin" type = "Timeout" value = "1">
+             <![CDATA[
+               CurrentTime := CurrentTime + 1;
+             ]]>
+          </Transition>
+
+        </State>
+      </Statechart>
+    </Block>
+
+  </BlockList>
+</Model>

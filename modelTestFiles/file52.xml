@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1" delay = "10">
+  <ConstantList>
+    <Const name = "scriptConst" type = "integer" initvalue = "100"/>
+  </ConstantList>
+
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "var2" type = "integer" initvalue = "0">
+          <Formula>
+             <![CDATA[
+               var2 := scriptConst - 5;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "var1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               var1 := scriptConst;
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

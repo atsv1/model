@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "SubModel2" delay = "10">
+
+  <BlockList>
+    <Block name = "block2" count = "1">
+    
+      <OutParamList>
+     
+        <Param name = "var1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               var1 := var1 + 1;
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

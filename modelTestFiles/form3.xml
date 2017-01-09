@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<!-- Пример описания файла пользовательской формы-->
+<!-- -->
+<Form classname = "mp.gui.StandartForm"
+  title = ""
+  sizex = "" sizey = ""
+  model = "Название модели">
+ <TabSheets>
+   <TabSheet title = "Закладка 1">
+     <EditBox caption = "Edit1" block = "Блок1" param = "var1"
+       x = "1"
+       y = "21"
+       width = "300"
+       height = "25"
+       />
+
+
+   </TabSheet>
+   <TabSheet title = "Закладка 2">
+
+   </TabSheet>
+ </TabSheets>
+
+</Form>

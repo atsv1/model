@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "BusStation" >
+      <InnerParamList>
+        <Param name = "totalPassengersCount" type = "integer" initvalue = "10000"/>
+        <Param name = "passengersAccumulator" type = "real" initvalue = "0"/>
+        <Param name = "Не пользующиеся" type = "integer" initvalue = "0"/>
+        <Param name = "passengerIncrement" type = "real" initvalue = "1">
+          <Formula>
+             <![CDATA[
+               passengerIncrement := ( (totalPassengersCount - [Не пользующиеся] ) * 3)/ (24*60);
+               if ( passengerIncrement < 0 ) then passengerIncrement := 0.01; 
+            ]]>
+          </Formula>
+        </Param>
+      </InnerParamList>
+    </Block>
+
+  </BlockList>
+</Model>

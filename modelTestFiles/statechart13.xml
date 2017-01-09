@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "Блок1" count = "1">
+      <InnerParamList>
+        <Param name = "par1" type = "integer" initvalue = "0">
+        </Param>
+        <Param name = "par2" type = "integer" initvalue = "0"/>
+        <Param name = "flag" type = "boolean" initvalue = "true"/>
+      </InnerParamList>
+      <Statechart name = "chart1">
+        <State name = "Begin">
+          <Transition name = "tr1" type = "byValue" value = "flag" nextstate = "state2" priority = "0">
+            <![CDATA[
+               par1 := 15;
+            ]]>
+          </Transition>
+          <Transition name = "tr2" type = "byvalue" value = "flag" nextstate = "state3"  priority = "1">
+            <![CDATA[
+               par1 := 20;
+            ]]>
+          </Transition>
+        </State>
+        <State name = "state2">
+          <Code type = "afterIn">
+            <![CDATA[
+               par2 := 10;
+             ]]>
+          </Code>
+        </State>
+        <State name = "state3">
+          <Code type = "afterIn">
+            <![CDATA[
+               par2 := 25;
+             ]]>
+          </Code>
+        </State>
+      </Statechart>
+    </Block>
+  </BlockList>
+</Model>

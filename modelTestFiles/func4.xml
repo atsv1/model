@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Model4" delay = "10">
+
+    <ConstantList>
+    <Const name = "funcConst" type = "integer" initvalue = "100"/>
+  </ConstantList>
+
+
+  <FunctionList>
+    <Function name = "sumFunc" type = "integer">
+      <Param number = "0" name = "inpVar" type = "integer"/>
+      <Formula>
+            <![CDATA[
+                  sumFunc := inpVar + funcConst;
+           ]]>
+          </Formula>
+    </Function>
+  </FunctionList>
+
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "funcVar" type = "integer" initvalue = "4">
+        </Param>
+        <Param name = "var" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+                 var := sumFunc(funcVar) ;
+           ]]>
+          </Formula>
+        </Param>
+
+      </OutParamList>
+    </Block>
+  </BlockList>
+
+ </Model>

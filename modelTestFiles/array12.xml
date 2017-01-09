@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <ConstantList>
+    <Const name = "arrayDimension" type = "integer" initvalue = "25"/>
+    <Const name = "arrayDimension1" type = "integer" initvalue = "4"/>
+  </ConstantList>
+
+
+  <BlockList>
+    <Block name = "block">
+      <OutParamList>
+        <Param name = "arrayParam" type = "array" valuetype = "integer" initvalue = "0"
+               dimension = "arrayDimension" dimension1 = "arrayDimension1"/>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

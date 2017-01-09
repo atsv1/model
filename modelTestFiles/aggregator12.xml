@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Aggregator name = "aggr1" count = "1" etalonname = "etalon">
+      <Code type = "enable">
+       <![CDATA[
+          enable := param1 >= 3;
+        ]]>
+      </Code>
+      <Value name = "valueToSumm" type = "integer" initvalue = "0">
+        <![CDATA[
+          valueToSumm := param1 + param2;
+        ]]>
+      </Value>
+
+     <Function name = "valueSumm" type = "integer" initvalue = "0" functiontype = "summ" value = "valueToSumm">
+      </Function>
+    </Aggregator>
+
+    <Block name = "etalon" count = "5">
+      <OutParamList>
+        <Param name = "param1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              param1 := selfIndex;
+           ]]>
+          </Formula>
+        </Param>
+        <Param name = "param2" type = "integer" initvalue = "2">
+          <Formula>
+            <![CDATA[
+              param2 := selfIndex * 10;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+    <Block name = "owner">
+      <InputParamList>
+        <Param name = "summ" type = "integer" initvalue = "0"
+           blockLink = "aggr1"   paramLink = "valueSumm"/>
+        <Param name = "queueSize" type = "integer" initvalue = "0"
+           blockLink = "aggr1"   paramLink = "queueSize"/>
+      </InputParamList>
+
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

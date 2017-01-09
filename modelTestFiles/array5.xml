@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "block">
+      <OutParamList>
+        <Param name = "enableFlag" type = "boolean" initvalue = "true"/>
+        <Param name = "tempValue" type = "integer" initvalue = "0"/>
+        <Param name = "arrayParam" type = "array" valuetype = "integer" initvalue = "2" dimension = "5" dimension1 = "5">
+          <ForEach enable = "enableFlag" arrayvalue = "tempValue">
+            <![CDATA[
+              tempValue := 16;
+           ]]>
+          </ForEach>
+        </Param>
+        <Param name = "singleArrayValue" type = "integer" initvalue = "0"/>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

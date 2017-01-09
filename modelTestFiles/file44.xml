@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "block" >
+      <OutParamList>
+        <Param name = "stringParam" type = "string" initvalue = "init string value">
+        </Param>
+      </OutParamList>
+    </Block>
+  </BlockList>
+</Model>

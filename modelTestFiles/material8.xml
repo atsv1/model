@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "Источник" count = "1">
+      <OutParamList>
+        <Param name = "testValue" initvalue = "0" type = "integer"/>
+        <Param name = "material1" type = "material" valuetype = "integer" initvalue = "30">
+          <OutgoingQuantity value = "outgoingQuantity">
+             <![CDATA[
+               if ( material1 > material1_orderQuantity ) then
+                begin
+                  outgoingQuantity := material1_orderQuantity;
+                end else
+                begin
+                  outgoingQuantity := material1;
+                end;
+               testValue := testValue + outgoingQuantity;
+             ]]>
+          </OutgoingQuantity>
+        </Param>
+      </OutParamList>
+    </Block>
+
+    <Block name = "Приемник" count = "10">
+      <InputParamList>
+        <Param name = "material2" type = "material" valuetype = "integer" initvalue = "0"
+                blockLink = "Источник" paramLink = "material1">
+
+          <RecieveQuantity value = "5"/>
+        </Param>
+      </InputParamList>
+
+    </Block>
+
+  </BlockList>
+
+ </Model>

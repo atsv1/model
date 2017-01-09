@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "Источник" count = "1">
+      <OutParamList>
+        <Param name = "testValue" initvalue = "1" type = "integer"/>
+        <Param name = "источник" type = "material" valuetype = "integer" initvalue = "30">
+          <OutgoingQuantity value = "outgoingQuantity">
+             <![CDATA[
+               outgoingQuantity := testValue;
+               testValue := testValue + 1;
+             ]]>
+          </OutgoingQuantity>
+        </Param>
+      </OutParamList>
+    </Block>
+
+    <Block name = "Приемник" count = "1">
+      <InputParamList>
+        <Param name = "приемник" type = "material" valuetype = "integer" initvalue = "0"
+                blockLink = "Источник" paramLink = "источник">
+
+          <RecieveQuantity value = "5"/>
+
+          <IncomingCode>
+            <![CDATA[
+               incomingCounter := incomingCounter + 1;
+               lastIncomingValue := incomingValue_приемник;
+               print("incoming");
+             ]]>
+          </IncomingCode>
+        </Param>
+      </InputParamList>
+      <InnerParamList>
+        <Param name = "incomingCounter" type = "integer" initvalue = "0"/>
+        <Param name = "lastIncomingValue" type = "integer" initvalue = "0"/>
+      </InnerParamList>
+    </Block>
+
+  </BlockList>
+
+ </Model>

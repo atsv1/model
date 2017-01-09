@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Model7" delay = "10">
+
+  <FunctionList>
+    <Function name = "getArrSumm" type = "integer">
+      <Param number = "0" name = "inpArr" type = "array" valuetype = "integer"/>
+      <InnerParamList>
+        <Param name = "i" type = "integer" initvalue = "0"/>
+        <Param name = "arrSize" type = "integer" initvalue = "0"/>
+      </InnerParamList>
+      <Formula>
+            <![CDATA[
+              arrSize := GetArrayDimensionLength(inpArr, 0);
+              getArrSumm := 0;
+              i := 0;
+              while (i < arrSize) do
+               begin
+                getArrSumm :=  getArrSumm + inpArr[i];
+                i := i + 1;
+               end;
+           ]]>
+          </Formula>
+    </Function>
+    <Function name = "fillArray" type = "integer">
+      <Param number = "0" name = "inpArr" type = "array" valuetype = "integer"/>
+      <Param number = "1" name = "baseValue" type =  "integer"/>
+      <InnerParamList>
+        <Param name = "i" type = "integer" initvalue = "0"/>
+        <Param name = "arrSize" type = "integer" initvalue = "0"/>
+      </InnerParamList>
+      <Formula>
+            <![CDATA[
+              arrSize := GetArrayDimensionLength(inpArr, 0);
+              i := 0;
+              while (i < arrSize) do
+               begin
+                inpArr[i] := baseValue + i;
+                i := i + 1;
+               end;
+           ]]>
+          </Formula>
+    </Function>
+  </FunctionList>
+
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "enableFlag" type = "boolean" initvalue = "true"/>
+        <Param name = "i" type = "integer" initvalue = "0"/>
+        <Param name = "tempValue" type = "integer" initvalue = "0"/>
+        <Param name = "mas" type = "array" valuetype = "integer" initvalue = "0" dimension = "5">
+           <ForEach arrayvalue = "tempValue" enable = "enableFlag" coordinate = "i">
+            <![CDATA[
+              tempValue := i;
+            ]]>
+          </ForEach>
+
+        </Param>
+        <Param name = "funcVar" type = "integer" initvalue = "7">
+        </Param>
+        <Param name = "var" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+                 fillArray(mas, 5);
+                 var := getArrSumm(mas) ;
+
+           ]]>
+          </Formula>
+        </Param>
+
+      </OutParamList>
+    </Block>
+  </BlockList>
+
+ </Model>

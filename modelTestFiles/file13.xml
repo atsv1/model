@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+    <Block name = "reciever" count = "5">
+      <InputParamList>
+        <Param name = "input1" type = "integer" initvalue = "0" 
+          blockLink = "mux1" paramLink = "ownerOut1"/>
+        <Param name = "input2" type = "integer" initvalue = "0" 
+          blockLink = "mux1" paramLink = "ownerOut2"/>
+      </InputParamList>
+      <OutParamList>
+        <Param name = "testLink" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               testLink := selfIndex;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+    <Block name = "owner" count = "1">
+      <OutParamList>
+        <Param name = "ownerOut1" type = "integer" initvalue = "12"/>
+        <Param name = "ownerOut2" type = "integer" initvalue = "14"/>
+      </OutParamList>
+    </Block>
+    
+    <Multiplexor name = "mux1" count  = "1" ownername = "owner" 
+                etalonname = "reciever" >
+      <Code type = "Enable">
+        <![CDATA[
+           enable := true;
+        ]]>
+      </Code>
+      <Code type = "Criteria">
+        <![CDATA[
+           if ( testlink = 3 ) then
+            begin
+              criteria := 20;
+            end else
+            begin
+              criteria := 8;
+            end
+        ]]>
+      </Code>
+
+    </Multiplexor>
+  </BlockList>
+ </Model>

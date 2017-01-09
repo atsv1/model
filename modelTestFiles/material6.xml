@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "Источник" count = "1">
+      <OutParamList>
+        <Param name = "material1" type = "material" valuetype = "integer" initvalue = "30">
+          <OutgoingQuantity value = "outgoingQuantity">
+             <![CDATA[
+               outgoingQuantity := material1_orderQuantity + 2;
+             ]]>
+          </OutgoingQuantity>
+        </Param>
+      </OutParamList>
+    </Block>
+
+    <Block name = "Приемник">
+      <InputParamList>
+        <Param name = "material2" type = "material" valuetype = "integer" initvalue = "0"
+                blockLink = "Источник" paramLink = "material1">
+          <RecieveDataFlag value = "recieveEnable">
+          </RecieveDataFlag>
+          <RecieveQuantity value = "5"/>
+        </Param>
+      </InputParamList>
+      <InnerParamList>
+        <Param name = "recieveEnable" type = "boolean" initvalue = "true"/>
+      </InnerParamList>
+    </Block>
+
+  </BlockList>
+
+ </Model>

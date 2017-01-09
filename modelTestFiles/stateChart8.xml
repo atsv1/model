@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1" step = "0.5" >
+  <BlockList>
+    <Block name = "b1">
+      <InnerParamList>
+        <Param name = "p1" type = "integer"/>
+      </InnerParamList>
+    </Block>
+
+  </BlockList>
+
+ </Model>

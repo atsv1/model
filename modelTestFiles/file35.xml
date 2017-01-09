@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель1">
+  <BlockList>
+
+    <Block name = "Приемник" >
+      <OutParamList>
+        <Param name = "recieverId" type = "integer">
+          <Formula>
+            <![CDATA[
+              recieverId := elementId;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+      <InputParamList>
+        <Param name = "summReciever" type = "integer" blockLink = "mux" paramLink = "Итоговая сумма"/>
+      </InputParamList>
+    </Block>
+
+    <Multiplexor name = "mux" count = "1" ownername = "Приемник" etalonname = "Источник" >
+      <OutParamList>
+        <Param name = "Итоговая сумма" type = "integer" initvalue = "0"/>
+      </OutParamList>
+      <Code type = "Criteria">
+        <![CDATA[
+          [Итоговая сумма] := [Итоговая сумма] + valuetoSumm;
+        ]]>
+      </Code>
+      <Code type = "BeforeStart">
+        <![CDATA[
+          [Итоговая сумма] := [Итоговая сумма] * valueToSumm;
+        ]]>
+      </Code>
+    </Multiplexor>
+
+    <Block name = "Источник" count = "5">
+      <OutParamList>
+         <Param name = "selfIndexValue" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               selfIndexValue := selfIndex;
+            ]]>
+          </Formula>
+        </Param>
+        <Param name = "valueToSumm" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              valueToSumm := selfIndex * 10;
+            ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+  </BlockList>
+ </Model>
