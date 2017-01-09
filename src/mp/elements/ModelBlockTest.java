@@ -1907,5 +1907,9 @@ public class ModelBlockTest extends TestCase {
     }
     assertTrue( f );
   }
+  
+  public void testDynamicBlocCreate_FromBlock(){
+  	
+  }
 
 }
