@@ -13,6 +13,15 @@
            ]]>
           </Formula>
         </Param>
+        
+        <Param name = "var3" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+              if (var3 < 50) then
+               var3 := var3 + 1;
+           ]]>
+          </Formula>
+        </Param>
       </OutParamList>
     </Block>
 

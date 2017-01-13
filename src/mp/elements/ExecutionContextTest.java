@@ -490,19 +490,26 @@ public class ExecutionContextTest extends TestCase {
     }
     assertTrue( f );
     Model subModel1 = (Model) ModelExecutionContext.GetManager( "SubModel1" );;
+    Model subModel2 = (Model) ModelExecutionContext.GetManager( "SubModel2" );
     ModelBlock subModel1Block = (ModelBlock) subModel1.Get("block1");
     assertTrue(subModel1Block != null);
+    ModelBlock subModel2Block = (ModelBlock) subModel2.Get("block2");
+    assertTrue(subModel2Block != null);
     int curValue = 0;
     int prevValue = 0;
     prevValue = subModel1Block.GetIntValue("var1");
     try {
-	    model.Execute();
-	    model.Execute();
+    	model.run();
+	    
     } catch (Exception e) {
 	     e.printStackTrace();
     }
     curValue = subModel1Block.GetIntValue("var1");;
     assertTrue(curValue > prevValue);
+    curValue = subModel1Block.GetIntValue("var2");;
+    assertTrue( curValue == 100 );
+    curValue = subModel2Block.GetIntValue("var3");;
+    assertEquals( curValue, 50 );
   }
 
   /////////////////////////////////////////////////////////////////////////
