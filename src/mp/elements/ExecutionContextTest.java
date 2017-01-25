@@ -489,7 +489,7 @@ public class ExecutionContextTest extends TestCase {
       e.printStackTrace();
     }
     assertTrue( f );
-    Model subModel1 = (Model) ModelExecutionContext.GetManager( "SubModel1" );;
+    Model subModel1 = (Model) ModelExecutionContext.GetManager( "SubModel1" );
     Model subModel2 = (Model) ModelExecutionContext.GetManager( "SubModel2" );
     ModelBlock subModel1Block = (ModelBlock) subModel1.Get("block1");
     assertTrue(subModel1Block != null);
@@ -504,12 +504,56 @@ public class ExecutionContextTest extends TestCase {
     } catch (Exception e) {
 	     e.printStackTrace();
     }
-    curValue = subModel1Block.GetIntValue("var1");;
+    curValue = subModel1Block.GetIntValue("var1");
     assertTrue(curValue > prevValue);
-    curValue = subModel1Block.GetIntValue("var2");;
+    curValue = subModel1Block.GetIntValue("var2");
     assertTrue( curValue == 100 );
-    curValue = subModel2Block.GetIntValue("var3");;
+    curValue = subModel2Block.GetIntValue("var3");
     assertEquals( curValue, 50 );
+  }
+  
+  /**
+   * проверяем возможность подключения к блокам основной модели из блоков модели, которая подключена из секции <ModelList><ParallelModel
+   */
+  public void testConnectBlocks_FromParallelModel(){
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    Model model = null;
+    boolean f = false;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "execution18.xml" );
+      model = builder.GetRootModel();
+      f = true;
+    } catch (ModelException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (SAXException e) {
+      e.printStackTrace();
+    }
+    assertTrue( f );
+    Model mainModel = (Model) ModelExecutionContext.GetManager( "Модель18" );
+    Model subModel = (Model) ModelExecutionContext.GetManager( "Модель18_1" );
+    assertTrue(mainModel != null);
+    assertTrue(subModel != null);
+    f = false;
+    try {
+			mainModel.Execute();
+			mainModel.Execute();
+			f = true;
+		} catch (ScriptException e) {
+			
+			e.printStackTrace();
+		} catch (ModelException e) {
+			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    ModelBlock subBlock = (ModelBlock) subModel.Get("sub_block");
+    assertTrue( subBlock != null);
+    assertEquals( subBlock.GetIntValue("inp1"), 8 );
+  	
   }
 
   /////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Модель18_1" delay = "10">
+
+<BlockList>
+    <Block name = "sub_block" count = "1">
+        <InputParamList>
+           <Param name = "inp1" type = "integer" initvalue = "-1"
+                  modelLink = "Модель18"  blockLink = "block"   paramLink = "var" blockIndex = "selfIndex"/>
+        </InputParamList>
+    </Block>
+ </BlockList>
+
+</Model>

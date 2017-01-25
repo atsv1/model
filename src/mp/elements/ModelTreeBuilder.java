@@ -115,6 +115,11 @@ public class ModelTreeBuilder {
     modelReader.ReadModel( aRootModelFileName );
     FRootModel = (Model) modelReader.GetRootElement();
     ExtractPath( aRootModelFileName );
+    try {
+			ModelExecutionContext.AddModelExecutionManager(FRootModel);
+		} catch (ScriptException e) {
+			throw new ModelException( e.getMessage() );
+		}
     ReadSubModels( FRootModel.GetNode(), FRootModel );
     Model subModel;
     int i = 0;
