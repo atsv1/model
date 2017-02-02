@@ -171,6 +171,12 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
         }
       i--;
     }
+    // модели из секции ParallelModel
+    if ( parallelModelList != null && !parallelModelList.isEmpty() ) {
+    	for (Model subModel : parallelModelList) {
+    		subModel.InitAllBlockStatecharts();
+    	}
+    }
 
   }
 

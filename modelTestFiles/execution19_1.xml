@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "SubModel19_1" delay = "10">
+
+  <BlockList>
+    <Block name = "block1" count = "1">
+    
+      <OutParamList>
+     
+        <Param name = "var1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+               var1 := 1;
+           ]]>
+          </Formula>
+        </Param>
+        
+        <Param name = "var2" type = "integer" initvalue = "0">          
+        </Param>      
+                
+      </OutParamList>
+      
+      <Statechart name = "block1Process" >
+        <State name = "begin">
+          <Transition name = "trans1" type = "Timeout" value = "1" nextstate = "begin">
+            <![CDATA[
+                var1 := var1 + 1;
+                if ( var1 >= 100 ) then
+                 begin
+                   StopExecution("SubModel19_1");
+                   StopExecution("Модель19");
+                 end;
+             ]]>
+          </Transition>
+        </State>
+      </Statechart>
+      
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

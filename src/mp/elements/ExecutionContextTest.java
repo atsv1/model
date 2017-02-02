@@ -512,6 +512,40 @@ public class ExecutionContextTest extends TestCase {
     assertEquals( curValue, 50 );
   }
   
+  public void testParallelModelsStatechart(){
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    Model model = null;
+    boolean f = false;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "execution19.xml" );
+      model = builder.GetRootModel();
+      f = true;
+    } catch (ModelException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (SAXException e) {
+      e.printStackTrace();
+    }
+    assertTrue( f );
+    f = false;
+    try {
+    	model.run();
+    	f = true;
+    } catch (Exception e) {
+	     e.printStackTrace();
+    }
+    assertTrue(f);
+    Model subModel1 = (Model) ModelExecutionContext.GetManager( "SubModel19_1" );
+    assertTrue( subModel1 != null );
+    ModelBlock subModel1Block = (ModelBlock) subModel1.Get("block1");
+    assertTrue(subModel1Block != null);
+    assertEquals( subModel1Block.GetIntValue("var1"), 100 );
+  	
+  }
+  
   /**
    * проверяем возможность подключения к блокам основной модели из блоков модели, которая подключена из секции <ModelList><ParallelModel
    */
