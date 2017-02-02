@@ -330,6 +330,9 @@ public class ModelMaterialParam extends ModelInputBlockParam {
       throw e;
     }
     String typeName = aAttrReader.GetValueType();
+    if ( typeName == null || "".equals(typeName) ) {
+    	typeName = "integer"; 
+    }
     String initValue = aAttrReader.GetAttrInitValue();
     SetVarInfo( typeName, initValue );
   }
