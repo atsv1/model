@@ -203,36 +203,27 @@ public  class Operand  extends ScriptProgramObject {
   }
 
   public int GetIntValue() throws ScriptException {
-    if ( isIntAssigned )
-    {
+    if ( isIntAssigned ) {
       return FIntOperandValue;
     }
-    if ( isFloatAssigned )
-    {
+    if ( isFloatAssigned ) {
       return (int)FFloatOperandValue;
     }
-    ScriptException e = new ScriptException("Не преобразовать " +
-                     FTypeName + " в integer");
-    throw e;
+    throw new ScriptException("Не преобразовать " + FTypeName + " в integer");    
   }
 
   public float GetFloatValue() throws ScriptException {
-    if ( isFloatAssigned )
-    {
+    if ( isFloatAssigned ) {
       return FFloatOperandValue;
     }
-    if ( isIntAssigned )
-    {
+    if ( isIntAssigned ) {
       return (float)FIntOperandValue;
     }
-    ScriptException e = new ScriptException("Не преобразовать " +
-                      FTypeName + " в real");
-    throw e;
+    throw new ScriptException("Не преобразовать " + FTypeName + " в real");    
   }
 
   public boolean GetBooleanValue()  {
-    if ( isBooleanAssigned )
-    {
+    if ( isBooleanAssigned ) {
       return FBooleanOperandValue;
     } else
       return false;

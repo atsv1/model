@@ -1,7 +1,9 @@
 package mp.parser;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 import java.util.Stack;
 
@@ -14,7 +16,7 @@ public class PascalParser implements ScriptParser {
   в переменной FLexemVector хранится спосок возможных объектов-лексем, соответствующих
   значениям массива ScriptLanguageDef.LexemList
   */
-  private Vector FLexemVector;
+  private Vector<ScriptLexem> FLexemVector;
   /**
     В переменной FParsedLexemList хранится лексем (объектов ScriptLexem),
     порядок следования которых  соответствует порядку следования лексем
@@ -181,6 +183,10 @@ public class PascalParser implements ScriptParser {
    lexem = new ScriptLexemArrayFinishBracket();
    lexem.Variables = GetVariables();
    FLexemVector.add( lexem );
+   
+   lexem = new VarLexem();
+   lexem.Variables = GetVariables();
+   FLexemVector.add( lexem );
 
  }
 
@@ -235,8 +241,7 @@ public class PascalParser implements ScriptParser {
       {
         return o;
       } else*/ FInnerPointer++;
-      if ( FInnerPointer >= FProgram.size() )
-      {
+      if ( FInnerPointer >= FProgram.size() ) {
         return null;
       }
     }
@@ -248,38 +253,24 @@ public class PascalParser implements ScriptParser {
    Второй параметр - список лексем, которые могут следовать за переданной в параметре
    лексемой
    */
-  private void ParseProduction( ScriptLexem aLexem, String aLexemString ) throws ScriptException
-  {
-    if ( aLexem == null )
-    {
+  private void ParseProduction( ScriptLexem aLexem, String aLexemString ) throws ScriptException  {
+    if ( aLexem == null ) {
       ScriptException e;
       e = new ScriptException("В процедуру разбора продукций передано пустое значение");
       throw e;
     }//if
-    if ( ( aLexemString == null ) || (aLexemString.equalsIgnoreCase(""))   )
-    {
+    if ( ( aLexemString == null ) || (aLexemString.equalsIgnoreCase(""))   ) {
       ScriptException e;
       e = new ScriptException("В процедуру разбора продукций передана пустая строка продукций");
       throw e;
     }//if
-   boolean f = true;
-   int currentPos = 0;
-   int previousPos = 0;
-   String lexemName;
+     
    ScriptLexem producedLexem = null;
-
-   while ( f )
-   {
-     currentPos = aLexemString.indexOf('#',currentPos);
-     if ( currentPos != -1 )
-     {
-       lexemName = aLexemString.substring( previousPos,currentPos );
-       producedLexem = GetLexem( lexemName.trim() );
-       aLexem.AddProducedLexem( producedLexem );
-       currentPos++;
-       previousPos = currentPos;
-     } else f = false;
-   }//while
+   String[] lexemArr = aLexemString.split("#");
+   for (String l : lexemArr) {
+  	 producedLexem = GetLexem( l.trim() );
+  	 aLexem.AddProducedLexem( producedLexem );
+   }   
   }
 
   /**
@@ -287,8 +278,7 @@ public class PascalParser implements ScriptParser {
    * Сначала вызывается процедура разбора продукций.
    *
   */
-  protected void ParseLanguageDef()
-  {
+  protected void ParseLanguageDef() {
     int i = 0;
     ScriptLexem lexem = null;
 
@@ -348,19 +338,18 @@ public class PascalParser implements ScriptParser {
     ScriptLexem lexem = null;
     int i = 0;
     while ( i < FLexemVector.size() ) {
-       lexem = (ScriptLexem) FLexemVector.get(i);
+       lexem =  FLexemVector.get(i);
        if ( aLexemName.equalsIgnoreCase(lexem.GetLanguageName()) ) {
-         break;
+      	 return lexem;
        } else {
          if ( lexem.IsMyToken( aLexemName ) ) {
-           break;
-         } else {
-           lexem = null;
-         }
+           //break;
+        	 return lexem;
+         } 
        }
      i++;
     }//while
-    return lexem;
+    return null;
   }
 
   protected ScriptLexem GetNextLexem(StringBuffer aCodePart) throws ScriptException {
@@ -372,10 +361,8 @@ public class PascalParser implements ScriptParser {
     ScriptLexem lexem;
     lexem = GetLexem( lexemCode.trim() );
     FLexemTokenizer.SetPreviousLexem( lexem );
-    if ( (lexem == null) && (!lexemCode.equals("")) ) {
-      ScriptException e;
-      e = new ScriptException( "Неизвестная строка: " +  lexemCode);
-      throw e;
+    if ( (lexem == null) && (!lexemCode.equals("")) ) {      
+      throw  new ScriptException( "Неизвестная строка: " +  lexemCode);      
     }
     return lexem;
   }
@@ -398,11 +385,7 @@ public class PascalParser implements ScriptParser {
           newLexem.SaveCode( aCodePart.toString() );
           FParsedLexemList.add( newLexem );
        } else {
-         ScriptException e;
-         //PrintLexemList();
-         e = new ScriptException("_После "  + previousLexem.GetCode() +
-                                 " не может следовать " + aCodePart );
-         throw e;
+         throw new ScriptException("_После "  + previousLexem.GetCode() + " не может следовать " + aCodePart );         
        }
      } else {
        ScriptBeginLexem beginLexem;
@@ -415,30 +398,23 @@ public class PascalParser implements ScriptParser {
 
   private void IsLexemCenInsertedAfter(int position, ScriptLexem aLexem) throws ScriptException {
     ScriptException e;
-    if ( position <= 0 && !aLexem.GetLanguageName().equalsIgnoreCase("Начало"))
-    {
-      e = new ScriptException("Нельзя вставлять в самое начало лексему " + aLexem.GetLanguageName());
-      throw e;
+    if ( position <= 0 && !aLexem.GetLanguageName().equalsIgnoreCase("Начало")) {
+    	throw new ScriptException("Нельзя вставлять в самое начало лексему " + aLexem.GetLanguageName());      
     }
-    if ( aLexem.IsServiceLexem() )
-    {
+    if ( aLexem.IsServiceLexem() ) {
       return ;
     }
-    if ( position == 0 )
-    {
+    if ( position == 0 ) {
       //@todo Здесь какой-то баг, это заглушка. Попробовать убрать и увидеть, что получится
       return;
     }
     ScriptLexem prevLexem = (ScriptLexem) FParsedLexemList.get( position-1 );
-    if ( prevLexem.IsServiceLexem() )
-    {
+    if ( prevLexem.IsServiceLexem() ) {
       return;
     }
     ScriptLexem prevEtalonLexem = GetEtalonLexem( prevLexem );
     if (!prevEtalonLexem.IsProducedLexemExist( aLexem )) {
-      e = new ScriptException("После  " + prevEtalonLexem.GetLanguageName() + " не может следовать  " +
-                 aLexem.GetLanguageName());
-      throw e;
+      throw new ScriptException("После  " + prevEtalonLexem.GetLanguageName() + " не может следовать  " + aLexem.GetLanguageName());      
     }
   }
 
@@ -1486,6 +1462,51 @@ public class PascalParser implements ScriptParser {
       }
     }//while
   }
+  
+  private void parseVarSection() throws ScriptException{
+  	boolean f = true;
+  	String lexemCode = null;
+  	String prevLexemCode = FLexemTokenizer.GetNextLexem3();
+  	if ( prevLexemCode ==null  ){
+  		throw new ScriptException("Пустая секция var");
+  	}
+  	List<String> varList = new ArrayList<String> ();
+  	String typeName = null;
+  	while (f) {
+  		lexemCode = FLexemTokenizer.GetNextLexem3();
+  		if ( ",".equals(lexemCode) || ":".equals(lexemCode) ) {
+  			varList.add(prevLexemCode);
+  		} else  if ( ";".equals(lexemCode) ) {
+  			typeName = prevLexemCode;
+  			break;
+  		} else if (lexemCode != null) { 
+  			prevLexemCode = lexemCode;
+  		} else {
+  			throw new ScriptException("ошибка секции var");
+  		}  		
+  	}
+  	if ( typeName == null ) {
+  		throw new ScriptException("Отсутствует тип переменной ");
+  	}
+  	if ( varList.isEmpty() ) {
+  		throw new ScriptException("Отсутствуют переменные ");
+  	}
+  	for (String varName : varList) {
+  		Variable newVar = new Variable();
+  		newVar.SetName(varName);
+  		if ( "integer".equalsIgnoreCase(typeName)  ) {
+  			newVar.InitIntOperand(0);
+  		} else if ( "real".equalsIgnoreCase(typeName)  ) {
+  			newVar.InitFloatOperand(0);
+  		} else if ( "boolean".equalsIgnoreCase(typeName) ) {
+  			newVar.InitBooleanOperand(false);
+  		} else if ( "string".equalsIgnoreCase(typeName) ) {
+  			newVar.InitStringOperand("");
+  		}
+  		Variables.AddVariable(newVar);
+  	}
+  	
+  }
 
   /**
     Алгоритм парсера следующий:
@@ -1512,14 +1533,15 @@ public class PascalParser implements ScriptParser {
     while ( f ) {
       codePart.delete( 0, codePart.length() );
       lexem = GetNextLexem( codePart );
-      if ( lexem == null ) {
+      if ( lexem != null && lexem instanceof VarLexem ) {
+      	parseVarSection();
+      } else  if ( lexem == null ) {
         ScriptLexem endLexem = GetLexem("Конец");
         ScriptLexem newLexem = (ScriptLexem)endLexem.clone();
         codePart.append("");
         Add2ParsedLexemList( newLexem, codePart );
         f = false;
-      } else {
-        //FParsedLexemList.add( lexem );
+      } else {        
         Add2ParsedLexemList( lexem, codePart );
       }
     }//while

@@ -3442,7 +3442,37 @@ public class ModelScriptTest extends TestCase {
     assertTrue( f );
     assertEquals(v1, 100);
     assertEquals(v2, 2);
-
+  }
+  
+  public void testVarSection(){
+  	boolean f = false;
+    PascalParser parser = new PascalParser();
+    ScriptLanguageExt ext = new ScriptLanguageExt();
+    try {
+    	parser.SetLanguageExt( ext );
+			parser.ParseScript( "var var1 : integer; var1 := 100; " );
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    assertTrue( ext.GetVariables().GetVariable("var1") != null);
+    f = false;
+    try {
+			parser.ExecuteScript();
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    f = false;
+    try {
+			assertEquals( ext.GetVariables().GetVariable("var1").GetIntValue() , 100);
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		} 
+    assertTrue(f);  	
   }
 
 

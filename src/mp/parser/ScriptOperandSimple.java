@@ -11,7 +11,9 @@ import java.util.Vector;
  Класс, отвечающий за операнды
 */
 public class ScriptOperandSimple extends ScriptLexem {
+	
   private String FOperandName;
+  
   public ScriptOperandSimple(String aOperandName) {
     super();
     FProducedLexem = new Vector();
@@ -24,9 +26,7 @@ public class ScriptOperandSimple extends ScriptLexem {
     return GetLanguageName().equalsIgnoreCase(aLexem.GetLanguageName());
   }
 
-  public boolean IsMyToken(String aTokenName)
-          //IsMyToken
-  {
+  public boolean IsMyToken(String aTokenName) {
     Object variable = null;
     if ( Variables != null ) {
       variable = Variables.GetVariable(aTokenName.toUpperCase());

@@ -31,27 +31,24 @@ public abstract class ScriptLexem {
    */
   protected String FLanguageName = "";
   protected String FUpperLanguageName = "";
-  protected Vector FProducedLexem;
+  protected Vector<ScriptLexem> FProducedLexem;
   protected String FCodePart = null;
   public VariableList Variables;
 
   public ScriptLexem() {
-    FProducedLexem = new Vector();
+    FProducedLexem = new Vector<ScriptLexem> ();
   }
 
   public String GetLanguageName()  {
     return FLanguageName;
   }
 
-  public void SetLanguageName( String aName ) throws ScriptException
-  {
-    if ( FLanguageName != "" )
-    {
+  public void SetLanguageName( String aName ) throws ScriptException  {
+    if ( FLanguageName != "" ) {
       ScriptException e;
       e = new ScriptException("Невозможно изменять уже присвоенное имя в лексеме " + aName);
       throw e;
-    } else
-    {
+    } else {
       FLanguageName = aName;
       FUpperLanguageName = aName.toUpperCase();
     }
@@ -67,7 +64,7 @@ public abstract class ScriptLexem {
     int i = 0;
     ScriptLexem lexem;
     while ( i < FProducedLexem.size() ) {
-      lexem = (ScriptLexem) FProducedLexem.get( i );
+      lexem = FProducedLexem.get( i );
       if ( lexem.IsMyToken( aToken ) ) {
         f = true;
         break;
@@ -85,7 +82,7 @@ public abstract class ScriptLexem {
       return f;
     }
     while ( i < FProducedLexem.size() ) {
-      lexem = (ScriptLexem) FProducedLexem.get( i );
+      lexem = FProducedLexem.get( i );
       if ( lexem.IsLexemEquals( aLexem ) ) {
         f = true;
         break;
@@ -97,12 +94,10 @@ public abstract class ScriptLexem {
 
   public  void AddProducedLexem( ScriptLexem aLexem ) throws ScriptException {
 
-    if ( IsProducedLexemExist( aLexem ) )
-    {
+    if ( IsProducedLexemExist( aLexem ) ) {
       throw new ScriptException("Такая лексема уже присутствует в продукциях");
     }
-    if ( aLexem != null )
-    {
+    if ( aLexem != null ) {
       FProducedLexem.add( aLexem );
     }
   }
@@ -118,7 +113,7 @@ public abstract class ScriptLexem {
     int i = 0;
     ScriptLexem lexem;
     while ( i <  FProducedLexem.size()) {
-      lexem = (ScriptLexem) FProducedLexem.get( i );
+      lexem =  FProducedLexem.get( i );
       if ( lexem.IsMyToken((aTokenName)) ) {
         f = true;
         break;

@@ -40,30 +40,25 @@ public class ScriptDigitLexem extends ScriptLexem {
     boolean f = false;
     Boolean f1;
     String s;
-    try
-    {
+    try  {
        r = Integer.parseInt( aTokenName );
        f = true;
        FDigitType = 1;
       return f;
     }
-    catch(Exception e)
-    {
-      try
-      {
+    catch(Exception e) {
+      try  {
         r = (float)Double.parseDouble( aTokenName );
         f = true;
         FDigitType = 2;
         return f;
-      } catch(Exception e1)
-      {
+      } catch(Exception e1)  {
         s = aTokenName.trim();
-        if (  s.equalsIgnoreCase("true")  || s.equalsIgnoreCase("false"))
-        {
+        if (  s.equalsIgnoreCase("true")  || s.equalsIgnoreCase("false")) {
           FDigitType = 3;
           return true;
         } else{
-          //проверяем, не string ли это
+          //проверяем, не string ли это        	
           s = aTokenName.substring(0, 1);
           if ( "\"".equalsIgnoreCase( s ) ) {
             s = aTokenName.substring( aTokenName.length() - 1, aTokenName.length() );
@@ -73,7 +68,6 @@ public class ScriptDigitLexem extends ScriptLexem {
             } else return false;
           } else
           return false;
-
         }
           //return false;
       }
@@ -81,22 +75,18 @@ public class ScriptDigitLexem extends ScriptLexem {
     //return f;
   }
 
-  public ScriptLexem GetProducedLexem(int aLexemIndex)
-
-  {
+  public ScriptLexem GetProducedLexem(int aLexemIndex) {
     return null;
   }
 
-  public Object clone()
-  {
+  public Object clone() {
     ScriptDigitLexem newLexem = new ScriptDigitLexem();
     newLexem.FDigitType = FDigitType;
     return newLexem;
   }
 
 
-  public Object GetExecutableObject()
-  {
+  public Object GetExecutableObject() {
     IsMyToken( FCodePart );
     switch (FDigitType) {
       case 1:{
