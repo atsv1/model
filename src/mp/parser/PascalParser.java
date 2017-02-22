@@ -1463,7 +1463,92 @@ public class PascalParser implements ScriptParser {
     }//while
   }
   
+  private int VAR_LEXEM_TYPE_VARIABLE = 1;
+  private int VAR_LEXEM_TYPE_VARIABLE_DIVIDER = 2;
+  private int VAR_LEXEM_TYPE_TYPE_SEPARATOR = 3;
+  private int VAR_LEXEM_TYPE_TYPE = 4;
+  private int VAR_LEXEM_TYPE_STOP_VAR_SECTION = 5;
+  
+  private int getLexemType(String lexemCode) throws ScriptException{
+  	if ( lexemCode == null || "".equals(lexemCode) ) {
+  		throw new ScriptException("неизвестная ошибка"); 
+  	}
+  	if ( ";".equals(lexemCode) ) {
+  		return VAR_LEXEM_TYPE_STOP_VAR_SECTION;
+  	}
+  	if (",".equals(lexemCode)) {
+  		return VAR_LEXEM_TYPE_VARIABLE_DIVIDER;
+  	}
+  	if (":".equalsIgnoreCase(lexemCode)) {
+  		return VAR_LEXEM_TYPE_TYPE_SEPARATOR;
+  	}
+  	if ("integer".equalsIgnoreCase(lexemCode) 
+  			|| "real".equalsIgnoreCase(lexemCode)
+  			|| "boolean".equalsIgnoreCase(lexemCode)
+  			|| "string".equalsIgnoreCase(lexemCode)
+  			) {
+  		return VAR_LEXEM_TYPE_TYPE;
+  	}
+  	return VAR_LEXEM_TYPE_VARIABLE;
+  } 
+  
   private void parseVarSection() throws ScriptException{
+  	int prevLexemType = 0;  	
+  	String lexemCode = FLexemTokenizer.GetNextLexem3();
+  	int curLexemType = getLexemType(lexemCode);
+  	boolean f = true;
+  	List<String> varList = new ArrayList<String> ();
+  	String typeName = null;
+  	
+  	while ( f ) {  		
+  		if ( prevLexemType == 0 && curLexemType == VAR_LEXEM_TYPE_VARIABLE ) {
+  			varList.add(lexemCode);
+  			prevLexemType = VAR_LEXEM_TYPE_VARIABLE; 
+  		} else if ( prevLexemType == 0 && curLexemType != VAR_LEXEM_TYPE_VARIABLE ) {
+  			throw new ScriptException("Некорректный синтаксис около " + lexemCode);
+  		} else if ( prevLexemType == VAR_LEXEM_TYPE_VARIABLE && curLexemType == VAR_LEXEM_TYPE_VARIABLE_DIVIDER ) {
+  			// запятая после названия переменной
+  			prevLexemType = 0;
+  		} else if ( prevLexemType == VAR_LEXEM_TYPE_VARIABLE && curLexemType == VAR_LEXEM_TYPE_TYPE_SEPARATOR ) {
+  			prevLexemType = VAR_LEXEM_TYPE_TYPE_SEPARATOR;
+  		} else if ( prevLexemType == VAR_LEXEM_TYPE_VARIABLE ) {
+  			throw new ScriptException("Некорректный синтаксис около " + lexemCode);
+  		} else if ( prevLexemType == VAR_LEXEM_TYPE_TYPE_SEPARATOR && curLexemType == VAR_LEXEM_TYPE_TYPE) {
+  			// пришел тип переменной, выходим из цикла и создаем все что накопилось в varList;
+  			typeName = lexemCode;
+  			prevLexemType = VAR_LEXEM_TYPE_TYPE;
+  			//break;
+  		}  else if ( prevLexemType == VAR_LEXEM_TYPE_TYPE_SEPARATOR ) {
+  			throw new ScriptException("Некорректный синтаксис около " + lexemCode);  			
+  		} else if ( prevLexemType == VAR_LEXEM_TYPE_TYPE && curLexemType == VAR_LEXEM_TYPE_STOP_VAR_SECTION) {
+  			break;
+  		} else if ( prevLexemType == VAR_LEXEM_TYPE_TYPE ) {
+  			throw new ScriptException("Некорректный синтаксис около " + lexemCode);  			
+  		}
+  		lexemCode = FLexemTokenizer.GetNextLexem3();
+  		curLexemType = getLexemType(lexemCode);
+  		
+  	}// while
+  	for (String varName : varList) {
+  		Variable newVar = new Variable();
+  		newVar.SetName(varName);
+  		if ( "integer".equalsIgnoreCase(typeName)  ) {
+  			newVar.InitIntOperand(0);
+  		} else if ( "real".equalsIgnoreCase(typeName)  ) {
+  			newVar.InitFloatOperand(0);
+  		} else if ( "boolean".equalsIgnoreCase(typeName) ) {
+  			newVar.InitBooleanOperand(false);
+  		} else if ( "string".equalsIgnoreCase(typeName) ) {
+  			newVar.InitStringOperand("");
+  		} else {
+  			throw new ScriptException("Неизвестный тип переменной " +  typeName);
+  		}
+  		Variables.AddVariable(newVar);  		
+  	}
+  	
+  }
+  
+  private void parseVarSection3() throws ScriptException{
   	boolean f = true;
   	String lexemCode = null;
   	String prevLexemCode = FLexemTokenizer.GetNextLexem3();
@@ -1476,6 +1561,7 @@ public class PascalParser implements ScriptParser {
   		lexemCode = FLexemTokenizer.GetNextLexem3();
   		if ( ",".equals(lexemCode) || ":".equals(lexemCode) ) {
   			varList.add(prevLexemCode);
+  			prevLexemCode = lexemCode;
   		} else  if ( ";".equals(lexemCode) ) {
   			typeName = prevLexemCode;
   			break;
@@ -1502,6 +1588,8 @@ public class PascalParser implements ScriptParser {
   			newVar.InitBooleanOperand(false);
   		} else if ( "string".equalsIgnoreCase(typeName) ) {
   			newVar.InitStringOperand("");
+  		} else {
+  			throw new ScriptException("Неизвестный тип переменной " +  typeName);
   		}
   		Variables.AddVariable(newVar);
   	}
