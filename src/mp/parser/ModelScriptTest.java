@@ -3474,6 +3474,130 @@ public class ModelScriptTest extends TestCase {
 		} 
     assertTrue(f);  	
   }
+  
+  public void testVarSection_2Vars(){
+  	boolean f = false;
+    PascalParser parser = new PascalParser();
+    ScriptLanguageExt ext = new ScriptLanguageExt();
+    try {
+    	parser.SetLanguageExt( ext );
+			parser.ParseScript( "var var1, var2 : integer; var1 := 101; var2 := var1 + 3;" );
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    assertTrue( ext.GetVariables().GetVariable("var1") != null);
+    assertTrue( ext.GetVariables().GetVariable("var2") != null);
+    f = false;
+    try {
+			parser.ExecuteScript();
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    f = false;
+    try {
+			assertEquals( ext.GetVariables().GetVariable("var1").GetIntValue() , 101);
+			assertEquals( ext.GetVariables().GetVariable("var2").GetIntValue() , 104);
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		} 
+    assertTrue(f);  	
+  }
+  
+  public void testVarSection_2Sect(){
+  	boolean f = false;
+    PascalParser parser = new PascalParser();
+    ScriptLanguageExt ext = new ScriptLanguageExt();
+    try {
+    	parser.SetLanguageExt( ext );
+    	parser.ParseScript( "var var1 : integer; var var3: real;  var1 := 100; var3 := 9;" );
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    f = false;
+    try {
+			parser.ExecuteScript();
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    f = false;
+    try {			
+			assertEquals( ext.GetVariables().GetVariable("var3").GetIntValue() , 9);
+			assertEquals( ext.GetVariables().GetVariable("var1").GetIntValue() , 100);
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		} 
+    assertTrue(f);
+  	
+  }
+  
+  public void testVarSection_2Variables(){
+  	boolean f = false;
+    PascalParser parser = new PascalParser();
+    ScriptLanguageExt ext = new ScriptLanguageExt();
+    try {
+    	parser.SetLanguageExt( ext );
+    	parser.ParseScript( "var var1, var3 : integer; var1 := 100; var3 := 9;" );
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    f = false;
+    try {
+			parser.ExecuteScript();
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    f = false;
+    try {			
+			assertEquals( ext.GetVariables().GetVariable("var3").GetIntValue() , 9);
+			assertEquals( ext.GetVariables().GetVariable("var1").GetIntValue() , 100);
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		} 
+    assertTrue(f);
+  }
+  
+  public void testVarSection_Error1(){
+  	boolean f = false;
+    PascalParser parser = new PascalParser();
+    ScriptLanguageExt ext = new ScriptLanguageExt();
+    try {
+    	parser.SetLanguageExt( ext );
+    	parser.ParseScript( "var var1, var3  integer; var1 := 100; var3 := 9;" );
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(!f);
+   }
+  
+  public void testVarSection_Error2(){
+  	boolean f = false;
+    PascalParser parser = new PascalParser();
+    ScriptLanguageExt ext = new ScriptLanguageExt();
+    try {
+    	parser.SetLanguageExt( ext );
+    	parser.ParseScript( "var var1, var3 : integer var1 := 100; var3 := 9;" );
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();			
+		}
+    assertTrue(!f);
+   }
 
 
 
