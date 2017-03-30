@@ -17,27 +17,21 @@ public abstract class ScriptOperationAbstrJMP extends ScriptOperation {
    * @throws ScriptException - исключение генерируется тогда, когда полученный
    * указатель выходит за пределы программы
    */
-  protected int GetExecResult(int aProgramPointer) throws ScriptException
-  {
-
+  protected int GetExecResult(int aProgramPointer) throws ScriptException {
     return FAddress.GetIntValue() - aProgramPointer;
   }
 
-  protected void IsAddressValid() throws ScriptException
-  {
+  protected void IsAddressValid() throws ScriptException  {
     ScriptException e;
-    if ( FAddress == null )
-    {
+    if ( FAddress == null ) {
       e = new ScriptException("Не инициализирован адрес перехода");
       throw e;
     }
-    if ( !FAddress.GetTypeName().equalsIgnoreCase("integer") )
-    {
+    if ( !FAddress.GetTypeName().equalsIgnoreCase("integer") ) {
       e = new ScriptException("Адрес перехода не является числом");
       throw e;
     }
-    if ( ( FAddress.GetIntValue() < 0 ) || (FAddress.GetIntValue() > Program.size()) )
-    {
+    if ( ( FAddress.GetIntValue() < 0 ) || (FAddress.GetIntValue() > Program.size()) )  {
       e = new ScriptException("Новый адрес выходит за пределы программы");
       throw e;
     }

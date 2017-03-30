@@ -26,4 +26,10 @@ public class ScriptOperationJNT extends ScriptOperationAbstrJMP {
     } else
     return GetExecResult( aProgramPointer );
   }
+  
+  @Override
+  public String toString(){
+  	return "JumpNotTrue to " + (FAddress != null ? FAddress.toString() : " no addr" ) + " condition " + FOperand;
+  }
+  
 }

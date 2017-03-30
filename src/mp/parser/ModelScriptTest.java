@@ -1991,8 +1991,7 @@ public class ModelScriptTest extends TestCase {
   //Цикл тестов по проверке правильности функционирования оператора IF
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  public void testParseIf1()
-  {
+  public void testParseIf1() {
     VariableList variables = new VariableList();
 
     Variable var1;
@@ -2013,13 +2012,11 @@ public class ModelScriptTest extends TestCase {
                 "begin var2 := false; end " +
                 "else var2 := true;";
 
-    try
-    {
+    try  {
       parser.ParseScript( s );
       parser.ExecuteScript();
       f = true;
-    } catch (Exception e)
-    {
+    } catch (Exception e){
        System.out.println(e.getMessage());
     }
     assertTrue( f );
@@ -2029,8 +2026,7 @@ public class ModelScriptTest extends TestCase {
   /**Проверяется наиболее полная ситуация с ветвлением алгоритма: когда есть секции IF и ELSE, ограниченные
    * метками BEGIN END
    */
-  public void testParseIf2()
-  {
+  public void testParseIf2() {
     VariableList variables = new VariableList();
 
     Variable var1;
@@ -2055,13 +2051,11 @@ public class ModelScriptTest extends TestCase {
                 "begin var2 := false; end " +
                 "else begin var2 := true; end; var3 := 18;";
 
-    try
-    {
+    try {
       parser.ParseScript( s );
       parser.ExecuteScript();
       f = true;
-    } catch (Exception e)
-    {
+    } catch (Exception e) {
        System.out.println(e.getMessage());
     }
     assertTrue( f );
@@ -2225,13 +2219,11 @@ public class ModelScriptTest extends TestCase {
                  " print( \"teststring\" ); " +
                  " end "
              ;
-     try
-     {
+     try {
        parser.ParseScript( s );
        parser.ExecuteScript();
        f = true;
-     } catch (Exception e)
-     {
+     } catch (Exception e) {
         System.out.println(e.getMessage());
      }
      assertTrue( f );
@@ -2309,8 +2301,7 @@ public class ModelScriptTest extends TestCase {
      assertTrue( !f );
    }
 
-   public void testParseIf8()
-   {
+   public void testParseIf8()  {
      VariableList variables = new VariableList();
 
      Variable var1;
@@ -2337,8 +2328,7 @@ public class ModelScriptTest extends TestCase {
                  " begin var2 := false; var3 := 7; end " +
                  "else begin var2 := true; var3 := 8; end; ";
 
-     try
-     {
+     try {
        parser.ParseScript( s );
        parser.ExecuteScript();
        f1 = var3.GetIntValue() == 8;
@@ -2351,8 +2341,7 @@ public class ModelScriptTest extends TestCase {
      assertTrue( f1 );
    }
 
-   public void testParseIf9()
-   {
+   public void testParseIf9() {
      VariableList variables = new VariableList();
 
      Variable var1;
@@ -2381,23 +2370,20 @@ public class ModelScriptTest extends TestCase {
                  " end " +
                  " else begin var2 := true; end; ";
 
-     try
-     {
+     try {
        parser.ParseScript( s );
        parser.ExecuteScript();
        f = true;
        //f1 = var3.GetBooleanValue();
        i = var3.GetIntValue();
-     } catch (Exception e)
-     {
+     } catch (Exception e) {
         System.out.println(e.getMessage());
      }
      assertTrue( f );
      assertEquals( i,5 );
    }
 
-  public void testParseIf10()
-   {
+  public void testParseIf10() {
      VariableList variables = new VariableList();
 
      Variable var1;
@@ -2426,15 +2412,13 @@ public class ModelScriptTest extends TestCase {
                  " end " +
                  " else begin var2 := true;if (var2) then begin var3 := 8; end else var3 := 9;  end; ";
 
-     try
-     {
+     try {
        parser.ParseScript( s );
        parser.ExecuteScript();
        f = true;
        //f1 = var3.GetBooleanValue();
        i = var3.GetIntValue();
-     } catch (Exception e)
-     {
+     } catch (Exception e) {
         System.out.println(e.getMessage());
      }
      assertTrue( f );
@@ -3598,6 +3582,48 @@ public class ModelScriptTest extends TestCase {
 		}
     assertTrue(!f);
    }
+  
+  private int getInt(Variable var) {
+  	if ( var == null ) {
+  		return 0;
+  	}
+  	try {
+			return var.GetIntValue();
+		} catch (ScriptException e) {
+			return 0;
+		}
+  	
+  }
+  
+  public void testifChain(){
+  	String s = "var cond, val : integer;"  			       
+  			       + " cond := 1;"
+  			       + " if ( cond <= 1 ) then       "
+  			       + "  begin"
+  			       + "     val := 3;"
+  			       + "  end else"
+  			       + "   "
+  			       + "  if ( cond > 1 AND cond < 2) then"
+  			       + "   begin"
+  			       + "      val := 4;"
+  			       + "   end; "
+  			       + "  ";
+  	boolean f = false;
+    PascalParser parser = new PascalParser();
+    ScriptLanguageExt ext = new ScriptLanguageExt();
+    try {
+    	parser.SetLanguageExt( ext );
+    	parser.ParseScript( s);
+    	parser.ExecuteScript();
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    Variable cond = ext.Get("cond");
+    assertTrue( cond != null );
+    assertEquals( getInt(cond), 1 );
+  }
 
 
 

@@ -65,14 +65,12 @@ public class ScriptLinker {
     }
   }
 
-  private void CheckLabel(Variable aLabel, int aPosition) throws ScriptException
-  {
+  private void CheckLabel(Variable aLabel, int aPosition) throws ScriptException {
     int address = GetPosition( aLabel.GetIntValue(), FAddressList );
-    if (address == -1)
-    {
+    if (address == -1){
       AddNewRecord( aPosition, aLabel.GetIntValue(), FLabelList);
-    } else
-    {//есть такой адрес
+    } else {
+    	//есть такой адрес
       //мен€ем значени€ в адресе на конкретную позицию в программе
       Variable addressVar = (Variable) FProgram.get( address );
       Integer newPos = (Integer) FCurrentObject[0];
@@ -85,14 +83,12 @@ public class ScriptLinker {
     }
   }
 
-  private void CheckAddress(Variable aAddress, int aPosition) throws ScriptException
-  {
+  private void CheckAddress(Variable aAddress, int aPosition) throws ScriptException  {
     int labelPosition = GetPosition( aAddress.GetIntValue(), FLabelList );
-    if ( labelPosition == -1 )
-    {//такой метки в списке еще нет
+    if ( labelPosition == -1 ) {
+    	//такой метки в списке еще нет
       AddNewRecord( aPosition, aAddress.GetIntValue(),  FAddressList );
-    } else
-    {
+    } else {
       //ѕроставл€ем правильный адрес а переменной-адресе
       Integer labelPos = (Integer) FCurrentObject[0];
       Variable addressVar = (Variable) FProgram.get( aPosition );
@@ -104,12 +100,10 @@ public class ScriptLinker {
     }
   }
 
-  private void CheckVariable(Variable aVariable, int aPosition) throws ScriptException
-  {
+  private void CheckVariable(Variable aVariable, int aPosition) throws ScriptException {
     if (aVariable.GetName().equalsIgnoreCase("ћетка") ){
       CheckLabel( aVariable, aPosition );
-    } else
-    {
+    } else {
       if ( aVariable.GetName().equalsIgnoreCase("јдрес") )
       {
         CheckAddress( aVariable, aPosition );
@@ -117,8 +111,7 @@ public class ScriptLinker {
     }
   }
 
-  public void LinkProgram(Vector aProgram) throws ScriptException
-  {
+  public void LinkProgram(Vector aProgram) throws ScriptException  {
     int i = 0;
     FProgram = aProgram;
     /**ƒобавл€ем в самое начало программы оператор NOP, дл€ того, чтобы правильно срабатывали переходы
@@ -127,8 +120,7 @@ public class ScriptLinker {
      */
     FProgram.insertElementAt(new ScriptOperationNOP(), 0);
     Variable programObject = null;
-    while ( i < aProgram.size() )
-    {
+    while ( i < aProgram.size() ) {
       try{
          programObject = (Variable)aProgram.get( i );
          CheckVariable(programObject, i);
