@@ -1,13 +1,18 @@
 package mp.elements;
 
 import mp.parser.Variable;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import mp.parser.ScriptException;
 
 /**
  */
 public class ModelTime {
   public static int TIME_COMPARE_EQUALS =0;
-  public static int TIME_COMPARE_LOW = 1;
+  public static int TIME_COMPARE_LESS = 1;
   public static int TIME_COMPARE_GREATER = 2;
   public static int TIME_COMPARE_UNKNOWN = 3;
   public static int TIME_COMPARE_GREATER_EQUAL = 4;
@@ -41,7 +46,7 @@ public class ModelTime {
     if ( value1 > value2 ){
       return TIME_COMPARE_GREATER;
     }
-    return TIME_COMPARE_LOW;
+    return TIME_COMPARE_LESS;
   }
 
   /**Функция сравнения времени. Сравнивается время, которое хранится в данном объекте с временем, переданным в
@@ -125,6 +130,25 @@ public class ModelTime {
   public void TruncateTime(){
     int newVal = (int) FValue;
     FValue = newVal;
+  }
+  
+  protected Map<UUID, Double> fixedStates = new HashMap<UUID, Double> ();
+  
+  public void  fixState(UUID uid) throws ModelException{
+  	if (fixedStates.containsKey(uid)) {
+  		throw new ModelException("Такое время уже зификсировано");
+  	}   	
+  	fixedStates.put(uid, new Double(FValue));
+  	
+  }
+  
+  public void rollbackTo(UUID stateLabel) throws ModelException{
+  	if (!fixedStates.containsKey(stateLabel)) {
+  		throw new  ModelException("Отсутствует метка для отката");  		
+  	}
+  	FValue =  fixedStates.get(stateLabel);
+  	
+  	  	
   }
 
 }

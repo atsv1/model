@@ -627,7 +627,7 @@ public class TimeManagerTest extends TestCase {
     ModelTime time1 = new ModelTime(10);
     ModelTime time2 = new ModelTime(2);
     assertEquals( manager.CompareWithStep( time1, time2 ), ModelTime.TIME_COMPARE_GREATER );
-    assertEquals( manager.CompareWithStep( time2, time1 ), ModelTime.TIME_COMPARE_LOW );
+    assertEquals( manager.CompareWithStep( time2, time1 ), ModelTime.TIME_COMPARE_LESS );
     assertEquals( manager.CompareWithStep( time2, time2 ), ModelTime.TIME_COMPARE_EQUALS );
 
     time2 = new ModelTime(9.5);

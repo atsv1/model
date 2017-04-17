@@ -295,19 +295,44 @@ public  class Operand  extends ScriptProgramObject {
     ScriptException e = new ScriptException("Ќе получить строковое значение дл€ операнда ");
     throw e;
   }
+  
+  public void SetValue(Object o) {
+  	if ( o == null ) {
+  		return;
+  	}
+  	switch (FType) {
+    case OPERAND_TYPE_INTEGER:{
+      this.SetValue( ((Integer)(o)).intValue() );      
+      return;
+    }
+    case OPERAND_TYPE_REAL:{
+    	this.SetValue( ((Double)(o)).doubleValue() );
+      return;
+    }
+    case OPERAND_TYPE_BOOLEAN:{
+      boolean b;
+      this.SetValue( ((Boolean)(o)).booleanValue() );
+      return;
+    }
+    case OPERAND_TYPE_STRING:{
+      InitStringOperand( (String)(o) );
+      return;
+    }
+    case OPERAND_TYPE_ARRAY:{
+      return;      
+    }
+  }
+  	
+  }
 
-  public Object GetObject()
-  {
-    if ( isIntAssigned )
-    {
+  public Object GetObject() {
+    if ( isIntAssigned ) {
       return new Integer( FIntOperandValue );
     }
-    if ( isFloatAssigned )
-    {
+    if ( isFloatAssigned ) {
       return new Float( FFloatOperandValue );
     }
-    if ( isBooleanAssigned )
-    {
+    if ( isBooleanAssigned ) {
       return new Boolean( FBooleanOperandValue );
     }
     if ( isStringAssigned ) {

@@ -7,6 +7,9 @@ import mp.parser.*;
 import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 /**
@@ -31,6 +34,11 @@ public class ModelCalculatedElement extends ModelBlockParam {
   private ExecutionStructure FDefaultExecutionStructure = null;
   private ExecutionStructure FActiveExecutionStructure = null;
   private String FSwitchException = null;
+  
+  /**
+   *  хранилище состояний для отката на прежнюю точку
+   */
+  protected Map<UUID, Object> fixedStates = new HashMap<UUID, Object> ();
 
 
   public ModelCalculatedElement(ModelElement aOwner, String aElementName, int aElementId) {
@@ -457,6 +465,21 @@ public class ModelCalculatedElement extends ModelBlockParam {
     ScriptParser Parser = null;
     ModelElementContainer InputParams = new ModelElementContainer();
     Variable SwitchValue;
+  }
+  
+  public void fixState(UUID stateLabel) throws ModelException{
+  	if (fixedStates.containsKey(stateLabel)) {
+  		throw new ModelException("Дублирование фиксированного состояния");
+  	}   	
+  	fixedStates.put(stateLabel, this.GetVariable().GetObject());
+  }
+    
+  public void rollbackTo(UUID stateLabel) throws ModelException{
+  	if (!fixedStates.containsKey(stateLabel)) {
+  		throw new  ModelException("Отсутствует метка для отката");  		
+  	}
+  	this.GetVariable().SetValue( fixedStates.get(stateLabel) ); 
+  	  	
   }
 
 }

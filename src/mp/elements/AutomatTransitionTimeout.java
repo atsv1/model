@@ -43,7 +43,7 @@ public class AutomatTransitionTimeout extends AutomatTransition {
     FTempTime.StoreValue( FOwnerActivateTime );
     FTempTime.Add( FTransitionVar );
     i = FTempTime.Compare( aCurrentTime );
-    if ( i == ModelTime.TIME_COMPARE_LOW || i == ModelTime.TIME_COMPARE_EQUALS ) {
+    if ( i == ModelTime.TIME_COMPARE_LESS || i == ModelTime.TIME_COMPARE_EQUALS ) {
       FNextExecTime.StoreValue( aCurrentTime );
       FNextExecTime.Add( FTransitionVar );
       //System.out.println( "Изменения времени на " + FTransitionVar.toString() + " новое время = " + FNextExecTime.toString() );

@@ -1,5 +1,6 @@
 package mp.elements;
 
+import java.util.UUID;
 import java.util.Vector;
 
 import mp.parser.*;
@@ -79,6 +80,16 @@ public class ModelLanguageBuilder {
       public boolean IsNeedRuntimeUpdate() {
         return false;
       }
+      
+      public void fixState(UUID stateLabel) throws ModelException{
+      	// ничего не делаем, т.к значение не меняется  	
+      }
+      
+      public void rollbackTo(UUID stateLabel) throws ModelException{
+        //  ничего не делаем, т.к значение не меняется      	  	
+      }
+
+      
     };
     selfIndex.SetVarInfo("integer",String.valueOf( indexValue ));
     aBlock.AddInnerParam( selfIndex );
@@ -100,6 +111,14 @@ public class ModelLanguageBuilder {
 
       public boolean IsNeedRuntimeUpdate() {
         return false;
+      }
+      
+      public void fixState(UUID stateLabel) throws ModelException{
+      	// ничего не делаем, т.к значение не меняется  	
+      }
+      
+      public void rollbackTo(UUID stateLabel) throws ModelException{
+        //  ничего не делаем, т.к значение не меняется      	  	
       }
     };
     param.SetVarInfo("integer",String.valueOf( i ));

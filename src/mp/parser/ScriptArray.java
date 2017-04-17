@@ -761,7 +761,7 @@ public  class ScriptArray extends Variable{
     ScriptArray newArray = new ScriptArray();
     newArray.InitArray();
     try {
-      newArray.StoreValueOf( this );
+      newArray.StoreArray( this );
     } catch (ScriptException e) {
       System.out.println( e.getMessage() );
       return null;
@@ -771,7 +771,6 @@ public  class ScriptArray extends Variable{
   }
 
   public void StoreValueOf(Operand aNewValue) throws ScriptException{
-
     int type = aNewValue.GetType();
     if ( type != Operand.OPERAND_TYPE_ARRAY ){
       ScriptException e = new ScriptException("ѕопытка присвоить переменной-массиву значение переменной не массива");
@@ -793,6 +792,38 @@ public  class ScriptArray extends Variable{
     FIsSummCalculated = array.FIsSummCalculated;
     SetChangeListeners( array );
     SaveArrayDef( array.GetArrayDef() );
+  }
+  
+  public void StoreArray(ScriptArray aNewValue) throws ScriptException{
+  	ScriptArray array = (ScriptArray) aNewValue;
+    if ( array.FBooleanArray != null ) {
+      FBooleanArray = new boolean[ array.FBooleanArray.length ];
+      System.arraycopy(array.FBooleanArray, 0, FBooleanArray, 0, array.FBooleanArray.length);
+      //FBooleanArray = array.FBooleanArray;
+    } else {
+    	FBooleanArray = null;
+    }
+    if ( array.FIntArray != null ) {
+      FIntArray = new int[array.FIntArray.length];
+      System.arraycopy(array.FIntArray, 0, FIntArray, 0, array.FIntArray.length);
+    } else {
+    	FIntArray = null;
+    }
+    //FIntArray = array.FIntArray;
+    FFloatArray = array.FFloatArray;
+    FStringArray = array.FStringArray;
+    FArrayOfArray = array.FArrayOfArray;
+
+    FMinFloatValue = array.FMinFloatValue;
+    FMinIntValue = array.FMinIntValue;
+    FMaxFloatValue = array.FMaxFloatValue;
+    FMaxIntValue = array.FMaxIntValue;
+    FFloatSumm = array.FFloatSumm;
+    FIntSumm = array.FIntSumm;
+    FIsSummCalculated = array.FIsSummCalculated;
+    SetChangeListeners( array );
+    SaveArrayDef( array.GetArrayDef() );
+  	
   }
 
   public void StoreValueToVar( Operand aOperand, int[]  aCoordinates) throws ScriptException{
@@ -1569,37 +1600,75 @@ public  class ScriptArray extends Variable{
 
   }
 
-    public void ShiftL( int aStep ) throws ScriptException{
-    if ( FDimension != 1 ){
-      ScriptException e = new ScriptException("¬ыполн€ть операцию сдвига можно только дл€ одномерного массива!. " +
-         "Ќеверна€ попытка сдвига дл€ массива \"" + GetName() + "\"");
-      throw e;
+	public void ShiftL(int aStep) throws ScriptException {
+		if (FDimension != 1) {
+			ScriptException e = new ScriptException(
+			    "¬ыполн€ть операцию сдвига можно только дл€ одномерного массива!. "
+			        + "Ќеверна€ попытка сдвига дл€ массива \"" + GetName() + "\"");
+			throw e;
+		}
+		if (aStep < 1) {
+			ScriptException e = new ScriptException(
+			    "Ќеверный аргумент дл€ операции сдвига");
+			throw e;
+		}
+		switch (ArrayValueType) {
+		case Operand.OPERAND_TYPE_BOOLEAN: {
+			ShiftLBoolean(aStep);
+			return;
+		}
+		case Operand.OPERAND_TYPE_INTEGER: {
+			ShiftLInt(aStep);
+			FIsSummCalculated = false;
+			FIntSumm = 0;
+			return;
+		}
+		case Operand.OPERAND_TYPE_REAL: {
+			ShiftLReal(aStep);
+			FIsSummCalculated = false;
+			FFloatSumm = 0;
+			return;
+		}
+		case Operand.OPERAND_TYPE_STRING: {
+			return;
+		}
+		}
+	}
+	
+	public void SetValue(Object o) {
+		if ( o == null ) {
+			return;
+		}
+		SaveConcreteArray(o);		
+	}
+	
+	public Object GetObject() {
+		if ( FDimension > 1 ) {
+		  return FArrayOfArray;
+		}
+		switch ( ArrayValueType ){
+    case Operand.OPERAND_TYPE_BOOLEAN:{
+      return FBooleanArray; 
+      
     }
-    if ( aStep < 1 ){
-      ScriptException e = new ScriptException( "Ќеверный аргумент дл€ операции сдвига" );
-      throw e;
-    }  
-    switch ( ArrayValueType ){
-      case Operand.OPERAND_TYPE_BOOLEAN:{
-        ShiftLBoolean( aStep );
-        return;
-      }
-      case Operand.OPERAND_TYPE_INTEGER: {
-        ShiftLInt( aStep );
-        FIsSummCalculated = false;
-        FIntSumm = 0;
-        return;
-      }
-      case Operand.OPERAND_TYPE_REAL:{
-        ShiftLReal( aStep );
-        FIsSummCalculated = false;
-        FFloatSumm = 0;
-        return;
-      }
-      case Operand.OPERAND_TYPE_STRING:{
-        return;
-      }
+    case Operand.OPERAND_TYPE_INTEGER:{
+      return FIntArray ;
+      
     }
-  }
+    case Operand.OPERAND_TYPE_REAL:{
+      return FFloatArray;
+      
+    }
+    case Operand.OPERAND_TYPE_STRING:{
+      return FStringArray;      
+    }    
+  }//case
+		return null;
+		
+	}
+    
+    
+    
+    
   
 }

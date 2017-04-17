@@ -1,4 +1,6 @@
 package mp.elements;
+import java.util.UUID;
+
 import org.w3c.dom.Node;
 import mp.parser.ScriptException;
 import mp.utils.NameService;
@@ -140,6 +142,14 @@ public class ModelElement implements ModelForReadInterface {
 
   public String toString(){
     return FFullName;
+  }
+  
+  public void fixState(UUID stateLabel) throws ModelException{
+  	throw new  ModelException("invalid object operation");  	
+  }
+  
+  public void rollbackTo(UUID stateLabel) throws ModelException{
+  	throw new  ModelException("invalid object operation");  	
   }
 
 }

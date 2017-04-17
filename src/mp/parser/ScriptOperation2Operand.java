@@ -13,14 +13,11 @@ public abstract class ScriptOperation2Operand extends ScriptOperation {
   protected Variable FResult = null;
   protected boolean FIsPreviousOperationEnabled = false;
 
-  protected void IsOperationEnabled() throws ScriptException
-  {
-    if (! FOperand.GetTypeName().equalsIgnoreCase( FResult.GetTypeName() )  )
-    {
-      if ( !FOperand.IsAutoCastEnabled( FResult.GetTypeName() ) ){
-        ScriptException e;
-        e = new ScriptException("Несовместимые типы " + FOperand.GetTypeName() + " и " + FResult.GetTypeName());
-        throw e;
+  protected void IsOperationEnabled() throws ScriptException {
+    if (! FOperand.GetTypeName().equalsIgnoreCase( FResult.GetTypeName() )  )  {
+      if ( !FOperand.IsAutoCastEnabled( FResult.GetTypeName() ) ) {
+        throw new ScriptException("Несовместимые типы " + FOperand.GetTypeName() + " и " + FResult.GetTypeName());
+        
       }
     }
     FIsPreviousOperationEnabled = true;

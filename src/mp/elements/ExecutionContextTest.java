@@ -3,11 +3,17 @@ package mp.elements;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import org.xml.sax.SAXException;
 import mp.parser.ModelExecutionManager;
+import mp.parser.Operand;
+import mp.parser.ScriptArray;
+import mp.parser.ArrayDefinition;
 import mp.parser.ModelExecutionContext;
 import mp.parser.ScriptException;
+import mp.parser.ScriptLanguageExt;
+import mp.parser.Variable;
 import mp.utils.ServiceLocator;
 
 /**
@@ -763,5 +769,336 @@ public class ExecutionContextTest extends TestCase {
     }
     assertTrue(f);
   }
+  
+  
+  ////////////////////////////////////////////////////////////////////////////////
+  /////////////// новая функция fork ////////////////////////////////////////////
+  
+  public void testFixState_CalculatedElement(){
+  	ModelBlockParam param = new ModelCalculatedElement((ModelElement)null, "name", 1);
+  	boolean f = false;
+  	try {
+			param.SetVarInfo("integer", "50");
+			f = true;
+		} catch (ModelException e) {
+			
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	UUID uid = java.util.UUID.randomUUID();
+  	try {
+			param.fixState(uid);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	param.GetVariable().SetValue(100);
+  	assertEquals( getIntValue(param), 100 );
+  	try {
+			param.rollbackTo(uid);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	assertEquals( getIntValue(param), 50 );  	
+  }
+  
+  public void testFixState_ArrayElement(){
+  	ModelArrayElement param = new ModelArrayElement((ModelElement)null, "name", 1);
+  	boolean f = false;
+  	ArrayDefinition def = new ArrayDefinition();
+    def.SetValueType( Operand.OPERAND_TYPE_INTEGER );
+    def.AddDimension( 10 );
+    def.SetInitValue("5");
+  	try {
+			param.InitArray(def);
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	UUID uid = java.util.UUID.randomUUID();
+  	try {
+			param.fixState(uid);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	ScriptArray arr = (ScriptArray) param.GetVariable();
+  	int[] coord = new int[1];
+  	coord[0] = 0;
+  	try {
+			arr.SetValue(33, coord);
+		} catch (ScriptException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	try {
+			int val = arr.GetIntValue(coord);
+			assertEquals(33, val);
+		} catch (ScriptException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	try {
+			param.rollbackTo(uid);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	try {
+			int val = arr.GetIntValue(coord);
+			assertEquals(5, val);
+		} catch (ScriptException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  }
+  
+  public void  testFixState_Statechart(){
+  	AutomatState state = new AutomatState(null, "state", 1);
+  	AutomatState innerState1 = new AutomatState(null, "begin", 2);
+  	AutomatState innerState2 = new AutomatState(null, "state2", 3);
+  	
+  	
+  	AutomatTransitionByValue trans1 = new AutomatTransitionByValue(innerState1, "tr1", 4);
+  	trans1.SetNextStateName("state2");
+  	Variable var1 = new Variable(false);
+    var1.SetName("var1");
+    ScriptLanguageExt ext = new ScriptLanguageExt();
+  	  	
+  	boolean f = false;
+  	try {
+  		ext.AddVariable( var1 );
+  		trans1.SetlanguageExt( ext );
+  		innerState1.SetlanguageExt( ext );
+  		trans1.SetTransitionVariable("var1");
+			state.AddElement(innerState1);
+			state.AddElement(innerState2);		
+			
+			innerState1.AddElement(trans1);
+			f = true;
+		} catch (Exception e) {			
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	try {
+			state.SetActive(null);
+		} catch (Exception e) {
+			f = false;
+			e.printStackTrace();
+		} 
+  	assertTrue(f);
+  	AutomatState activeState = state.GetActiveState();
+  	assertTrue( activeState != null && "begin".equalsIgnoreCase(activeState.GetName()) );
+  	UUID uid = java.util.UUID.randomUUID();
+  	try {
+			state.fixState(uid);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	var1.SetValue(true);
+  	try {
+			state.SetActive(null);
+		} catch (Exception e) {
+			f = false;
+			e.printStackTrace();
+		} 
+  	assertTrue(f);
+  	activeState = state.GetActiveState();
+  	assertTrue( activeState != null && "state2".equalsIgnoreCase(activeState.GetName()) );
+  	try {
+			state.rollbackTo(uid);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	activeState = state.GetActiveState();
+  	assertTrue( activeState != null && "begin".equalsIgnoreCase(activeState.GetName()) );
+  }
+  
+  public void testFixState_BlockParams(){
+  	ModelBlock block = new ModelSimpleBlock(null, "block", 1);
+  	ModelBlockParam param1 = new ModelCalculatedElement(block, "param1", 2);
+  	ModelBlockParam param2 = new ModelCalculatedElement(block, "param2", 3);
+  	ModelBlockParam param3 = new ModelCalculatedElement(block, "param3", 4);
+  	boolean f = true;
+  	try {
+  		param1.SetVarInfo("integer", "1");
+  		param2.SetVarInfo("integer", "2");
+  		param3.SetVarInfo("integer", "3");
+  		
+			block.AddInnerParam(param1);
+			block.AddOutParam(param2);
+			block.AddOutParam(param3);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	UUID uid = java.util.UUID.randomUUID();
+  	try {
+  		block.fixState(uid);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	param1.GetVariable().SetValue(10);
+  	param2.GetVariable().SetValue(20);
+  	param3.GetVariable().SetValue(30);
+  	
+  	try {
+			block.rollbackTo(uid);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	assertEquals(1, getIntValue(param1));
+  	assertEquals(2, getIntValue(param2));
+  	assertEquals(3, getIntValue(param3));
+  }
+  
+  public void testFixState_BlockStatechart(){
+  	ModelBlock block = new ModelSimpleBlock(null, "block", 1);
+  	AutomatState state = new AutomatState(null, "state", 1);
+  	AutomatState innerState1 = new AutomatState(null, "begin", 2);
+  	AutomatState innerState2 = new AutomatState(null, "state2", 3);
+  	
+  	
+  	AutomatTransitionByValue trans1 = new AutomatTransitionByValue(innerState1, "tr1", 4);
+  	trans1.SetNextStateName("state2");
+  	Variable var1 = new Variable(false);
+    var1.SetName("var1");
+    ScriptLanguageExt ext = new ScriptLanguageExt();
+  	  	
+  	boolean f = false;
+  	try {
+  		ext.AddVariable( var1 );
+  		trans1.SetlanguageExt( ext );
+  		innerState1.SetlanguageExt( ext );
+  		trans1.SetTransitionVariable("var1");
+			state.AddElement(innerState1);
+			state.AddElement(innerState2);		
+			
+			innerState1.AddElement(trans1);
+			
+			block.AddState(state);
+			f = true;
+		} catch (Exception e) {			
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	ModelTime t = new ModelTime();
+  	try {
+  		block.InitStatechart();
+			block.Execute(t);
+		} catch (Exception e) {
+			f = false;
+			e.printStackTrace();
+		} 
+  	assertTrue(f);
+  	AutomatState activeState = state.GetActiveState();
+  	assertTrue( activeState != null && "begin".equalsIgnoreCase(activeState.GetName()) );
+  	UUID uid = java.util.UUID.randomUUID();
+  	try {
+			block.fixState(uid);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	var1.SetValue(true);
+  	try {
+			block.Execute(t);
+		} catch (Exception e) {
+			f = false;
+			e.printStackTrace();
+		} 
+  	assertTrue(f);
+  	activeState = null;
+  	activeState = state.GetActiveState();
+  	assertTrue( activeState != null && "state2".equalsIgnoreCase(activeState.GetName()) );
+  	
+  	try {
+			block.rollbackTo(uid);
+		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		}
+  	assertTrue(f);
+  	activeState = null;
+  	activeState = state.GetActiveState();
+  	assertTrue( activeState != null && "begin".equalsIgnoreCase(activeState.GetName()) );
+  	
+  }
+  
+  
+  public void testFork1(){
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    Model model = null;
+    boolean f = false;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "fork1.xml" );
+      model = builder.GetRootModel();
+      f = true;
+    } catch (ModelException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (SAXException e) {
+      e.printStackTrace();
+    }
+    assertTrue( f );
+    Model mainModel = (Model) ModelExecutionContext.GetManager( "fork1_main" );
+    Model subModel = (Model) ModelExecutionContext.GetManager( "fork1_sub" );
+    assertTrue(mainModel != null);
+    assertTrue(subModel != null);
+    mainModel.run();
+    f = false;  	
+    Integer i = getIntValue(mainModel, "block", 0, "forkResult");
+    assertTrue(i != null);
+    assertTrue(i >= new Integer(20));
+    i = getIntValue(subModel, "sub_block", 0, "innerCounter");
+    assertEquals(i, new Integer(10));
+  }
+   
+  
+  
+  private int getIntValue(ModelBlockParam param){
+  	if ( param == null ) {
+  		return 0;
+  	}
+  	try {
+			return param.GetVariable().GetIntValue();
+		} catch (ScriptException e) {
+			return 0;
+		}
+  	
+  }
+  
+  private Integer getIntValue(Model model, String blockName, int blockIndex, String paramName){
+  	if (model == null) {
+  		return null;
+  	}
+  	ModelBlock block = model.Get(blockName, blockIndex);
+  	if (block == null) {
+  		return null;
+  	}
+  	return block.GetIntValue(paramName);  	
+  }
+  
 
 }

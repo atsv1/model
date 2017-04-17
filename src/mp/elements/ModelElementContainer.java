@@ -9,18 +9,17 @@ import java.util.Vector;
  */
 public class ModelElementContainer {
 
-  private Hashtable FHashByName = null;
+  private Hashtable<String, ModelElement> FHashByName = null;
   private Hashtable FHashById = null;
   private Hashtable FHashByNameIndex = null;
   private boolean FNameUnique = true;
-  protected Vector ElementList = null;
+  protected Vector<ModelElement> ElementList = null;
 
 
-  public ModelElementContainer()
-  {
+  public ModelElementContainer() {
     FHashByName = new  Hashtable();
     FHashById = new Hashtable();
-    ElementList = new Vector();
+    ElementList = new Vector<ModelElement> ();
     FHashByNameIndex = new Hashtable();
   }
 

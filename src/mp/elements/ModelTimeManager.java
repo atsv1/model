@@ -73,7 +73,7 @@ public class ModelTimeManager {
       FTempTime1.Sub( FTimeStep );
       FTempTime2.StoreValue( groupTime );
       FTempTime2.Add( FTimeStep );
-      if ( FTempTime1.Compare( aModelTime ) == ModelTime.TIME_COMPARE_LOW ) {
+      if ( FTempTime1.Compare( aModelTime ) == ModelTime.TIME_COMPARE_LESS ) {
         // переданное время больше, чем время текущего списка
         if (FTempTime2.Compare( aModelTime ) == ModelTime.TIME_COMPARE_GREATER) {
           return i;
@@ -116,7 +116,7 @@ public class ModelTimeManager {
   private boolean IsTimeEqualsWithStep(ModelTime aBaseTime, ModelTime aTimeToCheck){
     FTempTime1.StoreValue( aBaseTime );
     FTempTime1.Sub( FTimeStep );
-    if ( FTempTime1.Compare( aTimeToCheck ) == ModelTime.TIME_COMPARE_LOW){
+    if ( FTempTime1.Compare( aTimeToCheck ) == ModelTime.TIME_COMPARE_LESS){
       FTempTime1.StoreValue( aBaseTime );
       FTempTime1.Add( FTimeStep );
       if ( FTempTime1.Compare( aTimeToCheck ) == ModelTime.TIME_COMPARE_GREATER){
@@ -144,7 +144,7 @@ public class ModelTimeManager {
     if ( FTempTime1.Compare( aTime2 ) == ModelTime.TIME_COMPARE_GREATER ) {
       return ModelTime.TIME_COMPARE_EQUALS;
     } else
-    return ModelTime.TIME_COMPARE_LOW;
+    return ModelTime.TIME_COMPARE_LESS;
   }
 
   private void DeleteGroups( int aStartIndex ){
@@ -173,7 +173,7 @@ public class ModelTimeManager {
       FFullGroup.AddElement( aElement );
       return FGroupList.indexOf( FFullGroup );
     } else {
-      if ( FTimeToExecFullList != null && FTimeToExecFullList.Compare( aExecTime ) == ModelTime.TIME_COMPARE_LOW
+      if ( FTimeToExecFullList != null && FTimeToExecFullList.Compare( aExecTime ) == ModelTime.TIME_COMPARE_LESS
               &&  FGroupList.indexOf( FFullGroup ) > 0
              ){
         // время выполнения этого элемента больше, чем время выполнения "полного списка", и при этом этот "полный
@@ -271,7 +271,7 @@ public class ModelTimeManager {
   }
 
   private ModelTime GetMinimumTimeWithStep( ModelTime aTime1, ModelTime aTime2 ){
-    if ( CompareWithStep( aTime1, aTime2 ) == ModelTime.TIME_COMPARE_LOW) {
+    if ( CompareWithStep( aTime1, aTime2 ) == ModelTime.TIME_COMPARE_LESS) {
       return aTime1;
     }
     return aTime2;
