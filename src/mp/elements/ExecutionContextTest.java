@@ -1045,14 +1045,13 @@ public class ExecutionContextTest extends TestCase {
   
   
   public void testFork1(){
-  	mp.parser.ModelExecutionContext.ClearExecutionContext();
-    Model model = null;
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();    
     boolean f = false;
     try {
       ModelTreeBuilder builder = new ModelTreeBuilder();
       builder.SetElementFactory( new ModelElementFactory() );
       builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "fork1.xml" );
-      model = builder.GetRootModel();
+      builder.GetRootModel();
       f = true;
     } catch (ModelException e) {
       e.printStackTrace();
@@ -1072,7 +1071,95 @@ public class ExecutionContextTest extends TestCase {
     assertTrue(i != null);
     assertTrue(i >= new Integer(20));
     i = getIntValue(subModel, "sub_block", 0, "innerCounter");
-    assertEquals(i, new Integer(10));
+    /*проверяем 11, а не 10 потому что перед завершением все элементы модели получают возможность выполниться в основном цикле выполнения,
+     * а в следующий цикл модель не заходит
+     * */
+    assertEquals(i, new Integer(11));
+  }
+  
+  public void testFork_Cycle(){
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();    
+    boolean f = false;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "fork2.xml" );
+      builder.GetRootModel();
+      f = true;
+    } catch (ModelException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (SAXException e) {
+      e.printStackTrace();
+    }
+    assertTrue( f );
+    Model mainModel = (Model) ModelExecutionContext.GetManager( "fork2_main" );
+    Model subModel = (Model) ModelExecutionContext.GetManager( "fork2_sub" );
+    assertTrue(mainModel != null);
+    assertTrue(subModel != null);
+    mainModel.run();
+    Integer i = getIntValue(mainModel, "block", 0, "forkResult");
+    assertEquals(i, new Integer(8));
+  	i = getIntValue(mainModel, "block", 0, "val");
+  	assertEquals(i, new Integer(9));
+  	/*i = getIntValue(subModel, "sub_block", 0, "inp1");
+  	assertEquals(i, new Integer(0));*/
+  }
+  
+  public void testFork_ModelWirhConst(){
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();    
+    boolean f = false;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "fork3.xml" );
+      builder.GetRootModel();
+      f = true;
+    } catch (Exception e) {
+    	System.out.println("12987210908367");
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    Model mainModel = (Model) ModelExecutionContext.GetManager( "fork3_main" );
+    Model subModel = (Model) ModelExecutionContext.GetManager( "fork3_sub" );
+    assertTrue(mainModel != null);
+    assertTrue(subModel != null);
+    mainModel.run();
+    String err = mainModel.GetErrorString();
+    assertTrue( err == null || "".equals(err) );
+  	
+  }
+  
+  public void testFork_StatechartTimeoutTransitionAfterFork(){
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();    
+    boolean f = false;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "fork4.xml" );
+      builder.GetRootModel();
+      f = true;
+    } catch (ModelException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (SAXException e) {
+      e.printStackTrace();
+    }
+    assertTrue( f );
+    Model mainModel = (Model) ModelExecutionContext.GetManager( "fork4_main" );
+    Model subModel = (Model) ModelExecutionContext.GetManager( "fork4_sub" );
+    assertTrue(mainModel != null);
+    assertTrue(subModel != null);
+    mainModel.run();
+    Integer i = getIntValue(mainModel, "block", 0, "forkResult");
+    assertEquals(i, new Integer(103));
+  	i = getIntValue(mainModel, "block", 0, "counter");
+  	assertEquals(i, new Integer(10));
+  	i = getIntValue(subModel, "sub_block", 0, "subCounter");
+  	assertEquals(i, new Integer(10));
+  	
   }
    
   

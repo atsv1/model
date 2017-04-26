@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "fork4_main" delay = "10">
+  <ModelList>
+    <ParallelModel file = "fork4_sub.xml"/>
+    
+  </ModelList>
+
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "val" type = "integer" initvalue = "0"/>
+                
+      </OutParamList>
+      <InnerParamList>
+        <Param name = "forkResult" type = "integer" initvalue = "8"/>
+        <Param name = "counter" type = "integer" initvalue = "0"/>
+      </InnerParamList>
+      
+      <Statechart name = "mainProc">
+        <State name = "begin">
+          <Transition name = "startForkMain" type = "Timeout" value = "1" nextstate = "begin">
+            <![CDATA[
+                var forkId : string;
+                counter := counter +1;
+                print(counter);
+                if ( counter = 3 ) then
+                 begin
+                   print("before fork");
+                   forkId := fork("fork4_sub", 100, false);
+                   print(forkId);
+                   forkResult := Get("fork4_sub", "sub_block", 0, "subCounter");
+                   rollback("fork4_sub", forkId);
+                   print("sfter rollback");
+                 end; 
+               
+               if (counter = 10) then
+                begin
+                  StopExecution("fork4_main");
+                end;
+              
+             ]]>
+          </Transition>       
+        
+        </State>
+      </Statechart>
+      
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

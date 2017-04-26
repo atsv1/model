@@ -551,31 +551,54 @@ public class AutomatState extends ModelEventGenerator{
     return FActivateTime;
   }
   
-  protected Map<UUID, AutomatState> fixedStates = new HashMap<UUID, AutomatState> ();
+  protected Map<UUID, RollbackData> fixedStates = new HashMap<UUID, RollbackData> ();
+  
+  
+  private void doFix(ModelElementContainer elements, UUID stateLabel, int operation) throws ModelException {
+  	if ( elements == null || elements.size() == 0 ) {
+  		return;
+  	}
+  	int i = 0;
+  	ModelElement element;  	
+  	while ( i < elements.size() ) {
+  		element = elements.get(i);  		
+  		if (operation == 1 ) {
+  		  element.fixState(stateLabel);
+  		} else if (operation == 2) {
+  			element.rollbackTo(stateLabel);
+  		} else throw new ModelException("недопустимая операция");
+  		i++;
+  	}
+  	
+  }
   
   public void fixState(UUID stateLabel) throws ModelException{
   	if (fixedStates.containsKey(stateLabel)) {
   		throw new ModelException("Дублирование фиксированного состояния");
-  	}   	
-  	fixedStates.put(stateLabel, FActiveState);
-  	int i = 0;
-  	while ( i < FInnerStates.size() ) {
-  		AutomatState state = (AutomatState) FInnerStates.get(i);
-  		state.fixState(stateLabel);
-  		i++;
   	}
+  	RollbackData rd = new RollbackData();
+  	rd.actualState = FActiveState;
+  	rd.mt = new ModelTime();
+  	rd.mt.StoreValue(FActivateTime);
+  	fixedStates.put(stateLabel, rd);
+  	doFix(FInnerStates, stateLabel, 1);
+  	doFix(FTransitions, stateLabel, 1);
   	  	
   }
   
   public void rollbackTo(UUID stateLabel) throws ModelException{
-  	FActiveState = fixedStates.get(stateLabel);
-  	int i = 0;
-  	while ( i < FInnerStates.size() ) {
-  		AutomatState state = (AutomatState) FInnerStates.get(i);
-  		state.rollbackTo(stateLabel);
-  		i++;
-  	}
+  	RollbackData rd = fixedStates.get(stateLabel); 
+  	fixedStates.remove(stateLabel);
+  	FActiveState = rd.actualState;
+  	FActivateTime.StoreValue(rd.mt);  	
+  	doFix(FInnerStates, stateLabel, 2);
+  	doFix(FTransitions, stateLabel, 2);
   	  	
+  }
+  
+  private static class RollbackData{
+  	public ModelTime mt = null;
+  	public AutomatState actualState = null;
   }
 
 }

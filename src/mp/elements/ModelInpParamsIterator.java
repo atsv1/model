@@ -35,17 +35,10 @@ public class ModelInpParamsIterator extends ModelIterator {
   }
 
   private ModelElement GetResult(Variable aVariable) throws ModelException{
-    ModelException e;
-   if ( aVariable == null )
-    {
+    
+   if ( aVariable == null ) {
       return null;
-    }
-    ModelElement result = sourceList.Get(aVariable.GetName());
-    if ( result == null)
-    {
-      e = new ModelException("¬ списке переменных отсутствует переменна€ " + aVariable.GetName());
-      throw e;
-    }
+    }    
     return sourceList.Get(aVariable.GetName());
   }
 

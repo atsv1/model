@@ -23,6 +23,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   private ModelTimeManager FTimeManager = null;
   private boolean FIsTimeManagerInit = false;
   private int FStepDelay = 0;
+  private int noForkStepDelay = 0;
   /* Флаг, определяющий возможность выполнения модели. используется для приостановки работы модели*/
   private boolean FEnableExec = true;
   private Vector<Model> parallelModelList = new Vector<Model>();
@@ -159,6 +160,11 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   public void RegisterModelInContext() throws ModelException {
     try {
       ModelExecutionContext.AddModelExecutionManager( this );
+      if ( parallelModelList != null && !parallelModelList.isEmpty() ) {
+      	for (Model subModel : parallelModelList) {
+      		ModelExecutionContext.AddModelExecutionManager( subModel );
+      	}
+      }
     } catch (ScriptException e) {
       ModelException e1 = new ModelException( e.getMessage() );
       throw e1;
@@ -230,7 +236,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 
   private void ExecuteWithoutInit() throws ScriptException, ModelException {
   	if ( !FIsTimeManagerInit ) {
-      CreateTimeManager();
+  		FTimeManager = CreateTimeManager();
       FIsTimeManagerInit = true;
     }
     FTimeManager.ExecuteElements();
@@ -380,16 +386,17 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     return result;
   }
 
-  private void CreateTimeManager() throws ModelException {
-    FTimeManager = new ModelTimeManager( FTimeIncrement );
-    FTimeManager.SetFullElementsList( FBlockList );
+  private ModelTimeManager CreateTimeManager() throws ModelException {
+  	ModelTimeManager result = new ModelTimeManager( FTimeIncrement );
+  	result.SetFullElementsList( FBlockList );
     int i = 0;
     Model subModel;
     while ( i < parallelModelList.size()) {
     	subModel = parallelModelList.get(i);
-    	FTimeManager.AddElementList( subModel.FBlockList );
+    	result.AddElementList( subModel.FBlockList );
       i++;
     }
+    return result;
   }
 
   protected ModelTimeManager GetTimeManager(){
@@ -593,6 +600,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		stopTime.StoreValue(FCurrentModelTime);
 		stopTime.Add(modelTimePeriod);
 		stopTimesStack.push(stopTime);
+		noForkStepDelay = FStepDelay; 
 		mainCycle();
 		return uid;
 	}
@@ -608,7 +616,11 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 	    }
 	    FCurrentModelTime.rollbackTo(label);
 	    stopTimesStack.pop();
-		} catch (ModelException e) {
+	    if ( stopTimesStack.isEmpty() ) {
+	    	// задержку в выполнении основного потока модели восстанавливаем когда стек форков пуст
+	    	FStepDelay = noForkStepDelay;
+	    }
+		} catch (ModelException e) {			
 			 throw new ScriptException( e.getMessage() );
 		}
 		

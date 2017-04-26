@@ -1,6 +1,9 @@
 package mp.elements;
 
 import mp.parser.Variable;
+
+import java.util.UUID;
+
 import mp.parser.ScriptException;
 
 /**
@@ -62,5 +65,19 @@ public class AutomatTransitionByValue extends AutomatTransition {
     }
     FApplyFlag = true;
   }
+
+
+	@Override
+	public void fixState(UUID stateLabel) throws ModelException {
+		
+		
+	}
+
+
+	@Override
+	public void rollbackTo(UUID stateLabel) throws ModelException {
+		
+		
+	}
 
 }

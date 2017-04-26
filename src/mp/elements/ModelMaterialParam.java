@@ -4,6 +4,9 @@ import mp.parser.*;
 import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
 import org.w3c.dom.NodeList;
+
+import java.util.UUID;
+
 import org.w3c.dom.Node;
 
 /**
@@ -456,7 +459,16 @@ public class ModelMaterialParam extends ModelInputBlockParam {
     ReadLinkInfo( );
     ReadAdditionalSections();
     FEnableTransfer = true;
-
-  }
-
+  } //cornForSet
+  
+  /*public void fixState(UUID stateLabel) throws ModelException{
+  	String s = this.GetName();
+  	if ("cornForSet".equalsIgnoreCase(s)) {
+  		Object o = this.GetVariable().GetObject();
+  		System.out.println(o);  				
+  	}
+  	super.fixState(stateLabel);
+  }*/
+  
+  
 }

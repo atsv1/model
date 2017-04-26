@@ -4,6 +4,9 @@ import mp.parser.*;
 import mp.utils.ModelAttributeReader;
 import mp.utils.ServiceLocator;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.w3c.dom.Node;
@@ -49,6 +52,10 @@ public abstract class ModelBlockParam extends ModelElement{
    * */
   private ValueChangeListener FVarChangeListener = null;
 
+  /**
+   *  хранилище состояний для отката на прежнюю точку
+   */
+  protected Map<UUID, Object> fixedStates = new HashMap<UUID, Object> ();
 
 
   public ModelBlockParam(ModelElement aOwner, String aElementName, int aElementId) {
@@ -296,6 +303,22 @@ public abstract class ModelBlockParam extends ModelElement{
 				AddHistoryChangeListener();
 			}
 		}
+  }
+  
+  
+  public void fixState(UUID stateLabel) throws ModelException{
+  	if (fixedStates.containsKey(stateLabel)) {
+  		throw new ModelException("Дублирование фиксированного состояния "+ this.GetFullName());
+  	}   	
+  	fixedStates.put(stateLabel, this.GetVariable().GetObject());
+  }
+    
+  public void rollbackTo(UUID stateLabel) throws ModelException{
+  	if (!fixedStates.containsKey(stateLabel)) {
+  		throw new  ModelException("Отсутствует метка для отката " + this.GetFullName());  		
+  	}
+  	this.GetVariable().SetValue( fixedStates.get(stateLabel) ); 
+  	  	
   }
 
 }

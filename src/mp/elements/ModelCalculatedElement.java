@@ -35,10 +35,7 @@ public class ModelCalculatedElement extends ModelBlockParam {
   private ExecutionStructure FActiveExecutionStructure = null;
   private String FSwitchException = null;
   
-  /**
-   *  хранилище состояний для отката на прежнюю точку
-   */
-  protected Map<UUID, Object> fixedStates = new HashMap<UUID, Object> ();
+  
 
 
   public ModelCalculatedElement(ModelElement aOwner, String aElementName, int aElementId) {
@@ -467,19 +464,5 @@ public class ModelCalculatedElement extends ModelBlockParam {
     Variable SwitchValue;
   }
   
-  public void fixState(UUID stateLabel) throws ModelException{
-  	if (fixedStates.containsKey(stateLabel)) {
-  		throw new ModelException("Дублирование фиксированного состояния");
-  	}   	
-  	fixedStates.put(stateLabel, this.GetVariable().GetObject());
-  }
-    
-  public void rollbackTo(UUID stateLabel) throws ModelException{
-  	if (!fixedStates.containsKey(stateLabel)) {
-  		throw new  ModelException("Отсутствует метка для отката");  		
-  	}
-  	this.GetVariable().SetValue( fixedStates.get(stateLabel) ); 
-  	  	
-  }
-
+  
 }

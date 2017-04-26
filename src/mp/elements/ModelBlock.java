@@ -1,5 +1,7 @@
 package mp.elements;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import mp.parser.*;
@@ -505,7 +507,7 @@ public abstract class ModelBlock extends ModelEventGenerator {
   	int i = 0;
   	ModelElement element;  	
   	while ( i < elements.size() ) {
-  		element = elements.get(i);
+  		element = elements.get(i);  		
   		if (operation == 1 ) {
   		  element.fixState(stateLabel);
   		} else if (operation == 2) {
@@ -516,20 +518,24 @@ public abstract class ModelBlock extends ModelEventGenerator {
   	
   }
   
+
+  private  Map<UUID, ModelTimeManager> fixedStates = new HashMap<UUID, ModelTimeManager> ();
   
   public void fixState(UUID stateLabel) throws ModelException{
-  	//doFix(FInpParams, stateLabel, 1);
+  	doFix(FInpParams, stateLabel, 1);
   	doFix(FInnerParams, stateLabel, 1);
   	doFix(FOutParams, stateLabel, 1);
-  	doFix(FRootStates, stateLabel, 1);  	  	
+  	doFix(FRootStates, stateLabel, 1);  	 
+  	fixedStates.put(stateLabel, FTimeManager);  	
   }
   
   public void rollbackTo(UUID stateLabel) throws ModelException{
-  	//doFix(FInpParams, stateLabel, 2);
+  	doFix(FInpParams, stateLabel, 2);
   	doFix(FInnerParams, stateLabel, 2);
   	doFix(FOutParams, stateLabel, 2);
   	doFix(FRootStates, stateLabel, 2);
-  	
+  	FTimeManager = fixedStates.get(stateLabel);
+  	fixedStates.remove(stateLabel);  	
   }
   
 }

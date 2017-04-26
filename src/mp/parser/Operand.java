@@ -306,7 +306,14 @@ public  class Operand  extends ScriptProgramObject {
       return;
     }
     case OPERAND_TYPE_REAL:{
-    	this.SetValue( ((Double)(o)).doubleValue() );
+    	if ( o instanceof Integer ) {
+    		Double d = new Double( ((Integer)o).intValue() );
+    		this.SetValue( (float)d.doubleValue() );
+    	} else if ( o instanceof Float ) {
+    		Float f = (Float) o;
+    		this.SetValue(f.floatValue());
+    	} else
+    	  this.SetValue( (float)((Double)(o)).doubleValue() );    	
       return;
     }
     case OPERAND_TYPE_BOOLEAN:{
