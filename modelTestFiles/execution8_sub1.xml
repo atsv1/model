@@ -11,6 +11,7 @@
         <Param name = "var1" type = "integer" initvalue = "0">
           <Formula>
             <![CDATA[
+              print("model2 start");
                StartModel("Модель3");
                var1 := 498;
                StopExecution("Модель2");

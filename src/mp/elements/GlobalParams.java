@@ -1,6 +1,5 @@
 package mp.elements;
 
-import java.awt.*;
 
 /**
  * User: atsv
@@ -15,9 +14,7 @@ public  class GlobalParams {
    * "временем" выполнени€ понимаетс€ значение экземпл€ра класса ModelTime 
    * @return - возвращает true, если элементы модели должны выводить врем€ своего выполнени€ значение модельного времени.
    */
-  public static boolean ExecTimeOutputEnabled(){
-    /*Color c = Color.RED;
-    System.out.println( Integer.toString( c.getRGB()  ));*/
+  public static boolean ExecTimeOutputEnabled(){    
     return false;
   }
 

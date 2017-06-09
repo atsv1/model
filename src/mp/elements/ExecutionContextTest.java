@@ -100,14 +100,13 @@ public class ExecutionContextTest extends TestCase {
     mp.parser.ModelExecutionContext.ClearExecutionContext();
     Model model = null;
     boolean f = false;
-    try {
-      //model = ModelMuxTest.ReadModel( ModelMuxTest.FPathToXMLFiles + "execution4.xml" );
+    try {      
       ModelTreeBuilder builder = new ModelTreeBuilder();
       builder.SetElementFactory( new ModelElementFactory() );
       builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "execution4.xml" );
       model = builder.GetRootModel();
       assertTrue( model != null );
-      model.run();
+      //model.run();
       f = true;
     } catch (ModelException e) {
       e.printStackTrace();
@@ -131,7 +130,7 @@ public class ExecutionContextTest extends TestCase {
 
     ModelBlock block1 = (ModelBlock) model.Get("block");
     assertTrue( block1 != null );
-    ModelBlock block2 = (ModelBlock) model2.Get("block");
+    ModelBlock block2 = (ModelBlock) model2.Get("sub_block");
     assertTrue( block2 != null );
 
     assertEquals( block1.GetIntValue("var1"), 5 );
@@ -221,7 +220,7 @@ public class ExecutionContextTest extends TestCase {
       builder.SetElementFactory( new ModelElementFactory() );
       builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "execution8.xml" );
       model = builder.GetRootModel();
-      model.RegisterModelInContext();
+      //model.RegisterModelInContext();
       f = true;
     } catch (ModelException e) {
       e.printStackTrace();
@@ -505,11 +504,11 @@ public class ExecutionContextTest extends TestCase {
     int prevValue = 0;
     prevValue = subModel1Block.GetIntValue("var1");
     try {
-    	model.run();
-	    
+    	model.run();	    
     } catch (Exception e) {
 	     e.printStackTrace();
     }
+    assertTrue(model.GetErrorString() == null);
     curValue = subModel1Block.GetIntValue("var1");
     assertTrue(curValue > prevValue);
     curValue = subModel1Block.GetIntValue("var2");
@@ -732,19 +731,41 @@ public class ExecutionContextTest extends TestCase {
   /////////////////////////////////////////////////////////////////////////
   ///////// тестируем возможность выполнения одной и той же модели одновременно, но в разных потоках //////////////////////////////////
   /////////////////////////////////////////////////////////////////////////
-
+ public static String syncFlag = "123";
+ public static Model globalModel = null;
+  
   /**
    * Проверка возможности двойного запуска одной и той же модели
    */
   public void test2SameModelsRun(){
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
   	Model model1 = null;
   	Model model2 = null;
     boolean f = false;
     try {
       ModelTreeBuilder builder = new ModelTreeBuilder();
       builder.SetElementFactory( new ModelElementFactory() );
-      builder.ReadModelTree( TestUtils.GetPath() + "file65.xml" );
-      model1 = builder.GetRootModel();
+      Thread builderThread1 = new Thread( new Runnable() {
+				public void run() {
+					synchronized (syncFlag) {
+						ModelTreeBuilder builder = new ModelTreeBuilder();
+						try {
+							builder.SetElementFactory(new ModelElementFactory());
+							builder.ReadModelTree(TestUtils.GetPath() + "file65.xml");
+							globalModel = builder.GetRootModel();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						syncFlag.notifyAll();
+					}
+				}
+      } );
+      builderThread1.start();
+      synchronized(syncFlag){
+      	syncFlag.wait();
+      }
+      
+      model1 = globalModel;
       //model1.Execute();
       builder.ReadModelTree( TestUtils.GetPath() + "file65.xml" );
       model2 = builder.GetRootModel();
@@ -1045,6 +1066,7 @@ public class ExecutionContextTest extends TestCase {
   
   
   public void testFork1(){
+  	
   	mp.parser.ModelExecutionContext.ClearExecutionContext();    
     boolean f = false;
     try {
@@ -1101,13 +1123,13 @@ public class ExecutionContextTest extends TestCase {
     mainModel.run();
     Integer i = getIntValue(mainModel, "block", 0, "forkResult");
     assertEquals(i, new Integer(8));
-  	i = getIntValue(mainModel, "block", 0, "val");
-  	assertEquals(i, new Integer(9));
-  	/*i = getIntValue(subModel, "sub_block", 0, "inp1");
-  	assertEquals(i, new Integer(0));*/
+  	i = getIntValue(mainModel, "block", 0, "i");
+  	assertEquals(i, new Integer(10));
+  	i = getIntValue(subModel, "sub_block", 0, "inp1");
+  	assertEquals(i, new Integer(0));
   }
   
-  public void testFork_ModelWirhConst(){
+  public void testFork_ModelWithConst(){
   	mp.parser.ModelExecutionContext.ClearExecutionContext();    
     boolean f = false;
     try {
@@ -1116,8 +1138,7 @@ public class ExecutionContextTest extends TestCase {
       builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "fork3.xml" );
       builder.GetRootModel();
       f = true;
-    } catch (Exception e) {
-    	System.out.println("12987210908367");
+    } catch (Exception e) {    	
       e.printStackTrace();
     } 
     assertTrue( f );
@@ -1132,8 +1153,10 @@ public class ExecutionContextTest extends TestCase {
   }
   
   public void testFork_StatechartTimeoutTransitionAfterFork(){
-  	mp.parser.ModelExecutionContext.ClearExecutionContext();    
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+  	
     boolean f = false;
+    
     try {
       ModelTreeBuilder builder = new ModelTreeBuilder();
       builder.SetElementFactory( new ModelElementFactory() );

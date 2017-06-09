@@ -12,7 +12,7 @@
         <Param name = "var1" type = "integer" initvalue = "0">
           <Formula>
             <![CDATA[
-
+            
            ]]>
           </Formula>
         </Param>
@@ -22,4 +22,4 @@
 
   </BlockList>
 
- </Model>
+</Model>

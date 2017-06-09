@@ -30,7 +30,7 @@
                    print(forkId);
                    forkResult := Get("fork4_sub", "sub_block", 0, "subCounter");
                    rollback("fork4_sub", forkId);
-                   print("sfter rollback");
+                   print("after rollback");
                  end; 
                
                if (counter = 10) then

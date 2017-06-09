@@ -33,8 +33,7 @@ public class ModelElementContainer {
   }
 
   protected void CheckBeforeAdd(ModelElement aElement) throws ModelException{
-    if ( aElement == null )
-    {
+    if ( aElement == null ) {
       ModelException e = new ModelException("Попытка добавить пустой элемент в список элементов модели");
       throw e;
     }
@@ -85,13 +84,11 @@ public class ModelElementContainer {
     FHashByNameIndex.put( aElement.GetNameIndexObj(), aElement );
   }
 
-  public void AddElement( ModelElement aElement ) throws ModelException
-  {
+  public void AddElement( ModelElement aElement ) throws ModelException {
     CheckBeforeAdd( aElement );
     if ( !CheckEqualsCount() ){
-      ModelException e = new ModelException( "Ошибка: несовпадение количеств в контейнере при добавлении элемента \"" +
-              aElement.GetFullName() + "\"");
-      throw e;
+    	//throw new ModelException( "Ошибка: несовпадение количеств в контейнере при добавлении элемента \"" +  aElement.GetFullName() + "\"");
+      
     }
     AddByName( aElement );
     AddById( aElement );

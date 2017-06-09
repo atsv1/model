@@ -13,29 +13,33 @@
       </OutParamList>
       <InnerParamList>
         <Param name = "forkResult" type = "integer" initvalue = "8"/>
+        <Param name = "i" type = "integer" initvalue = "8"/>
       </InnerParamList>
       
       <Statechart name = "1">
         <State name = "begin">
           <Transition name = "startFork" type = "Timeout" value = "10" nextstate = "begin">
-            <![CDATA[
-               var i : integer;
+            <![CDATA[               
                var curResult : integer;
                var forkLabel : string;
                curResult := 0;
                i :=  0;
                while (i < 10) do
                 begin
+                  print(i);
                   val := i;
                   forkLabel  := fork("fork2_sub", 10, false);
+                  print(forkLabel);
                   curResult := Get("fork2_sub", "sub_block", 0, "modelVal");
                   if ( forkResult < curResult ) then 
                    begin
                      forkResult := curResult;
                    end;
                   rollback("fork2_sub", forkLabel);
+                  print("rollback");
                   i := i+1;                                   
-                end;                
+                end;                    
+                val := 0;            
                 StopExecution("fork2_main");
               
              ]]>

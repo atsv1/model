@@ -2,6 +2,11 @@ package mp.elements;
 
 
 import mp.parser.ScriptException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 /**
@@ -20,7 +25,7 @@ import java.util.Vector;
  * Date: 08.10.2007
  */
 public class ModelTimeManager {
-  private Vector FGroupList = new Vector();
+  private ArrayList<ExecuteGroup> FGroupList = new ArrayList<ExecuteGroup> ();
   private ModelTime FTimeStep = null;
   private ModelTime FTempTime1 = new ModelTime(0);
   private ModelTime FTempTime2 = new ModelTime(0);
@@ -48,16 +53,43 @@ public class ModelTimeManager {
    */
   private int FTimeIndependentBlockGroupIndex = -1;
 
-  public ModelTimeManager(){
+  private static ThreadLocal<ModelTimeManager> tmList = new  ThreadLocal<ModelTimeManager>();
+  
+  private ModelTimeManager(){  	
     FTimeStep = new ModelTime(0.05);
   }
 
-  public ModelTimeManager( ModelTime aStep ){
+  private ModelTimeManager( ModelTime aStep ){
     FTimeStep = aStep;
     if ( FTimeStep == null ){
       FTimeStep = new ModelTime(0.05);
     }
   }
+  
+  public static ModelTimeManager getTimeManager(){
+  	ModelTimeManager result = tmList.get();
+  	if (result == null) {
+  		result = new ModelTimeManager();
+  		tmList.set(result);
+  	}
+  	return result;
+  	//return new ModelTimeManager();
+  }
+  
+  public static ModelTimeManager getTimeManager(ModelTime aStep){
+  	ModelTimeManager result = tmList.get();
+  	if (result == null) {
+  		result = new ModelTimeManager(aStep);
+  		tmList.set(result);
+  	}
+  	return result;
+  	//return new ModelTimeManager(aStep);
+  }
+  
+  public static void clearContext(){
+  	tmList.set(null);
+  }
+
 
   private int GetExecuteGroup( ModelTime aModelTime, int aStartIndex ){
     ExecuteGroup result = null;
@@ -102,7 +134,8 @@ public class ModelTimeManager {
       if ( FTempTime1.Compare( aTime ) == ModelTime.TIME_COMPARE_GREATER) {
         // переданное в параметре время меньше, чем время текущей группы. Нужно вставлять новую группу
         // перед текущей группой
-        FGroupList.insertElementAt( aGroup, i );
+        //FGroupList.insertElementAt( aGroup, i );
+        FGroupList.add(i, aGroup);
         return i;
       }
       i++;
@@ -149,7 +182,8 @@ public class ModelTimeManager {
 
   private void DeleteGroups( int aStartIndex ){
     while ( aStartIndex< FGroupList.size() ){
-      FGroupList.removeElementAt( aStartIndex );
+      //FGroupList.removeElementAt( aStartIndex );
+      FGroupList.remove(aStartIndex);
     }
 
   }
@@ -349,7 +383,12 @@ public class ModelTimeManager {
   	ModelBlock block;
   	ModelTime execTime;
     ModelTime currentTime = FLastExecTime != null ? FLastExecTime : new ModelTime(0);
+    if ( FFullList == null ){
+    	FFullList = new ModelElementContainer();
+    	FFullList.SetUniqueNameFlag(false);
+    }
 
+    
   	while ( i < elementList.size() ){
   		element = elementList.get(i);
       if ( !(element instanceof ModelBlock) ) {
@@ -395,8 +434,7 @@ public class ModelTimeManager {
       if ( FLastExecTime != null ){
         s = "Последнее время выполнения: " + FLastExecTime.toString();
       }
-      ModelException e = new ModelException("Пустой список групп для выполнения " + s);
-      throw e;
+      throw new ModelException("Пустой список групп для выполнения " + s);      
     }
     FListExecuted = true;
     ExecuteGroup currentGroup = (ExecuteGroup) FGroupList.get( 0 );
@@ -424,10 +462,54 @@ public class ModelTimeManager {
       FTimeToExecFullList = null;
     }
     FLastExecTime = execTime;
-    FGroupList.removeElementAt( 0 );
+    //FGroupList.removeElementAt( 0 );
+    FGroupList.remove(0);
     FListExecuted = false;
     FTimeIndependentBlockGroupIndex--;
   }
+  
+  
+  private  Map<UUID, RollbackData> fixedStates = new HashMap<UUID, RollbackData> ();
+  
+  public void fixState(UUID uid) throws ModelException {
+  	RollbackData rd = new RollbackData();
+  	rd.FTimeStep.StoreValue(FTimeStep);
+  	rd.FTempTime1.StoreValue(FTempTime1);
+  	rd.FTempTime2.StoreValue(FTempTime2);
+  	rd.FTimeToExecFullList.StoreValue(FTimeToExecFullList);
+  	rd.FLastExecTime.StoreValue(FLastExecTime);
+  	rd.FGroupList = (ArrayList<ExecuteGroup>) FGroupList.clone();
+  	fixedStates.put(uid, rd);
+  }
+  
+  public void rollback(UUID label) throws ScriptException{
+  	RollbackData rd = fixedStates.get(label);
+  	if ( rd == null ) {
+  		throw new ScriptException("Нет данных для отката состояния"); 
+  	}
+  	
+  	FTimeStep.StoreValue(rd.FTimeStep);
+  	FTempTime1.StoreValue(rd.FTempTime1);
+  	FTempTime2.StoreValue(rd.FTempTime2);
+  	if ( FTimeToExecFullList != null ) {
+  	  FTimeToExecFullList.StoreValue(rd.FTimeToExecFullList);
+  	}
+  	FLastExecTime.StoreValue(rd.FLastExecTime);
+  	FGroupList = rd.FGroupList;
+  	fixedStates.remove(label);
+  	
+  }
+  
+  private static class RollbackData{
+  	 ModelTime FTimeStep = new ModelTime(0);
+     ModelTime FTempTime1 = new ModelTime(0);
+     ModelTime FTempTime2 = new ModelTime(0);
+     ModelTime FTimeToExecFullList = new ModelTime(0);         
+     ModelTime FLastExecTime = new ModelTime(0);
+     ArrayList<ExecuteGroup> FGroupList = null;
+  	
+  }
+  
 
   protected class ExecuteGroup{
     private ModelBlock[] FElementList = null;

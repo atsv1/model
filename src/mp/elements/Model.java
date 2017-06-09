@@ -4,6 +4,9 @@ import mp.parser.*;
 import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.Vector;
@@ -21,14 +24,19 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   private ModelAttributeReader FAttrReader = null;
   private Vector<ModelBlock> FDynamicBlockList = null;
   private ModelTimeManager FTimeManager = null;
-  private boolean FIsTimeManagerInit = false;
+  
   private int FStepDelay = 0;
   private int noForkStepDelay = 0;
   /* Флаг, определяющий возможность выполнения модели. используется для приостановки работы модели*/
   private boolean FEnableExec = true;
-  private Vector<Model> parallelModelList = new Vector<Model>();
+  private ArrayList<Model> parallelModelList = new ArrayList<Model>();
+  private ArrayList<Model> subModelList = new ArrayList<Model>();
   private Vector<ModelFunction> FFunctionList = null;
-  private boolean FInitFlag = false;
+
+  
+  private boolean statechartInitFlag = false;
+  private boolean contextRegFlag = false;
+  private boolean timeManagerInit = false;
 
   private int FPrintDurationInterval = 0;
 
@@ -165,6 +173,12 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
       		ModelExecutionContext.AddModelExecutionManager( subModel );
       	}
       }
+      if ( subModelList != null && !subModelList.isEmpty() ) {
+      	for (Model subModel : subModelList) {
+      		ModelExecutionContext.AddModelExecutionManager( subModel );
+      	}
+      	
+      }
     } catch (ScriptException e) {
       ModelException e1 = new ModelException( e.getMessage() );
       throw e1;
@@ -235,15 +249,31 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   }
 
   private void ExecuteWithoutInit() throws ScriptException, ModelException {
-  	if ( !FIsTimeManagerInit ) {
-  		FTimeManager = CreateTimeManager();
-      FIsTimeManagerInit = true;
+  	if ( !timeManagerInit ) {
+  		initTimeManager();
+  		timeManagerInit = true;
     }
     FTimeManager.ExecuteElements();
     FCurrentModelTime.StoreValue( FTimeManager.GetNearestModelTime() );
     for (Model subModel : parallelModelList) {
     	subModel.FCurrentModelTime.StoreValue(FCurrentModelTime);
     }    
+  }
+  
+  private void init() throws ScriptException, ModelException {
+  	if ( !statechartInitFlag ) {
+  		InitAllBlockStatecharts();
+  		statechartInitFlag = true;
+  	}
+		if (!contextRegFlag) {
+			RegisterModelInContext();				
+			contextRegFlag = true;
+		}
+  	if ( !timeManagerInit ) {
+  		initTimeManager();
+  		timeManagerInit = true;
+    }
+  	
   }
 
  /**Выполнение тактов модели. Такты выполняются на основании потребности блоков в выполнении такта
@@ -252,12 +282,8 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   * @throws ModelException
   */
   public void Execute() throws ScriptException, ModelException {
-  	if ( !FInitFlag ) {
-  		RegisterModelInContext();
-	    InitAllBlockStatecharts();
-  		FInitFlag = true;
-  	}
-  	ExecuteWithoutInit();
+  	init();
+  	ExecuteWithoutInit();  	
   }
 
   public ModelElement GetByIndex(int aIndex) throws ModelException{
@@ -334,16 +360,20 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   }
 
   public void run() {
-    //int tactCount = 0;    
+    //int tactCount = 0;  	
     try {
-	    RegisterModelInContext();
-	    InitAllBlockStatecharts();
-	    FInitFlag = true;
-    } catch (ModelException e1) {
+    	init();
+    } catch (Exception e1) {
+    	System.out.println(e1.getMessage());
     	FErrorString = e1.getMessage();
     	return;
     }
-    mainCycle();
+    FStopFlag = true;
+    FEnableExec = true;
+    synchronized(this) {
+      mainCycle();
+      this.notifyAll();
+    }
 
   }
 
@@ -386,17 +416,20 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     return result;
   }
 
-  private ModelTimeManager CreateTimeManager() throws ModelException {
-  	ModelTimeManager result = new ModelTimeManager( FTimeIncrement );
-  	result.SetFullElementsList( FBlockList );
+  private void initTimeManager() throws ModelException {
+  	ModelTimeManager result = ModelTimeManager.getTimeManager( FTimeIncrement );
+  	//result.SetFullElementsList( FBlockList );
+  	result.AddElementList(FBlockList);
     int i = 0;
     Model subModel;
     while ( i < parallelModelList.size()) {
     	subModel = parallelModelList.get(i);
-    	result.AddElementList( subModel.FBlockList );
+    	subModel.initTimeManager();
+    	//result.AddElementList( subModel.FBlockList );
       i++;
     }
-    return result;
+    FTimeManager = result;
+    //return result;
   }
 
   protected ModelTimeManager GetTimeManager(){
@@ -425,8 +458,8 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   }
 
   public void StartModelExecution() throws ScriptException {
-    FStopFlag = true;
-    FEnableExec = true;
+  	//FStopFlag = true;
+    //FEnableExec = true;
     run();
   }
 
@@ -547,6 +580,10 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   public void AddParallelModel(Model subModel) {
   	parallelModelList.add(subModel);
   }
+  
+  public void addSubModel(Model subModel){
+  	subModelList.add(subModel);
+  }
 
   public void AddFunction( ModelFunction aFunction ){
   	if (FFunctionList == null) {
@@ -577,6 +614,8 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     return null;
   }
   
+  private Map<UUID, ModelTimeManager> timeManagerFixedStates = new HashMap<UUID, ModelTimeManager> ();
+  
   private void fixStates(UUID uid) throws ModelException {
   	int i = 0;
     while ( i < FBlockList.size() ) {
@@ -585,6 +624,11 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     	i++;
     }
     FCurrentModelTime.fixState(uid);
+    if ( FTimeManager == null ) {
+    	FTimeManager = ModelTimeManager.getTimeManager();
+    }
+    FTimeManager.fixState(uid);
+    timeManagerFixedStates.put(uid, FTimeManager);
   }
 
 	@Override
@@ -600,8 +644,21 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		stopTime.StoreValue(FCurrentModelTime);
 		stopTime.Add(modelTimePeriod);
 		stopTimesStack.push(stopTime);
-		noForkStepDelay = FStepDelay; 
-		mainCycle();
+		noForkStepDelay = FStepDelay;
+		
+		contextRegFlag = false;
+		timeManagerInit = false;
+		Thread tr = new Thread(this);
+		tr.start();
+		synchronized(this) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {				
+				e.printStackTrace();
+			}
+		}
+		contextRegFlag = true;
+		timeManagerInit = true;		
 		return uid;
 	}
 
@@ -619,7 +676,11 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 	    if ( stopTimesStack.isEmpty() ) {
 	    	// задержку в выполнении основного потока модели восстанавливаем когда стек форков пуст
 	    	FStepDelay = noForkStepDelay;
-	    }
+	    }	    
+	    FTimeManager =  timeManagerFixedStates.get(label);
+	    timeManagerFixedStates.remove(label);
+	    FTimeManager.rollback(label);	  
+	   
 		} catch (ModelException e) {			
 			 throw new ScriptException( e.getMessage() );
 		}

@@ -136,7 +136,7 @@ public class ModelTime {
   
   public void  fixState(UUID uid) throws ModelException{
   	if (fixedStates.containsKey(uid)) {
-  		throw new ModelException("Такое время уже зификсировано");
+  		throw new ModelException("Такое время уже зафиксировано");
   	}   	
   	fixedStates.put(uid, new Double(FValue));
   	

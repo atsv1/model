@@ -93,6 +93,9 @@ public class ModelTreeBuilder {
         } catch (ScriptException e) {
         	throw new ModelException( e.getMessage() );
         }
+        if (  SubModelNodeName.equalsIgnoreCase( nodeName ) ) {
+        	parentModel.addSubModel(subModel);
+        }
         if ( ParallelModelNodeName.equalsIgnoreCase(nodeName) ) {
         	parentModel.AddParallelModel(subModel);
         }

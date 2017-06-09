@@ -441,9 +441,11 @@ public abstract class ModelBlock extends ModelEventGenerator {
       return;
     }
     if ( IsTimeIndependentBlock ) {
-      FTimeManager.AddElement( this, null );
+    	ModelTimeManager.getTimeManager().AddElement( this, null );
+      //FTimeManager.AddElement( this, null );
     } else {
-      FTimeManager.AddElement( this, this.GetNearestEventTime( aLastExecModelTime ) );
+    	ModelTimeManager.getTimeManager().AddElement( this, this.GetNearestEventTime( aLastExecModelTime ) );
+      //FTimeManager.AddElement( this, this.GetNearestEventTime( aLastExecModelTime ) );
     }
   }
 
@@ -519,23 +521,20 @@ public abstract class ModelBlock extends ModelEventGenerator {
   }
   
 
-  private  Map<UUID, ModelTimeManager> fixedStates = new HashMap<UUID, ModelTimeManager> ();
+  
   
   public void fixState(UUID stateLabel) throws ModelException{
   	doFix(FInpParams, stateLabel, 1);
   	doFix(FInnerParams, stateLabel, 1);
   	doFix(FOutParams, stateLabel, 1);
-  	doFix(FRootStates, stateLabel, 1);  	 
-  	fixedStates.put(stateLabel, FTimeManager);  	
+  	doFix(FRootStates, stateLabel, 1);  	  	
   }
   
   public void rollbackTo(UUID stateLabel) throws ModelException{
   	doFix(FInpParams, stateLabel, 2);
   	doFix(FInnerParams, stateLabel, 2);
   	doFix(FOutParams, stateLabel, 2);
-  	doFix(FRootStates, stateLabel, 2);
-  	FTimeManager = fixedStates.get(stateLabel);
-  	fixedStates.remove(stateLabel);  	
+  	doFix(FRootStates, stateLabel, 2);  	  	
   }
   
 }

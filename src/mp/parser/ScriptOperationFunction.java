@@ -136,7 +136,16 @@ public class ScriptOperationFunction extends ScriptOperation {
       ScriptException e = new ScriptException("Ошибка при старте модели: отсутствует модель с именем \"" + op1.GetStringValue() + "\"");
       throw e;
     }
-    manager.StartModelExecution();
+    //manager.StartModelExecution();
+    Thread t = new Thread((Runnable) manager);
+    t.start();
+    synchronized(manager) {
+    	try {
+				manager.wait();
+			} catch (InterruptedException e) {				
+				e.printStackTrace();
+			}
+    }
     result.SetValue( true );
     return 2;
   }

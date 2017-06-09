@@ -2,7 +2,7 @@
 <Model name = "Модель2" delay = "10">
   <BlockList>
 
-    <Block name = "block" count = "1">
+    <Block name = "sub_block" count = "1">
       <OutParamList>
         <Param name = "var1" type = "integer" initvalue = "0">
           <Formula>

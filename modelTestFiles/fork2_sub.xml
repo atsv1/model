@@ -15,6 +15,7 @@
         <Param name = "modelVal" type = "integer" initvalue = "0">
            <Formula>
             <![CDATA[
+               print(inp1);
                var v1 : real;
                var v : real;
                var  i : integer;
