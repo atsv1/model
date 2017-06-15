@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "fork1_main" delay = "10">
+  <ModelList>
+    <ParallelModel file = "fork1_sub.xml"/>
+    
+  </ModelList>
+
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "val" type = "integer" initvalue = "8"/>
+                
+      </OutParamList>
+      <InnerParamList>
+        <Param name = "forkResult" type = "integer" initvalue = "8"/>
+      </InnerParamList>
+      
+      <Statechart name = "1">
+        <State name = "begin">
+          <Transition name = "startFork" type = "Timeout" value = "10" nextstate = "begin">
+            <![CDATA[
+              var id : string;
+                 print("fork test");
+                val := 100;
+                id := fork("fork1_sub", 10, false);
+                print(id);
+                forkResult := Get("fork1_sub", "sub_block", 0, "innerCounter");
+                rollback("fork1_sub", id);
+                StopExecution("fork1_main");
+             ]]>
+          </Transition>       
+        
+        </State>
+      </Statechart>
+      
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

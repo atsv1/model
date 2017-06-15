@@ -1,5 +1,6 @@
 package mp.parser;
 
+import java.util.UUID;
 
 /**
  * User: atsv
@@ -135,7 +136,16 @@ public class ScriptOperationFunction extends ScriptOperation {
       ScriptException e = new ScriptException("ќшибка при старте модели: отсутствует модель с именем \"" + op1.GetStringValue() + "\"");
       throw e;
     }
-    manager.StartModelExecution();
+    //manager.StartModelExecution();
+    Thread t = new Thread((Runnable) manager);
+    t.start();
+    synchronized(manager) {
+    	try {
+				manager.wait();
+			} catch (InterruptedException e) {				
+				e.printStackTrace();
+			}
+    }
     result.SetValue( true );
     return 2;
   }
@@ -490,6 +500,12 @@ public class ScriptOperationFunction extends ScriptOperation {
       }
       case 400 : {
       	return ExecExit( aProgramPointer );
+      }
+      case 501 : {
+      	return ExecFork(aProgramPointer);
+      } 
+      case 502 : {
+      	return ExecRollback(aProgramPointer);
       }
       default: {
          ScriptException e = new ScriptException("Ќеизвестна€ команда дл€ выполнени€");
@@ -909,5 +925,42 @@ public class ScriptOperationFunction extends ScriptOperation {
   public String toString(){
   	return ScriptLanguageDef.FunctionsList[OperationIndex][0];
   }
+  
 
+  ///////////////////////////////////////////////////////////////////////////
+  ////////////// Fork //////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////
+
+  
+  private int ExecFork(int aProgramPointer) throws ScriptException {
+  	Operand op1 = InitOperand( aProgramPointer + 1 );
+  	ModelExecutionManager manager = ModelExecutionContext.GetManager( op1.GetStringValue() );
+  	if ( manager == null ){      
+      throw new ScriptException("fork err: отсутствует модель с именем \"" + op1.GetStringValue() + "\"");      
+    }
+  	Operand op2 = InitOperand( aProgramPointer + 2 );
+    int tactCount = op2.GetIntValue();
+    Operand op3 = InitOperand( aProgramPointer + 3 );
+    Operand forkLabel = InitOperand( aProgramPointer + 4 );
+    boolean nestedFork = op3.GetBooleanValue();    
+    UUID forkUid = manager.fork(tactCount, nestedFork);
+    forkLabel.SetValue( forkUid.toString() );  	
+  	return 4;  	
+  }  
+  
+  private int ExecRollback(int aProgramPointer) throws ScriptException {
+  	Operand op1 = InitOperand( aProgramPointer + 1 );
+  	ModelExecutionManager manager = ModelExecutionContext.GetManager( op1.GetStringValue() );
+  	if ( manager == null ){      
+      throw new ScriptException("fork err: отсутствует модель с именем \"" + op1.GetStringValue() + "\"");      
+    }
+  	Operand forkLabel = InitOperand( aProgramPointer + 2 );
+  	String s = forkLabel.GetStringValue();
+  	UUID uid = UUID.fromString(s);
+  	manager.rollback(uid);
+  	return 3;  	
+  }  
+  
+  
+  
 }

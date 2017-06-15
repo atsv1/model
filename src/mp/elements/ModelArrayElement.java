@@ -6,6 +6,7 @@ import mp.parser.*;
 import org.w3c.dom.Node;
 
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.Vector;
 
 /**
@@ -102,12 +103,25 @@ public class ModelArrayElement extends ModelCalculatedElement{
     }
     arrayDef.AddDimension( GetElementsCount(startDimension) );
     try {
-      FArray.InitArray( arrayDef );
+    	InitArray(arrayDef);
     } catch (ScriptException e) {
       ModelException e1 = new ModelException("Ошибка в массиве \"" + GetFullName() + "\": " + e.getMessage());
       throw e1;
-    }
-    FCoordinates = new int[ FArray.GetDimension() ];
+    }    
+  }
+  
+  public void InitArray(ArrayDefinition arrayDef) throws ScriptException{
+  	if ( arrayDef == null ) {
+  		return;  		
+  	}
+  	if (FArray == null) {
+  		ScriptArray array = new ScriptArray();
+      array.SetName( this.GetName() );
+      this.SetVariable( array );
+      FArray = array;
+  	}
+  	FArray.InitArray( arrayDef );
+  	FCoordinates = new int[ FArray.GetDimension() ];  	
   }
 
   private void ReadCoordinates( Node aForEachNode ) throws ModelException {
@@ -296,6 +310,35 @@ public class ModelArrayElement extends ModelCalculatedElement{
 
   public ScriptArray GetArray(){
   	return FArray;
+  }
+  
+  public Variable GetVariable(){
+  	return FArray;
+  }
+  
+  
+  public void fixState(UUID stateLabel) throws ModelException{
+  	if (fixedStates.containsKey(stateLabel)) {
+  		throw new ModelException("Дублирование фиксированного состояния");
+  	}   	
+  	fixedStates.put(stateLabel,  FArray.clone() );
+  }
+    
+  public void rollbackTo(UUID stateLabel) throws ModelException{
+  	if (!fixedStates.containsKey(stateLabel)) {
+  		throw new  ModelException("Отсутствует метка для отката");  		
+  	}
+  	Object o = fixedStates.get(stateLabel);
+  	if ( !(o instanceof ScriptArray) ) {
+  		throw new ModelException("Попытка записать в массив не массив");
+  	}
+  	try {
+			FArray.StoreArray( (ScriptArray) o );
+		} catch (ScriptException e) {
+			throw new ModelException(e.getMessage()) ;
+		}
+  	 
+  	  	
   }
 
 }

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "fork4_sub" delay = "10">
+
+<BlockList>
+    <Block name = "sub_block" count = "1">
+        
+        
+       <OutParamList>
+        <Param name = "subCounter" type = "integer" initvalue = "0">
+        </Param>
+                
+      </OutParamList>
+      
+      <Statechart name = "subProc">
+        <State name = "begin">
+          <Transition name = "startForkSub" type = "Timeout" value = "1" nextstate = "begin">
+            <![CDATA[              
+              subCounter := subCounter + 1;
+              print(subCounter);                
+              
+             ]]>
+          </Transition>       
+        
+        </State>
+      </Statechart>
+       
+               
+    </Block>
+ </BlockList>
+
+</Model>

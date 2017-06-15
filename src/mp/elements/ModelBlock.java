@@ -1,5 +1,9 @@
 package mp.elements;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import mp.parser.*;
 import mp.utils.ServiceLocator;
 
@@ -437,9 +441,11 @@ public abstract class ModelBlock extends ModelEventGenerator {
       return;
     }
     if ( IsTimeIndependentBlock ) {
-      FTimeManager.AddElement( this, null );
+    	ModelTimeManager.getTimeManager().AddElement( this, null );
+      //FTimeManager.AddElement( this, null );
     } else {
-      FTimeManager.AddElement( this, this.GetNearestEventTime( aLastExecModelTime ) );
+    	ModelTimeManager.getTimeManager().AddElement( this, this.GetNearestEventTime( aLastExecModelTime ) );
+      //FTimeManager.AddElement( this, this.GetNearestEventTime( aLastExecModelTime ) );
     }
   }
 
@@ -495,4 +501,40 @@ public abstract class ModelBlock extends ModelEventGenerator {
       i++;
     }
   }
+  
+  private void doFix(ModelElementContainer elements, UUID stateLabel, int operation) throws ModelException {
+  	if ( elements == null || elements.size() == 0 ) {
+  		return;
+  	}
+  	int i = 0;
+  	ModelElement element;  	
+  	while ( i < elements.size() ) {
+  		element = elements.get(i);  		
+  		if (operation == 1 ) {
+  		  element.fixState(stateLabel);
+  		} else if (operation == 2) {
+  			element.rollbackTo(stateLabel);
+  		} else throw new ModelException("недопустимая операция");
+  		i++;
+  	}
+  	
+  }
+  
+
+  
+  
+  public void fixState(UUID stateLabel) throws ModelException{
+  	doFix(FInpParams, stateLabel, 1);
+  	doFix(FInnerParams, stateLabel, 1);
+  	doFix(FOutParams, stateLabel, 1);
+  	doFix(FRootStates, stateLabel, 1);  	  	
+  }
+  
+  public void rollbackTo(UUID stateLabel) throws ModelException{
+  	doFix(FInpParams, stateLabel, 2);
+  	doFix(FInnerParams, stateLabel, 2);
+  	doFix(FOutParams, stateLabel, 2);
+  	doFix(FRootStates, stateLabel, 2);  	  	
+  }
+  
 }

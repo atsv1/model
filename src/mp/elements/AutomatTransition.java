@@ -2,6 +2,9 @@ package mp.elements;
 
 import mp.parser.*;
 import mp.utils.ModelAttributeReader;
+
+import java.util.UUID;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -159,6 +162,10 @@ public abstract class AutomatTransition extends ModelEventGenerator{
   public int GetPriority(){
     return FPriority;
   }
-
+  
+  public abstract void fixState(UUID stateLabel) throws ModelException;
+  
+  public abstract void rollbackTo(UUID stateLabel) throws ModelException;
+  
 
 }

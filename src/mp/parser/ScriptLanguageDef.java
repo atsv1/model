@@ -182,7 +182,10 @@ public class ScriptLanguageDef {
       {"Distribution_Normal2",     "301", "",  "real"},
 
       // Функции переходов
-      {"Exit", "400", "", "integer"}
+      {"Exit", "400", "", "integer"},
+      // FORK
+      {"fork", "501", "", "string"},
+      {"rollback", "502", "", "integer"}
     };
 
   /**Массив, описывающий автомат переходов состояний при разборе условных

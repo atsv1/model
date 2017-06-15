@@ -1,6 +1,8 @@
 package mp.elements;
 
 
+import java.util.UUID;
+
 import mp.parser.ScriptException;
 import mp.parser.Variable;
 
@@ -36,6 +38,14 @@ public class ModelConstant extends ModelBlockParam implements ModelForReadInterf
 
   public void SetVariable (Variable aVariable){
   	FVariable = aVariable;
+  }
+  
+  public void fixState(UUID stateLabel) throws ModelException{
+  	//ничего не делаем
+  }
+    
+  public void rollbackTo(UUID stateLabel) throws ModelException{
+    //ничего не делаем
   }
 
 }

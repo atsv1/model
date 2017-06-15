@@ -12,6 +12,7 @@
         <Param name = "var1" type = "integer" initvalue = "0">
           <Formula>
             <![CDATA[
+            
                var1 := inp1;
            ]]>
           </Formula>
@@ -36,6 +37,5 @@
     </Block>
 
 
-  </BlockList>
-
- </Model>
+</BlockList>
+</Model>

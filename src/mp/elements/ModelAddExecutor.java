@@ -20,13 +20,11 @@ public class ModelAddExecutor extends ModelExecutor {
   }
 
   public void DoSomething(ModelElement aObjectToAction) throws ModelException{
-    if ( container == null )
-    {
+    if ( container == null ) {
       ModelException e = new ModelException("Попытка добавить элемент в пустой список");
       throw e;
     }
-    if ( aObjectToAction == null )
-    {
+    if ( aObjectToAction == null ) {
       ModelException e = new ModelException("Попытка добавить пустой элемент");
       throw e;
     }

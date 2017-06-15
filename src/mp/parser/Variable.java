@@ -49,8 +49,7 @@ public class Variable extends Operand {
 
     Variable newVariable;
     if ("integer".equalsIgnoreCase(aVarType) ){
-      if ( aInitValue == null || aInitValue.equalsIgnoreCase("") )
-      {
+      if ( aInitValue == null || aInitValue.equalsIgnoreCase("") )  {
         aInitValue = "0";
       }
       try{

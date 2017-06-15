@@ -4,6 +4,9 @@ import mp.parser.*;
 import mp.elements.AutomatTransitionTimeout;
 import mp.utils.ModelAttributeReader;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.w3c.dom.Node;
@@ -220,7 +223,8 @@ public class AutomatState extends ModelEventGenerator{
     return (AutomatTransition) transitions.get(0);
   }
 
-  /**Процедура вызывается для активации состояния. Метод должен вызываться для АКТИВИРУЕМОГО состояния.
+  /**
+   * Процедура вызывается для активации состояния. Метод должен вызываться для АКТИВИРУЕМОГО состояния.
    * При активации состояния происходит:
    * 1. Вызов кода CodeAfterIn
    * 2. Проверяется, не выполняется ли какое-либо из условий перехода. Если выполняется, то вызывается код перехода и
@@ -360,7 +364,7 @@ public class AutomatState extends ModelEventGenerator{
       return selfTransitionsTime;
     }
     int i = selfTransitionsTime.Compare( childNearestTime );
-    if ( i == ModelTime.TIME_COMPARE_LOW ){
+    if ( i == ModelTime.TIME_COMPARE_LESS ){
       return selfTransitionsTime;
     }
     return childNearestTime;
@@ -393,13 +397,13 @@ public class AutomatState extends ModelEventGenerator{
       ModelException e = new ModelException("Попытка добавить пустой элемент в состояние " + this.GetName());
       throw e;
     }
-    Class cl = aElement.getClass();
-    if ( cl.getName().equalsIgnoreCase("mp.elements.AutomatState") ){
+    
+    if ( aElement instanceof AutomatState ){
       AddInnerState((AutomatState)aElement);
       return;
     }
-    cl = cl.getSuperclass();
-    if ( cl.getName().equalsIgnoreCase("mp.elements.AutomatTransition") ){
+    
+    if ( aElement instanceof  AutomatTransition ){
       AddTransition( (AutomatTransition) aElement );
       return;
     }
@@ -545,6 +549,56 @@ public class AutomatState extends ModelEventGenerator{
 
   protected ModelTime GetActivateTime(){
     return FActivateTime;
+  }
+  
+  protected Map<UUID, RollbackData> fixedStates = new HashMap<UUID, RollbackData> ();
+  
+  
+  private void doFix(ModelElementContainer elements, UUID stateLabel, int operation) throws ModelException {
+  	if ( elements == null || elements.size() == 0 ) {
+  		return;
+  	}
+  	int i = 0;
+  	ModelElement element;  	
+  	while ( i < elements.size() ) {
+  		element = elements.get(i);  		
+  		if (operation == 1 ) {
+  		  element.fixState(stateLabel);
+  		} else if (operation == 2) {
+  			element.rollbackTo(stateLabel);
+  		} else throw new ModelException("недопустимая операция");
+  		i++;
+  	}
+  	
+  }
+  
+  public void fixState(UUID stateLabel) throws ModelException{
+  	if (fixedStates.containsKey(stateLabel)) {
+  		throw new ModelException("Дублирование фиксированного состояния");
+  	}
+  	RollbackData rd = new RollbackData();
+  	rd.actualState = FActiveState;
+  	rd.mt = new ModelTime();
+  	rd.mt.StoreValue(FActivateTime);
+  	fixedStates.put(stateLabel, rd);
+  	doFix(FInnerStates, stateLabel, 1);
+  	doFix(FTransitions, stateLabel, 1);
+  	  	
+  }
+  
+  public void rollbackTo(UUID stateLabel) throws ModelException{
+  	RollbackData rd = fixedStates.get(stateLabel); 
+  	fixedStates.remove(stateLabel);
+  	FActiveState = rd.actualState;
+  	FActivateTime.StoreValue(rd.mt);  	
+  	doFix(FInnerStates, stateLabel, 2);
+  	doFix(FTransitions, stateLabel, 2);
+  	  	
+  }
+  
+  private static class RollbackData{
+  	public ModelTime mt = null;
+  	public AutomatState actualState = null;
   }
 
 }

@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "fork2_sub" delay = "10">
+
+<BlockList>
+    <Block name = "sub_block" count = "1">
+        <InputParamList>
+           <Param name = "inp1" type = "integer" initvalue = "-1"
+                  modelLink = "fork2_main"  blockLink = "block"   paramLink = "val" blockIndex = "selfIndex"/>
+        </InputParamList>
+        
+        <InnerParamList>
+        </InnerParamList>
+        
+       <OutParamList>
+        <Param name = "modelVal" type = "integer" initvalue = "0">
+           <Formula>
+            <![CDATA[
+               print(inp1);
+               var v1 : real;
+               var v : real;
+               var  i : integer;
+               v1 := inp1/5;
+               i := Integer(v1);
+               v := v1-i;               
+               modelVal := integer(v*10);
+               
+            ]]>
+          </Formula>
+          
+        </Param>
+                
+      </OutParamList>
+       
+               
+    </Block>
+ </BlockList>
+
+</Model>

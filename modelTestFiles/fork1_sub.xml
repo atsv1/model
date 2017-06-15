@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "fork1_sub" delay = "10">
+
+<BlockList>
+    <Block name = "sub_block" count = "1">
+        <InputParamList>
+           <Param name = "inp1" type = "integer" initvalue = "-1"
+                  modelLink = "fork1_main"  blockLink = "block"   paramLink = "val" blockIndex = "selfIndex"/>
+        </InputParamList>
+        
+       <OutParamList>
+        <Param name = "value" type = "integer" initvalue = "0"/>
+        <Param name = "innerCounter" type = "integer" initvalue = "1"/>        
+      </OutParamList>
+        
+       <Statechart name = "2">
+        <State name = "begin">
+          <Transition name = "1" type = "Timeout" value = "1" nextstate = "begin">
+            <![CDATA[
+              innerCounter := innerCounter + 1;
+              value := innerCounter;
+              print(innerCounter);
+                
+             ]]>
+          </Transition>       
+        
+        </State>
+      </Statechart>
+        
+    </Block>
+ </BlockList>
+
+</Model>

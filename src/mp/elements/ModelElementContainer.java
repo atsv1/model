@@ -9,18 +9,17 @@ import java.util.Vector;
  */
 public class ModelElementContainer {
 
-  private Hashtable FHashByName = null;
+  private Hashtable<String, ModelElement> FHashByName = null;
   private Hashtable FHashById = null;
   private Hashtable FHashByNameIndex = null;
   private boolean FNameUnique = true;
-  protected Vector ElementList = null;
+  protected Vector<ModelElement> ElementList = null;
 
 
-  public ModelElementContainer()
-  {
+  public ModelElementContainer() {
     FHashByName = new  Hashtable();
     FHashById = new Hashtable();
-    ElementList = new Vector();
+    ElementList = new Vector<ModelElement> ();
     FHashByNameIndex = new Hashtable();
   }
 
@@ -34,8 +33,7 @@ public class ModelElementContainer {
   }
 
   protected void CheckBeforeAdd(ModelElement aElement) throws ModelException{
-    if ( aElement == null )
-    {
+    if ( aElement == null ) {
       ModelException e = new ModelException("Попытка добавить пустой элемент в список элементов модели");
       throw e;
     }
@@ -86,13 +84,11 @@ public class ModelElementContainer {
     FHashByNameIndex.put( aElement.GetNameIndexObj(), aElement );
   }
 
-  public void AddElement( ModelElement aElement ) throws ModelException
-  {
+  public void AddElement( ModelElement aElement ) throws ModelException {
     CheckBeforeAdd( aElement );
     if ( !CheckEqualsCount() ){
-      ModelException e = new ModelException( "Ошибка: несовпадение количеств в контейнере при добавлении элемента \"" +
-              aElement.GetFullName() + "\"");
-      throw e;
+    	//throw new ModelException( "Ошибка: несовпадение количеств в контейнере при добавлении элемента \"" +  aElement.GetFullName() + "\"");
+      
     }
     AddByName( aElement );
     AddById( aElement );

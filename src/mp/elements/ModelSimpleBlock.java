@@ -1,5 +1,9 @@
 package mp.elements;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import mp.parser.*;
 
 /**
@@ -72,10 +76,10 @@ public class ModelSimpleBlock extends ModelBlock {
       System.out.println( "Начало выполнения параметров в блоке " + this.GetFullName() + ". Время модели = " +
               Double.toString(aCurrentTime.GetValue()) + " последнее время выполнения блока = " + Integer.toString(FLastExecutionTime) );
     }
-    int currentTimeValue = aCurrentTime.GetIntValue();
-    if ( currentTimeValue > FLastExecutionTime){
-      //Execute();
-      ExecuteParamsUpdate( aCurrentTime );
+    int currentTimeValue = aCurrentTime.GetIntValue();    
+    if ( currentTimeValue > FLastExecutionTime){      
+    	// сделано специально, чтобы параметры обновлялись только если модельное время переваливает очередное целое значение
+    	ExecuteParamsUpdate( aCurrentTime );  
       FLastExecutionTime = currentTimeValue;
     } else {
       if ( GlobalParams.ExecTimeOutputEnabled() ){
@@ -147,6 +151,19 @@ public class ModelSimpleBlock extends ModelBlock {
     ApplyStatechartNodeInfo();
     //чтение информации об обработчиках событий
     ApplyEventNodeInfo();
+  }
+  
+  private  Map<UUID, Integer> fixedStates = new HashMap<UUID, Integer> ();
+  public void fixState(UUID stateLabel) throws ModelException{
+  	super.fixState(stateLabel);  	  	
+  	fixedStates.put(stateLabel, new Integer(FLastExecutionTime));
+  }
+  
+  public void rollbackTo(UUID stateLabel) throws ModelException{
+  	super.rollbackTo(stateLabel);
+  	FLastExecutionTime = fixedStates.get(stateLabel);
+  	fixedStates.remove(stateLabel);
+  	
   }
 
 }

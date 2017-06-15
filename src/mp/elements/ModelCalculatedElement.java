@@ -7,6 +7,9 @@ import mp.parser.*;
 import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 /**
@@ -31,6 +34,8 @@ public class ModelCalculatedElement extends ModelBlockParam {
   private ExecutionStructure FDefaultExecutionStructure = null;
   private ExecutionStructure FActiveExecutionStructure = null;
   private String FSwitchException = null;
+  
+  
 
 
   public ModelCalculatedElement(ModelElement aOwner, String aElementName, int aElementId) {
@@ -458,5 +463,6 @@ public class ModelCalculatedElement extends ModelBlockParam {
     ModelElementContainer InputParams = new ModelElementContainer();
     Variable SwitchValue;
   }
-
+  
+  
 }

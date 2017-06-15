@@ -788,7 +788,7 @@ public class ModelBlockTest extends TestCase {
     ModelTime time1 = new ModelTime(1);
     ModelTime time2 = new ModelTime(2);
     int i = time1.Compare( time2 );
-    assertEquals( i, ModelTime.TIME_COMPARE_LOW );
+    assertEquals( i, ModelTime.TIME_COMPARE_LESS );
     i = time2.Compare( time1 );
     assertEquals( i, ModelTime.TIME_COMPARE_GREATER);
     i = time1.Compare( new ModelTime(1) );

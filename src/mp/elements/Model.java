@@ -4,6 +4,11 @@ import mp.parser.*;
 import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+import java.util.UUID;
 import java.util.Vector;
 
 /**
@@ -19,17 +24,25 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   private ModelAttributeReader FAttrReader = null;
   private Vector<ModelBlock> FDynamicBlockList = null;
   private ModelTimeManager FTimeManager = null;
-  private boolean FIsTimeManagerInit = false;
+  
   private int FStepDelay = 0;
+  private int noForkStepDelay = 0;
   /* ‘лаг, определ€ющий возможность выполнени€ модели. используетс€ дл€ приостановки работы модели*/
   private boolean FEnableExec = true;
-  private Vector<Model> parallelModelList = new Vector<Model>();
+  private ArrayList<Model> parallelModelList = new ArrayList<Model>();
+  private ArrayList<Model> subModelList = new ArrayList<Model>();
   private Vector<ModelFunction> FFunctionList = null;
-  private boolean FInitFlag = false;
+
+  
+  private boolean statechartInitFlag = false;
+  private boolean contextRegFlag = false;
+  private boolean timeManagerInit = false;
 
   private int FPrintDurationInterval = 0;
 
   private ModelElementContainer FConstantList = null;
+  
+  private Stack<ModelTime> stopTimesStack = new Stack<ModelTime> ();
 
   public Model(ModelElement aOwner, String aElementName, int aElementId) {
     super(aOwner, aElementName, aElementId);
@@ -155,6 +168,17 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   public void RegisterModelInContext() throws ModelException {
     try {
       ModelExecutionContext.AddModelExecutionManager( this );
+      if ( parallelModelList != null && !parallelModelList.isEmpty() ) {
+      	for (Model subModel : parallelModelList) {
+      		ModelExecutionContext.AddModelExecutionManager( subModel );
+      	}
+      }
+      if ( subModelList != null && !subModelList.isEmpty() ) {
+      	for (Model subModel : subModelList) {
+      		ModelExecutionContext.AddModelExecutionManager( subModel );
+      	}
+      	
+      }
     } catch (ScriptException e) {
       ModelException e1 = new ModelException( e.getMessage() );
       throw e1;
@@ -224,39 +248,32 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     //InitAllBlockStatecharts();
   }
 
- /**»зменение текущего модельного времени. »зменение производитс€ с учетом ближайшего событи€ в системе и шага
-  * моделировани€.
-  * @param aNearestEventTime
-  */
-  private void UpdateCurrentTime( ModelTime aNearestEventTime ){
-   /**≈сли в системе нет ближайшего событи€, то модельное врем€ увеличиваетс€ на шаг моделировани€
-    */
-    if ( aNearestEventTime == null ){
-      FCurrentModelTime.Add( FTimeIncrement );
-      return;
-    }
-   /**¬ модели присутствует ближайшее событие. Ќеобходимо вы€снить, что произойдет раньше - следующий запланированный
-    * такт, или событие. ≈сли плановый такт, то это означает, что в модели до этого такта ничего не происходит,
-    * и делать этот такт не нужно дл€ экономии процессорного времени. ¬ этом случае следующий такт нужно производить
-    * либо во врем€ этого событи€, либо ѕќ—Ћ≈ него.
-    * ≈сли же плановый такт должен произойти после ближайшего событи€, то модельное врем€ становитс€ равным времени
-    * следующего планового такта
-    */
-   FCurrentModelTime.Add( FTimeIncrement );
-   while ( FCurrentModelTime.Compare(aNearestEventTime) != ModelTime.TIME_COMPARE_GREATER
-           &&  FCurrentModelTime.Compare(aNearestEventTime) != ModelTime.TIME_COMPARE_EQUALS
-           ) {
-     FCurrentModelTime.Add( FTimeIncrement );
-   }
-  }
-
   private void ExecuteWithoutInit() throws ScriptException, ModelException {
-  	if ( !FIsTimeManagerInit ) {
-      CreateTimeManager();
-      FIsTimeManagerInit = true;
+  	if ( !timeManagerInit ) {
+  		initTimeManager();
+  		timeManagerInit = true;
     }
     FTimeManager.ExecuteElements();
     FCurrentModelTime.StoreValue( FTimeManager.GetNearestModelTime() );
+    for (Model subModel : parallelModelList) {
+    	subModel.FCurrentModelTime.StoreValue(FCurrentModelTime);
+    }    
+  }
+  
+  private void init() throws ScriptException, ModelException {
+  	if ( !statechartInitFlag ) {
+  		InitAllBlockStatecharts();
+  		statechartInitFlag = true;
+  	}
+		if (!contextRegFlag) {
+			RegisterModelInContext();				
+			contextRegFlag = true;
+		}
+  	if ( !timeManagerInit ) {
+  		initTimeManager();
+  		timeManagerInit = true;
+    }
+  	
   }
 
  /**¬ыполнение тактов модели. “акты выполн€ютс€ на основании потребности блоков в выполнении такта
@@ -265,12 +282,8 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   * @throws ModelException
   */
   public void Execute() throws ScriptException, ModelException {
-  	if ( !FInitFlag ) {
-  		RegisterModelInContext();
-	    InitAllBlockStatecharts();
-  		FInitFlag = true;
-  	}
-  	ExecuteWithoutInit();
+  	init();
+  	ExecuteWithoutInit();  	
   }
 
   public ModelElement GetByIndex(int aIndex) throws ModelException{
@@ -297,20 +310,26 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   public void SetEnableExecution( boolean aEnableExec ){
     FEnableExec = aEnableExec;
   }
-
-  public void run() {
-    //int tactCount = 0;
-    int tactWithoutGC = 0;
+  
+  private boolean runEnable(){
+  	if ( !FStopFlag  ) {
+  		return false;
+  	}
+  	if ( FStopFlag && stopTimesStack.isEmpty()) {
+  		return true;
+  	}
+  	if ( stopTimesStack.isEmpty() ) {
+  		return false;
+  	}
+  	ModelTime curT = stopTimesStack.peek();
+  	int i = FCurrentModelTime.Compare(curT);
+  	return (i == ModelTime.TIME_COMPARE_LESS  || i == ModelTime.TIME_COMPARE_EQUALS) ;
+  }
+  
+  private void mainCycle(){
+  	int tactWithoutGC = 0;
     int toPrint = 0;
-    try {
-	    RegisterModelInContext();
-	    InitAllBlockStatecharts();
-	    FInitFlag = true;
-    } catch (ModelException e1) {
-    	FErrorString = e1.getMessage();
-    	return;
-    }
-    while (FStopFlag){
+    while ( runEnable() ){
       try {
         if ( FEnableExec ) {
           ExecuteWithoutInit();
@@ -337,6 +356,25 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
         break;
       }
     }
+  	
+  }
+
+  public void run() {
+    //int tactCount = 0;  	
+    try {
+    	init();
+    } catch (Exception e1) {
+    	System.out.println(e1.getMessage());
+    	FErrorString = e1.getMessage();
+    	return;
+    }
+    FStopFlag = true;
+    FEnableExec = true;
+    synchronized(this) {
+      mainCycle();
+      this.notifyAll();
+    }
+
   }
 
  /** ‘ункци€ возвращает значение текущего модельного времени
@@ -378,16 +416,20 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     return result;
   }
 
-  private void CreateTimeManager() throws ModelException {
-    FTimeManager = new ModelTimeManager( FTimeIncrement );
-    FTimeManager.SetFullElementsList( FBlockList );
+  private void initTimeManager() throws ModelException {
+  	ModelTimeManager result = ModelTimeManager.getTimeManager( FTimeIncrement );
+  	//result.SetFullElementsList( FBlockList );
+  	result.AddElementList(FBlockList);
     int i = 0;
     Model subModel;
     while ( i < parallelModelList.size()) {
     	subModel = parallelModelList.get(i);
-    	FTimeManager.AddElementList( subModel.FBlockList );
+    	subModel.initTimeManager();
+    	//result.AddElementList( subModel.FBlockList );
       i++;
     }
+    FTimeManager = result;
+    //return result;
   }
 
   protected ModelTimeManager GetTimeManager(){
@@ -416,8 +458,8 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   }
 
   public void StartModelExecution() throws ScriptException {
-    FStopFlag = true;
-    FEnableExec = true;
+  	//FStopFlag = true;
+    //FEnableExec = true;
     run();
   }
 
@@ -538,6 +580,10 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   public void AddParallelModel(Model subModel) {
   	parallelModelList.add(subModel);
   }
+  
+  public void addSubModel(Model subModel){
+  	subModelList.add(subModel);
+  }
 
   public void AddFunction( ModelFunction aFunction ){
   	if (FFunctionList == null) {
@@ -567,5 +613,78 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   	}
     return null;
   }
+  
+  private Map<UUID, ModelTimeManager> timeManagerFixedStates = new HashMap<UUID, ModelTimeManager> ();
+  
+  private void fixStates(UUID uid) throws ModelException {
+  	int i = 0;
+    while ( i < FBlockList.size() ) {
+    	ModelBlock block = (ModelBlock) FBlockList.get(i);
+    	block.fixState(uid);
+    	i++;
+    }
+    FCurrentModelTime.fixState(uid);
+    if ( FTimeManager == null ) {
+    	FTimeManager = ModelTimeManager.getTimeManager();
+    }
+    FTimeManager.fixState(uid);
+    timeManagerFixedStates.put(uid, FTimeManager);
+  }
+
+	@Override
+	public UUID fork(int modelTimePeriod, boolean nestedFork) throws ScriptException {
+		UUID uid = java.util.UUID.randomUUID();
+		try {
+			fixStates(uid);
+		} catch (ModelException e) {
+			throw new ScriptException(e.getMessage());
+		}	
+		
+		ModelTime stopTime = new ModelTime();
+		stopTime.StoreValue(FCurrentModelTime);
+		stopTime.Add(modelTimePeriod);
+		stopTimesStack.push(stopTime);
+		noForkStepDelay = FStepDelay;
+		
+		contextRegFlag = false;
+		timeManagerInit = false;
+		Thread tr = new Thread(this);
+		tr.start();
+		synchronized(this) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {				
+				e.printStackTrace();
+			}
+		}
+		contextRegFlag = true;
+		timeManagerInit = true;		
+		return uid;
+	}
+
+	@Override
+	public void rollback(UUID label) throws ScriptException{
+		try {
+	  	int i = 0;
+	    while ( i < FBlockList.size() ) {
+	    	ModelBlock block = (ModelBlock) FBlockList.get(i);
+	    	block.rollbackTo(label);
+	    	i++;
+	    }
+	    FCurrentModelTime.rollbackTo(label);
+	    stopTimesStack.pop();
+	    if ( stopTimesStack.isEmpty() ) {
+	    	// задержку в выполнении основного потока модели восстанавливаем когда стек форков пуст
+	    	FStepDelay = noForkStepDelay;
+	    }	    
+	    FTimeManager =  timeManagerFixedStates.get(label);
+	    timeManagerFixedStates.remove(label);
+	    FTimeManager.rollback(label);	  
+	   
+		} catch (ModelException e) {			
+			 throw new ScriptException( e.getMessage() );
+		}
+		
+	}
 
 }

@@ -2,6 +2,7 @@ package mp.elements;
 
 import junit.framework.TestCase;
 
+import java.util.ArrayList;
 import java.util.Vector;
 import java.lang.reflect.Field;
 import java.io.IOException;
@@ -21,14 +22,15 @@ public class TimeManagerTest extends TestCase {
   }
 
   public void testCreateEmptyTimeManager(){
-    ModelTimeManager manager = new ModelTimeManager();
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager = ModelTimeManager.getTimeManager();
     assertTrue( manager.GetNearestModelTime() == null );
     assertEquals( manager.GetExecuteGroupCount(), 0 );
   }
 
 
   public void testAddSingleElement(){
-    ModelTimeManager manager = new ModelTimeManager();
+    ModelTimeManager manager =ModelTimeManager.getTimeManager();
     ModelBlock block = new ModelSimpleBlock(null, "block", ServiceLocator.GetNextId());
     ModelElementContainer container = new ModelElementContainer();
     try {
@@ -84,7 +86,8 @@ public class TimeManagerTest extends TestCase {
    *
    */
   public void testAddExistElement(){
-    ModelTimeManager manager = new ModelTimeManager();
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager = ModelTimeManager.getTimeManager();
     int id = ServiceLocator.GetNextId();
     ModelBlock block1 = new ModelSimpleBlock(null, "block1", id);
     ModelElementContainer container = new ModelElementContainer();
@@ -121,13 +124,13 @@ public class TimeManagerTest extends TestCase {
     assertEquals( manager.GetExecuteGroupCount(), 2 );
   }
 
-  private static Vector GetGroupsList( ModelTimeManager manager ){
+  private static ArrayList GetGroupsList( ModelTimeManager manager ){
     Class cl = manager.getClass();
     Field f = null;
     try {
       f = cl.getDeclaredField("FGroupList");
       f.setAccessible( true );
-      return (Vector) f.get( manager );
+      return (ArrayList) f.get( manager );
     } catch (NoSuchFieldException e) {
       e.printStackTrace();
     } catch (IllegalAccessException e) {
@@ -145,7 +148,8 @@ public class TimeManagerTest extends TestCase {
    *
    */
   public void testShiftToFullList(){
-    ModelTimeManager manager = new ModelTimeManager();
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager = ModelTimeManager.getTimeManager();
     int id = 0;
     ModelElementContainer container = new ModelElementContainer();
     int i = 0;
@@ -201,7 +205,7 @@ public class TimeManagerTest extends TestCase {
     }
     assertTrue( f );
     assertEquals( 4, manager.GetExecuteGroupCount());
-    Vector groups = GetGroupsList( manager );
+    ArrayList groups = GetGroupsList( manager );
     assertTrue( groups != null );
     assertEquals( groups.size(), 4 );
 
@@ -256,7 +260,8 @@ public class TimeManagerTest extends TestCase {
    *
    */
   public void testSelfTimeStep(){
-    ModelTimeManager manager = new ModelTimeManager( new ModelTime(5) );
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager =  ModelTimeManager.getTimeManager( new ModelTime(5) );
     ModelElementContainer container = new ModelElementContainer();
     int i = 0;
     boolean f = true;
@@ -321,7 +326,8 @@ public class TimeManagerTest extends TestCase {
    * ѕровер€етс€ правильность добавлени€ такого блока в пустой менеджер времени
    */
   public void testAddBlockWithNullTime_EmptyManager(){
-    ModelTimeManager manager = new ModelTimeManager();
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager = ModelTimeManager.getTimeManager();
     ModelBlock block = new ModelSimpleBlock( null, "", 1 );
     assertTrue( manager.GetTimeIndependentBlockGroupIndex() < 0 );
     boolean f = false;
@@ -335,7 +341,7 @@ public class TimeManagerTest extends TestCase {
     assertEquals( manager.GetExecuteGroupCount(), 1 );
     assertEquals( manager.GetTimeIndependentBlockGroupIndex(), 0 );
 
-    manager = new ModelTimeManager();
+    manager = ModelTimeManager.getTimeManager();
     f = false;
     try {
       manager.AddElement( block, null );
@@ -355,7 +361,8 @@ public class TimeManagerTest extends TestCase {
    * ѕосле выполнени€ всех блоков он должен снова стать равным -1
    */
   public void testChangeIndepandentIndex(){
-    ModelTimeManager manager = new ModelTimeManager();
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager = ModelTimeManager.getTimeManager();
     ModelBlock block = new ModelSimpleBlock( null, "", 1 );
     assertTrue( manager.GetTimeIndependentBlockGroupIndex() < 0 );
     boolean f = false;
@@ -387,7 +394,8 @@ public class TimeManagerTest extends TestCase {
    *
    */
   public void testAddTimeIndependentBlock_1(){
-    ModelTimeManager manager = new ModelTimeManager( new ModelTime(0.05) );
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager = ModelTimeManager.getTimeManager( new ModelTime(0.05) );
     ModelBlock timeDependBlock = new ModelSimpleBlock( null, "1", 1 );
     ModelBlock timeIndependBlock = new ModelSimpleBlock( null, "2", 2 );
     boolean f = false;
@@ -430,7 +438,8 @@ public class TimeManagerTest extends TestCase {
    *
    */
   public void testAddTimeIndependentBlock_2(){
-    ModelTimeManager manager = new ModelTimeManager( new ModelTime(0.05) );
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager = ModelTimeManager.getTimeManager( new ModelTime(0.05) );
     ModelBlock timeDependBlock = new ModelSimpleBlock( null, "1", 1 );
     ModelBlock timeIndependBlock = new ModelSimpleBlock( null, "2", 2 );
     boolean f = false;
@@ -462,8 +471,8 @@ public class TimeManagerTest extends TestCase {
    *
    */
   public void testAddIndependentBlock_AfterFullList(){
-    ModelTimeManager manager = new ModelTimeManager();
-
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager = ModelTimeManager.getTimeManager();
     ModelElementContainer container = new ModelElementContainer();
     int id = 0;
     int i = 0;
@@ -488,7 +497,7 @@ public class TimeManagerTest extends TestCase {
       e.printStackTrace();
     }
     assertTrue( f );
-    Vector groups = GetGroupsList( manager );
+    ArrayList groups = GetGroupsList( manager );
     assertTrue( groups != null );
     ModelTime fullListTime  = new ModelTime(0.1);
     f = false;
@@ -529,8 +538,8 @@ public class TimeManagerTest extends TestCase {
   }
 
   public void testAddIndependentBlock_BeforeFullList(){
-     ModelTimeManager manager = new ModelTimeManager();
-
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager = ModelTimeManager.getTimeManager();
     ModelElementContainer container = new ModelElementContainer();
     int id = 0;
     int i = 0;
@@ -555,7 +564,7 @@ public class TimeManagerTest extends TestCase {
       e.printStackTrace();
     }
     assertTrue( f );
-    Vector groups = GetGroupsList( manager );
+    ArrayList groups = GetGroupsList( manager );
     assertTrue( groups != null );
     ModelTime fullListTime  = new ModelTime(100);
     f = false;
@@ -623,11 +632,12 @@ public class TimeManagerTest extends TestCase {
   }
 
   public void testTimeCompareWithStep(){
-    ModelTimeManager manager = new ModelTimeManager( new ModelTime(1) );
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    ModelTimeManager manager = ModelTimeManager.getTimeManager( new ModelTime(1) );
     ModelTime time1 = new ModelTime(10);
     ModelTime time2 = new ModelTime(2);
     assertEquals( manager.CompareWithStep( time1, time2 ), ModelTime.TIME_COMPARE_GREATER );
-    assertEquals( manager.CompareWithStep( time2, time1 ), ModelTime.TIME_COMPARE_LOW );
+    assertEquals( manager.CompareWithStep( time2, time1 ), ModelTime.TIME_COMPARE_LESS );
     assertEquals( manager.CompareWithStep( time2, time2 ), ModelTime.TIME_COMPARE_EQUALS );
 
     time2 = new ModelTime(9.5);
@@ -659,7 +669,7 @@ public class TimeManagerTest extends TestCase {
     assertTrue( f );
     //assertTrue( model != null );
     ModelTimeManager manager = model.GetTimeManager();
-    Vector groups = GetGroupsList( manager );
+    ArrayList groups = GetGroupsList( manager );
     assertTrue( groups != null );
     // должно быть две группы, в первой по времени выполнени€ - block2, во второй - block1
     assertEquals( manager.GetExecuteGroupCount(), 2 );

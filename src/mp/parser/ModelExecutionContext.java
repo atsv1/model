@@ -2,20 +2,21 @@ package mp.parser;
 
 import java.util.Hashtable;
 
-import mp.elements.Model;
+import mp.elements.ModelTimeManager;
 
 /**
  * Date: 07.04.2008
  */
 public class ModelExecutionContext {
   private static final ThreadLocal<Hashtable<String, ModelExecutionManager>> FExecutionManagerList = new ThreadLocal <Hashtable<String, ModelExecutionManager>>();
+  
 
   public static void AddModelExecutionManager( ModelExecutionManager aManager ) throws ScriptException{
     if ( aManager == null ){
       return;
     }
     if ( FExecutionManagerList.get() == null ) {
-    	Hashtable<String, ModelExecutionManager> managerList = new Hashtable();
+    	Hashtable<String, ModelExecutionManager> managerList = new Hashtable<String, ModelExecutionManager>();
     	FExecutionManagerList.set(managerList);
     }
     Hashtable<String, ModelExecutionManager> tab = FExecutionManagerList.get();
@@ -36,11 +37,15 @@ public class ModelExecutionContext {
       return null;
     }
     Hashtable<String, ModelExecutionManager> tab = FExecutionManagerList.get();
+    if (tab == null){
+    	return null;
+    }
     return (ModelExecutionManager) tab.get( aManagerName.toUpperCase() );
   }
 
   public static void ClearExecutionContext(){
     FExecutionManagerList.set(null);
+    ModelTimeManager.clearContext();
   }
 
 

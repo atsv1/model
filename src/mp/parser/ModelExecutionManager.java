@@ -1,5 +1,7 @@
 package mp.parser;
 
+import java.util.UUID;
+
 /**
  * Интерфейс предназначен для обеспечения возможности управления ходом моделирования изнутри скрипта модели
  *
@@ -21,5 +23,10 @@ public interface ModelExecutionManager {
 
   public void ReConnectParam( String aBlockName, int aBlockIndex, String aParamName, 
                               String aModelToConnect, String aBlockToConnect, int aBlockIndexToConnect, String aParamToConnect ) throws ScriptException;
+  
+  public UUID fork(int modelTimePeriod, boolean nestedFork) throws ScriptException;
+  
+  public void rollback(UUID label) throws ScriptException;
+  
 
 }

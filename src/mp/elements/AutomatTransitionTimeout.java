@@ -1,6 +1,11 @@
 package mp.elements;
 
 import mp.parser.Variable;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import mp.parser.ScriptException;
 
 /** Класс отвечает за реализацию перехода по тайм-айту - то есть периодически, один раз за указанный в параметре
@@ -43,10 +48,10 @@ public class AutomatTransitionTimeout extends AutomatTransition {
     FTempTime.StoreValue( FOwnerActivateTime );
     FTempTime.Add( FTransitionVar );
     i = FTempTime.Compare( aCurrentTime );
-    if ( i == ModelTime.TIME_COMPARE_LOW || i == ModelTime.TIME_COMPARE_EQUALS ) {
+    if ( i == ModelTime.TIME_COMPARE_LESS || i == ModelTime.TIME_COMPARE_EQUALS ) {
       FNextExecTime.StoreValue( aCurrentTime );
       FNextExecTime.Add( FTransitionVar );
-      //System.out.println( "Изменения времени на " + FTransitionVar.toString() + " новое время = " + FNextExecTime.toString() );
+     
       return true;
     }
     FNextExecTime.StoreValue( FOwnerActivateTime );
@@ -102,5 +107,29 @@ public class AutomatTransitionTimeout extends AutomatTransition {
     }
     FApplyFlag = true;
   }
+
+
+  private  Map<UUID, ModelTime> fixedStates = new HashMap<UUID, ModelTime> ();
+	@Override
+	public void fixState(UUID stateLabel) throws ModelException {
+		if (fixedStates.containsKey(stateLabel)) {
+  		throw new ModelException("Дублирование фиксированного состояния "+ this.GetFullName());
+  	}   	
+		ModelTime t = new ModelTime();
+		t.StoreValue(FNextExecTime);
+  	fixedStates.put(stateLabel, t);
+	}
+
+
+	@Override
+	public void rollbackTo(UUID stateLabel) throws ModelException {
+		ModelTime t = fixedStates.get(stateLabel);
+		if ( t == null ) {
+			throw new ModelException("Пустое время для отката состояния "+ this.GetFullName());
+		}
+		FNextExecTime.StoreValue(t);
+		
+		
+	}
 
 }
