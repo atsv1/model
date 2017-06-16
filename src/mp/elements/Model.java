@@ -43,6 +43,8 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   private ModelElementContainer FConstantList = null;
   
   private Stack<ModelTime> stopTimesStack = new Stack<ModelTime> ();
+  
+  private int forkCounter = 0;
 
   public Model(ModelElement aOwner, String aElementName, int aElementId) {
     super(aOwner, aElementName, aElementId);
@@ -334,7 +336,9 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
         if ( FEnableExec ) {
           ExecuteWithoutInit();
         }
-        Thread.sleep(FStepDelay);
+        if (FStepDelay != 0) {
+          Thread.sleep(FStepDelay);
+        }
         if ( tactWithoutGC > 1000 ){
           Runtime r = Runtime.getRuntime();
           r.gc();
@@ -645,9 +649,10 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		stopTime.Add(modelTimePeriod);
 		stopTimesStack.push(stopTime);
 		noForkStepDelay = FStepDelay;
-		
+		FStepDelay = 0;
 		contextRegFlag = false;
 		timeManagerInit = false;
+		forkCounter++;
 		Thread tr = new Thread(this);
 		tr.start();
 		synchronized(this) {
@@ -680,11 +685,19 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 	    FTimeManager =  timeManagerFixedStates.get(label);
 	    timeManagerFixedStates.remove(label);
 	    FTimeManager.rollback(label);	  
+	    forkCounter--;
 	   
 		} catch (ModelException e) {			
 			 throw new ScriptException( e.getMessage() );
-		}
-		
+		}		
+	}
+	
+	public int forkStatus(){
+		return forkCounter;		
+	}
+	
+	public boolean isForkMode(){
+		return (forkCounter > 0);
 	}
 
 }
