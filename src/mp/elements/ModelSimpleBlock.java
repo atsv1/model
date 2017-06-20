@@ -156,6 +156,8 @@ public class ModelSimpleBlock extends ModelBlock {
   private  Map<UUID, Integer> fixedStates = new HashMap<UUID, Integer> ();
   public void fixState(UUID stateLabel) throws ModelException{
   	super.fixState(stateLabel);  	  	
+  	ModelBlockParam forkModeParam = super.GetInnerParam("isForkMode");
+  	forkModeParam.GetVariable().SetValue(true);
   	fixedStates.put(stateLabel, new Integer(FLastExecutionTime));
   }
   
@@ -163,6 +165,10 @@ public class ModelSimpleBlock extends ModelBlock {
   	super.rollbackTo(stateLabel);
   	FLastExecutionTime = fixedStates.get(stateLabel);
   	fixedStates.remove(stateLabel);
+  	if ( fixedStates.isEmpty() ) {
+  		ModelBlockParam forkModeParam = super.GetInnerParam("isForkMode");
+    	forkModeParam.GetVariable().SetValue(false);  		
+  	}
   	
   }
 

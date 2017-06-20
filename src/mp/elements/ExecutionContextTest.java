@@ -961,7 +961,13 @@ public class ExecutionContextTest extends TestCase {
 			block.AddInnerParam(param1);
 			block.AddOutParam(param2);
 			block.AddOutParam(param3);
+			
+			ModelLanguageBuilder builder = new ModelLanguageBuilder( null );
+	    builder.UpdateBlock( block );
 		} catch (ModelException e) {
+			f = false;
+			e.printStackTrace();
+		} catch (ScriptException e) {			
 			f = false;
 			e.printStackTrace();
 		}
@@ -1015,6 +1021,11 @@ public class ExecutionContextTest extends TestCase {
 			innerState1.AddElement(trans1);
 			
 			block.AddState(state);
+			
+			ModelLanguageBuilder builder = new ModelLanguageBuilder( null );
+	    builder.UpdateBlock( block );
+			
+			
 			f = true;
 		} catch (Exception e) {			
 			e.printStackTrace();
@@ -1153,10 +1164,8 @@ public class ExecutionContextTest extends TestCase {
   }
   
   public void testFork_StatechartTimeoutTransitionAfterFork(){
-  	mp.parser.ModelExecutionContext.ClearExecutionContext();
-  	
-    boolean f = false;
-    
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();  	
+    boolean f = false;    
     try {
       ModelTreeBuilder builder = new ModelTreeBuilder();
       builder.SetElementFactory( new ModelElementFactory() );
@@ -1181,7 +1190,31 @@ public class ExecutionContextTest extends TestCase {
   	i = getIntValue(mainModel, "block", 0, "counter");
   	assertEquals(i, new Integer(10));
   	i = getIntValue(subModel, "sub_block", 0, "subCounter");
-  	assertEquals(i, new Integer(10));
+  	assertEquals(i, new Integer(10));  	
+  }
+  
+  public void testFork_isForkVariable(){
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();  	
+    boolean f = false;    
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "fork5.xml" );
+      builder.GetRootModel();
+      f = true;
+    } catch (ModelException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (SAXException e) {
+      e.printStackTrace();
+    }
+    assertTrue( f );
+    Model mainModel = (Model) ModelExecutionContext.GetManager( "fork5_main" );
+    mainModel.run();
+    assertTrue(mainModel != null);
+    Integer i = getIntValue(mainModel, "block", 0, "forkResult");
+    assertEquals(i, new Integer(100));
   	
   }
    
