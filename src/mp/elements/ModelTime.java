@@ -136,7 +136,9 @@ public class ModelTime {
   
   public void  fixState(UUID uid) throws ModelException{
   	if (fixedStates.containsKey(uid)) {
-  		throw new ModelException("Òàêîå âðåìÿ óæå çàôèêñèðîâàíî");
+
+  		throw new ModelException("����� ����� ��� �������������");
+
   	}   	
   	fixedStates.put(uid, new Double(FValue));
   	
@@ -144,10 +146,10 @@ public class ModelTime {
   
   public void rollbackTo(UUID stateLabel) throws ModelException{
   	if (!fixedStates.containsKey(stateLabel)) {
-  		throw new  ModelException("Îòñóòñòâóåò ìåòêà äëÿ îòêàòà");  		
+
+  		throw new  ModelException("����������� ����� ��� ������");  		
   	}
   	FValue =  fixedStates.get(stateLabel);
-
   	fixedStates.remove(stateLabel);
 
   }

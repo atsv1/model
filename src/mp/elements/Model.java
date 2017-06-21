@@ -27,7 +27,9 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   
   private int FStepDelay = 0;
   private int noForkStepDelay = 0;
-  /* Ôëàã, îïðåäåëÿþùèé âîçìîæíîñòü âûïîëíåíèÿ ìîäåëè. èñïîëüçóåòñÿ äëÿ ïðèîñòàíîâêè ðàáîòû ìîäåëè*/
+
+  /* ����, ������������ ����������� ���������� ������. ������������ ��� ������������ ������ ������*/
+
   private boolean FEnableExec = true;
   private ArrayList<Model> parallelModelList = new ArrayList<Model>();
   private ArrayList<Model> subModelList = new ArrayList<Model>();
@@ -689,7 +691,9 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 	    FCurrentModelTime.rollbackTo(label);
 	    stopTimesStack.pop();
 	    if ( stopTimesStack.isEmpty() ) {
-	    	// çàäåðæêó â âûïîëíåíèè îñíîâíîãî ïîòîêà ìîäåëè âîññòàíàâëèâàåì êîãäà ñòåê ôîðêîâ ïóñò
+
+	    	// �������� � ���������� ��������� ������ ������ ��������������� ����� ���� ������ ����
+
 	    	FStepDelay = noForkStepDelay;
 	    }	    
 	    FTimeManager =  timeManagerFixedStates.get(label);

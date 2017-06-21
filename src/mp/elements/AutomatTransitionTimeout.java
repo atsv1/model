@@ -113,7 +113,9 @@ public class AutomatTransitionTimeout extends AutomatTransition {
 	@Override
 	public void fixState(UUID stateLabel) throws ModelException {
 		if (fixedStates.containsKey(stateLabel)) {
-  		throw new ModelException("Äóáëèðîâàíèå ôèêñèðîâàííîãî ñîñòîÿíèÿ "+ this.GetFullName());
+
+  		throw new ModelException("������������ �������������� ��������� "+ this.GetFullName());
+
   	}   	
 		ModelTime t = new ModelTime();
 		t.StoreValue(FNextExecTime);
@@ -125,10 +127,10 @@ public class AutomatTransitionTimeout extends AutomatTransition {
 	public void rollbackTo(UUID stateLabel) throws ModelException {
 		ModelTime t = fixedStates.get(stateLabel);
 		if ( t == null ) {
-			throw new ModelException("Ïóñòîå âðåìÿ äëÿ îòêàòà ñîñòîÿíèÿ "+ this.GetFullName());
+
+			throw new ModelException("������ ����� ��� ������ ��������� "+ this.GetFullName());
 		}
 		FNextExecTime.StoreValue(t);
-
 		fixedStates.remove(stateLabel);
 
 		

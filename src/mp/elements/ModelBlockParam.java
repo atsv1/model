@@ -53,7 +53,9 @@ public abstract class ModelBlockParam extends ModelElement{
   private ValueChangeListener FVarChangeListener = null;
 
   /**
-   *  õðàíèëèùå ñîñòîÿíèé äëÿ îòêàòà íà ïðåæíþþ òî÷êó
+
+   *  ��������� ��������� ��� ������ �� ������� �����
+
    */
   protected Map<UUID, Object> fixedStates = new HashMap<UUID, Object> ();
 
@@ -308,17 +310,19 @@ public abstract class ModelBlockParam extends ModelElement{
   
   public void fixState(UUID stateLabel) throws ModelException{
   	if (fixedStates.containsKey(stateLabel)) {
-  		throw new ModelException("Äóáëèðîâàíèå ôèêñèðîâàííîãî ñîñòîÿíèÿ "+ this.GetFullName());
+
+  		throw new ModelException("������������ �������������� ��������� "+ this.GetFullName());
+
   	}   	
   	fixedStates.put(stateLabel, this.GetVariable().GetObject());
   }
     
   public void rollbackTo(UUID stateLabel) throws ModelException{
   	if (!fixedStates.containsKey(stateLabel)) {
-  		throw new  ModelException("Îòñóòñòâóåò ìåòêà äëÿ îòêàòà " + this.GetFullName());  		
+
+  		throw new  ModelException("����������� ����� ��� ������ " + this.GetFullName());  		
   	}
   	this.GetVariable().SetValue( fixedStates.get(stateLabel) ); 
-
   	fixedStates.remove(stateLabel);
 
   	  	

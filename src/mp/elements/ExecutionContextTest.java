@@ -793,7 +793,9 @@ public class ExecutionContextTest extends TestCase {
   
   
   ////////////////////////////////////////////////////////////////////////////////
-  /////////////// íîâàÿ ôóíêöèÿ fork ////////////////////////////////////////////
+
+  /////////////// ����� ������� fork ////////////////////////////////////////////
+
   
   public void testFixState_CalculatedElement(){
   	ModelBlockParam param = new ModelCalculatedElement((ModelElement)null, "name", 1);
@@ -1028,7 +1030,6 @@ public class ExecutionContextTest extends TestCase {
 			ModelLanguageBuilder builder = new ModelLanguageBuilder( null );
 	    builder.UpdateBlock( block );
 			
-			
 
 			f = true;
 		} catch (Exception e) {			
@@ -1108,8 +1109,10 @@ public class ExecutionContextTest extends TestCase {
     assertTrue(i != null);
     assertTrue(i >= new Integer(20));
     i = getIntValue(subModel, "sub_block", 0, "innerCounter");
-    /*ïðîâåðÿåì 11, à íå 10 ïîòîìó ÷òî ïåðåä çàâåðøåíèåì âñå ýëåìåíòû ìîäåëè ïîëó÷àþò âîçìîæíîñòü âûïîëíèòüñÿ â îñíîâíîì öèêëå âûïîëíåíèÿ,
-     * à â ñëåäóþùèé öèêë ìîäåëü íå çàõîäèò
+
+    /*��������� 11, � �� 10 ������ ��� ����� ����������� ��� �������� ������ �������� ����������� ����������� � �������� ����� ����������,
+     * � � ��������� ���� ������ �� �������
+
      * */
     assertEquals(i, new Integer(11));
   }

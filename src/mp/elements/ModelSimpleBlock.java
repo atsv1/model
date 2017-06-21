@@ -78,7 +78,9 @@ public class ModelSimpleBlock extends ModelBlock {
     }
     int currentTimeValue = aCurrentTime.GetIntValue();    
     if ( currentTimeValue > FLastExecutionTime){      
-    	// ñäåëàíî ñïåöèàëüíî, ÷òîáû ïàðàìåòðû îáíîâëÿëèñü òîëüêî åñëè ìîäåëüíîå âðåìÿ ïåðåâàëèâàåò î÷åðåäíîå öåëîå çíà÷åíèå
+
+    	// ������� ����������, ����� ��������� ����������� ������ ���� ��������� ����� ������������ ��������� ����� ��������
+
     	ExecuteParamsUpdate( aCurrentTime );  
       FLastExecutionTime = currentTimeValue;
     } else {
