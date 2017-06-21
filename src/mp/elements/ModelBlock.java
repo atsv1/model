@@ -189,6 +189,10 @@ public abstract class ModelBlock extends ModelEventGenerator {
   public ModelBlockParam GetInnerParam(int aParamIndex){
     return GetParam( aParamIndex, FInnerParams );
   }
+  
+  public ModelBlockParam GetInnerParam(String aParamName){
+    return GetParam( aParamName, FInnerParams );
+  }
 
   public ModelBlockParam GetInpParam(int aParamIndex){
     return GetParam( aParamIndex, FInpParams );

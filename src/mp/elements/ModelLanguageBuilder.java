@@ -141,13 +141,35 @@ public class ModelLanguageBuilder {
       aBlock.AddInnerParam( cnt );
       i++;
     }
+  }
+  
+  private void addForkVar(ModelBlock aBlock) throws ModelException{
+  	ModelBlockParam param = new ModelBlockParam(aBlock, "isForkMode", ServiceLocator.GetNextId()) {
+      protected void UpdateParam() throws ScriptException, ModelException {
+      }
 
+      public boolean IsNeedRuntimeUpdate() {
+        return false;
+      }
+      
+      public void fixState(UUID stateLabel) throws ModelException{
+      	// ничего не делаем, т.к значение не меняется  	
+      }
+      
+      public void rollbackTo(UUID stateLabel) throws ModelException{
+        //  ничего не делаем, т.к значение не меняется      	  	
+      }
+    };
+    param.SetVarInfo("boolean",String.valueOf( false ));
+    aBlock.AddInnerParam( param );
+  	
   }
 
   private void AddServiceVariables( ModelBlock aBlock ) throws ModelException{
     AddSelfIndexVariable(aBlock, FModel);
     AddElementIdVariable( aBlock );
     AddConstants( aBlock );
+    addForkVar(aBlock);
   }
 
   private  static ScriptLanguageExt GetLanguageExt( ModelBlock block, Vector functionList ) throws ScriptException {

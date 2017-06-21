@@ -27,7 +27,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   
   private int FStepDelay = 0;
   private int noForkStepDelay = 0;
-  /* Флаг, определяющий возможность выполнения модели. используется для приостановки работы модели*/
+  /* Г”Г«Г ГЈ, Г®ГЇГ°ГҐГ¤ГҐГ«ГїГѕГ№ГЁГ© ГўГ®Г§Г¬Г®Г¦Г­Г®Г±ГІГј ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГї Г¬Г®Г¤ГҐГ«ГЁ. ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГІГ±Гї Г¤Г«Гї ГЇГ°ГЁГ®Г±ГІГ Г­Г®ГўГЄГЁ Г°Г ГЎГ®ГІГ» Г¬Г®Г¤ГҐГ«ГЁ*/
   private boolean FEnableExec = true;
   private ArrayList<Model> parallelModelList = new ArrayList<Model>();
   private ArrayList<Model> subModelList = new ArrayList<Model>();
@@ -43,6 +43,10 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   private ModelElementContainer FConstantList = null;
   
   private Stack<ModelTime> stopTimesStack = new Stack<ModelTime> ();
+
+  
+  private int forkCounter = 0;
+
 
   public Model(ModelElement aOwner, String aElementName, int aElementId) {
     super(aOwner, aElementName, aElementId);
@@ -67,16 +71,16 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     FBlockList.AddElement( aElement );
   }
 
-  /** Возвращается количество блоков, имеющихся в модели
+  /** Г‚Г®Г§ГўГ°Г Г№Г ГҐГІГ±Гї ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® ГЎГ«Г®ГЄГ®Гў, ГЁГ¬ГҐГѕГ№ГЁГµГ±Гї Гў Г¬Г®Г¤ГҐГ«ГЁ
    *
-   * @return количество блоков
+   * @return ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® ГЎГ«Г®ГЄГ®Гў
    */
   public int size(){
     return FBlockList.size();
   }
 
-  /**Чтение шага моделирования из файла модели. Шаг считывается и записывается в переменную FTimeIncrement.
-   * Если шаг моделирования в модели отсутствует, то указанная переменная  создается со значением 1.
+  /**Г—ГІГҐГ­ГЁГҐ ГёГ ГЈГ  Г¬Г®Г¤ГҐГ«ГЁГ°Г®ГўГ Г­ГЁГї ГЁГ§ ГґГ Г©Г«Г  Г¬Г®Г¤ГҐГ«ГЁ. ГГ ГЈ Г±Г·ГЁГІГ»ГўГ ГҐГІГ±Гї ГЁ Г§Г ГЇГЁГ±Г»ГўГ ГҐГІГ±Гї Гў ГЇГҐГ°ГҐГ¬ГҐГ­Г­ГіГѕ FTimeIncrement.
+   * Г…Г±Г«ГЁ ГёГ ГЈ Г¬Г®Г¤ГҐГ«ГЁГ°Г®ГўГ Г­ГЁГї Гў Г¬Г®Г¤ГҐГ«ГЁ Г®ГІГ±ГіГІГ±ГІГўГіГҐГІ, ГІГ® ГіГЄГ Г§Г Г­Г­Г Гї ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г Гї  Г±Г®Г§Г¤Г ГҐГІГ±Гї Г±Г® Г§Г­Г Г·ГҐГ­ГЁГҐГ¬ 1.
    */
   private void ReadTimeIncrement() throws ModelException {
     FAttrReader.SetNode( this.GetNode() );
@@ -88,7 +92,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     try{
       d = Double.parseDouble( s );
     } catch (Exception e1){
-      ModelException e = new ModelException("Неверный формат шага моделирования в модели \"" + this.GetName() + "\"");
+      ModelException e = new ModelException("ГЌГҐГўГҐГ°Г­Г»Г© ГґГ®Г°Г¬Г ГІ ГёГ ГЈГ  Г¬Г®Г¤ГҐГ«ГЁГ°Г®ГўГ Г­ГЁГї Гў Г¬Г®Г¤ГҐГ«ГЁ \"" + this.GetName() + "\"");
       throw e;
     }
     FTimeIncrement = new ModelTime(d);
@@ -102,16 +106,16 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     try{
       block = (ModelDynamicBlock) aBlock;
     } catch (Exception e){
-      ModelException e1 = new ModelException("Невозможно преобразовать блок \"" + aBlock.GetFullName() +
-              "\" в блок с динамически формируемыми параметрами");
+      ModelException e1 = new ModelException("ГЌГҐГўГ®Г§Г¬Г®Г¦Г­Г® ГЇГ°ГҐГ®ГЎГ°Г Г§Г®ГўГ ГІГј ГЎГ«Г®ГЄ \"" + aBlock.GetFullName() +
+              "\" Гў ГЎГ«Г®ГЄ Г± Г¤ГЁГ­Г Г¬ГЁГ·ГҐГ±ГЄГЁ ГґГ®Г°Г¬ГЁГ°ГіГҐГ¬Г»Г¬ГЁ ГЇГ Г°Г Г¬ГҐГІГ°Г Г¬ГЁ");
       throw e1;
     }
     ModelLanguageBuilder.AddSelfIndexVariable( aBlock, this );
     block.BuildParams();
   }
 
-  /**Формируем список блоков, для которых нужно производить динамическое формирование параметров
-   * Список будет храниться в поле FDynamicBlockList. Если в модели нет таких блоков, то FDynamicBlockList останется равным null
+  /**Г”Г®Г°Г¬ГЁГ°ГіГҐГ¬ Г±ГЇГЁГ±Г®ГЄ ГЎГ«Г®ГЄГ®Гў, Г¤Г«Гї ГЄГ®ГІГ®Г°Г»Гµ Г­ГіГ¦Г­Г® ГЇГ°Г®ГЁГ§ГўГ®Г¤ГЁГІГј Г¤ГЁГ­Г Г¬ГЁГ·ГҐГ±ГЄГ®ГҐ ГґГ®Г°Г¬ГЁГ°Г®ГўГ Г­ГЁГҐ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў
+   * Г‘ГЇГЁГ±Г®ГЄ ГЎГіГ¤ГҐГІ ГµГ°Г Г­ГЁГІГјГ±Гї Гў ГЇГ®Г«ГҐ FDynamicBlockList. Г…Г±Г«ГЁ Гў Г¬Г®Г¤ГҐГ«ГЁ Г­ГҐГІ ГІГ ГЄГЁГµ ГЎГ«Г®ГЄГ®Гў, ГІГ® FDynamicBlockList Г®Г±ГІГ Г­ГҐГІГ±Гї Г°Г ГўГ­Г»Г¬ null
    */
   private void CreateDynamicBlockList(){
     int i = 0;
@@ -128,12 +132,12 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     }
   }
 
-  /** Метод производит построение динамических параметров для всех блоков, которые попали в объект FDynamicBlockList
+  /** ГЊГҐГІГ®Г¤ ГЇГ°Г®ГЁГ§ГўГ®Г¤ГЁГІ ГЇГ®Г±ГІГ°Г®ГҐГ­ГЁГҐ Г¤ГЁГ­Г Г¬ГЁГ·ГҐГ±ГЄГЁГµ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў Г¤Г«Гї ГўГ±ГҐГµ ГЎГ«Г®ГЄГ®Гў, ГЄГ®ГІГ®Г°Г»ГҐ ГЇГ®ГЇГ Г«ГЁ Гў Г®ГЎГєГҐГЄГІ FDynamicBlockList
    */
   private void BuildAllDynamicParams() throws ModelException {
-    //Пока производится простой перебор блоков. Когда начнутся соединяться мультиплексор с мультиплексором, это придется
-    // переделать
-    //@todo переделать, когда будут соединяться мультиплексор с мультиплексором
+    //ГЏГ®ГЄГ  ГЇГ°Г®ГЁГ§ГўГ®Г¤ГЁГІГ±Гї ГЇГ°Г®Г±ГІГ®Г© ГЇГҐГ°ГҐГЎГ®Г° ГЎГ«Г®ГЄГ®Гў. ГЉГ®ГЈГ¤Г  Г­Г Г·Г­ГіГІГ±Гї Г±Г®ГҐГ¤ГЁГ­ГїГІГјГ±Гї Г¬ГіГ«ГјГІГЁГЇГ«ГҐГЄГ±Г®Г° Г± Г¬ГіГ«ГјГІГЁГЇГ«ГҐГЄГ±Г®Г°Г®Г¬, ГЅГІГ® ГЇГ°ГЁГ¤ГҐГІГ±Гї
+    // ГЇГҐГ°ГҐГ¤ГҐГ«Г ГІГј
+    //@todo ГЇГҐГ°ГҐГ¤ГҐГ«Г ГІГј, ГЄГ®ГЈГ¤Г  ГЎГіГ¤ГіГІ Г±Г®ГҐГ¤ГЁГ­ГїГІГјГ±Гї Г¬ГіГ«ГјГІГЁГЇГ«ГҐГЄГ±Г®Г° Г± Г¬ГіГ«ГјГІГЁГЇГ«ГҐГЄГ±Г®Г°Г®Г¬
     if ( FDynamicBlockList == null ){
       return;
     }
@@ -195,7 +199,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
         }
       i--;
     }
-    // модели из секции ParallelModel
+    // Г¬Г®Г¤ГҐГ«ГЁ ГЁГ§ Г±ГҐГЄГ¶ГЁГЁ ParallelModel
     if ( parallelModelList != null && !parallelModelList.isEmpty() ) {
     	for (Model subModel : parallelModelList) {
     		subModel.InitAllBlockStatecharts();
@@ -207,7 +211,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   public void ApplyNodeInformation() throws ModelException{
     PrepareDynamicBlock();
     FAttrReader = ServiceLocator.GetAttributeReader();
-    //передаем во все объекты расширитель языка
+    //ГЇГҐГ°ГҐГ¤Г ГҐГ¬ ГўГ® ГўГ±ГҐ Г®ГЎГєГҐГЄГІГ» Г°Г Г±ГёГЁГ°ГЁГІГҐГ«Гј ГїГ§Г»ГЄГ 
     ModelLanguageBuilder builder = new ModelLanguageBuilder( this );
     try{
       builder.UpdateModelElements();
@@ -216,7 +220,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
       throw e;
     }
     int i = FBlockList.size()-1;
-    //вызывваем у всех объектов метод ApplyNodeInformation() - чтение информации из ноды
+    //ГўГ»Г§Г»ГўГўГ ГҐГ¬ Гі ГўГ±ГҐГµ Г®ГЎГєГҐГЄГІГ®Гў Г¬ГҐГІГ®Г¤ ApplyNodeInformation() - Г·ГІГҐГ­ГЁГҐ ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГЁ ГЁГ§ Г­Г®Г¤Г»
     ModelElement element;
     while ( i >= 0 ){
       element = FBlockList.get(i);
@@ -276,8 +280,8 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   	
   }
 
- /**Выполнение тактов модели. Такты выполняются на основании потребности блоков в выполнении такта
-  * и на основании шага такта, значение которого было заложено при создании модели
+ /**Г‚Г»ГЇГ®Г«Г­ГҐГ­ГЁГҐ ГІГ ГЄГІГ®Гў Г¬Г®Г¤ГҐГ«ГЁ. Г’Г ГЄГІГ» ГўГ»ГЇГ®Г«Г­ГїГѕГІГ±Гї Г­Г  Г®Г±Г­Г®ГўГ Г­ГЁГЁ ГЇГ®ГІГ°ГҐГЎГ­Г®Г±ГІГЁ ГЎГ«Г®ГЄГ®Гў Гў ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГЁ ГІГ ГЄГІГ 
+  * ГЁ Г­Г  Г®Г±Г­Г®ГўГ Г­ГЁГЁ ГёГ ГЈГ  ГІГ ГЄГІГ , Г§Г­Г Г·ГҐГ­ГЁГҐ ГЄГ®ГІГ®Г°Г®ГЈГ® ГЎГ»Г«Г® Г§Г Г«Г®Г¦ГҐГ­Г® ГЇГ°ГЁ Г±Г®Г§Г¤Г Г­ГЁГЁ Г¬Г®Г¤ГҐГ«ГЁ
   * @throws ScriptException
   * @throws ModelException
   */
@@ -302,10 +306,10 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     return FErrorString;
   }
 
-  /**Установка флага, разрешающего выполнение модели
-   * Используется для приостановки работы модели
+  /**Г“Г±ГІГ Г­Г®ГўГЄГ  ГґГ«Г ГЈГ , Г°Г Г§Г°ГҐГёГ ГѕГ№ГҐГЈГ® ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГҐ Г¬Г®Г¤ГҐГ«ГЁ
+   * Г€Г±ГЇГ®Г«ГјГ§ГіГҐГІГ±Гї Г¤Г«Гї ГЇГ°ГЁГ®Г±ГІГ Г­Г®ГўГЄГЁ Г°Г ГЎГ®ГІГ» Г¬Г®Г¤ГҐГ«ГЁ
    *
-   * @param aEnableExec true - выполнение модели разрешено, false - модель не выполняется
+   * @param aEnableExec true - ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГҐ Г¬Г®Г¤ГҐГ«ГЁ Г°Г Г§Г°ГҐГёГҐГ­Г®, false - Г¬Г®Г¤ГҐГ«Гј Г­ГҐ ГўГ»ГЇГ®Г«Г­ГїГҐГІГ±Гї
    */
   public void SetEnableExecution( boolean aEnableExec ){
     FEnableExec = aEnableExec;
@@ -334,7 +338,9 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
         if ( FEnableExec ) {
           ExecuteWithoutInit();
         }
-        Thread.sleep(FStepDelay);
+        if (FStepDelay != 0) {
+          Thread.sleep(FStepDelay);
+        }
         if ( tactWithoutGC > 1000 ){
           Runtime r = Runtime.getRuntime();
           r.gc();
@@ -365,6 +371,9 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     	init();
     } catch (Exception e1) {
     	System.out.println(e1.getMessage());
+
+    	e1.printStackTrace();
+
     	FErrorString = e1.getMessage();
     	return;
     }
@@ -377,10 +386,10 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 
   }
 
- /** Функция возвращает значение текущего модельного времени
-  *  Внимание! Возвращается именно тот экземпляр класса, который действительно используются в модели. Поэтому
-  *  нежелательно изменять значения внутри полученного объекта.
-  * @return Значение текущего модельного времени
+ /** Г”ГіГ­ГЄГ¶ГЁГї ГўГ®Г§ГўГ°Г Г№Г ГҐГІ Г§Г­Г Г·ГҐГ­ГЁГҐ ГІГҐГЄГіГ№ГҐГЈГ® Г¬Г®Г¤ГҐГ«ГјГ­Г®ГЈГ® ГўГ°ГҐГ¬ГҐГ­ГЁ
+  *  Г‚Г­ГЁГ¬Г Г­ГЁГҐ! Г‚Г®Г§ГўГ°Г Г№Г ГҐГІГ±Гї ГЁГ¬ГҐГ­Г­Г® ГІГ®ГІ ГЅГЄГ§ГҐГ¬ГЇГ«ГїГ° ГЄГ«Г Г±Г±Г , ГЄГ®ГІГ®Г°Г»Г© Г¤ГҐГ©Г±ГІГўГЁГІГҐГ«ГјГ­Г® ГЁГ±ГЇГ®Г«ГјГ§ГіГѕГІГ±Гї Гў Г¬Г®Г¤ГҐГ«ГЁ. ГЏГ®ГЅГІГ®Г¬Гі
+  *  Г­ГҐГ¦ГҐГ«Г ГІГҐГ«ГјГ­Г® ГЁГ§Г¬ГҐГ­ГїГІГј Г§Г­Г Г·ГҐГ­ГЁГї ГўГ­ГіГІГ°ГЁ ГЇГ®Г«ГіГ·ГҐГ­Г­Г®ГЈГ® Г®ГЎГєГҐГЄГІГ .
+  * @return Г‡Г­Г Г·ГҐГ­ГЁГҐ ГІГҐГЄГіГ№ГҐГЈГ® Г¬Г®Г¤ГҐГ«ГјГ­Г®ГЈГ® ГўГ°ГҐГ¬ГҐГ­ГЁ
   */
   public ModelTime GetCurrentTime(){
     return FCurrentModelTime;
@@ -390,13 +399,13 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     return FTimeIncrement;
   }
 
-  /** Функция возвращает индекс переданного в параметре блока. Здесь индекс - это не порядковый номер блока
-   * в общем списке блоков, а порядковый номер блока в списке блоков с названием, таким же, как и у переданного
-   * в параметре блока.
+  /** Г”ГіГ­ГЄГ¶ГЁГї ГўГ®Г§ГўГ°Г Г№Г ГҐГІ ГЁГ­Г¤ГҐГЄГ± ГЇГҐГ°ГҐГ¤Г Г­Г­Г®ГЈГ® Гў ГЇГ Г°Г Г¬ГҐГІГ°ГҐ ГЎГ«Г®ГЄГ . Г‡Г¤ГҐГ±Гј ГЁГ­Г¤ГҐГЄГ± - ГЅГІГ® Г­ГҐ ГЇГ®Г°ГїГ¤ГЄГ®ГўГ»Г© Г­Г®Г¬ГҐГ° ГЎГ«Г®ГЄГ 
+   * Гў Г®ГЎГ№ГҐГ¬ Г±ГЇГЁГ±ГЄГҐ ГЎГ«Г®ГЄГ®Гў, Г  ГЇГ®Г°ГїГ¤ГЄГ®ГўГ»Г© Г­Г®Г¬ГҐГ° ГЎГ«Г®ГЄГ  Гў Г±ГЇГЁГ±ГЄГҐ ГЎГ«Г®ГЄГ®Гў Г± Г­Г Г§ГўГ Г­ГЁГҐГ¬, ГІГ ГЄГЁГ¬ Г¦ГҐ, ГЄГ ГЄ ГЁ Гі ГЇГҐГ°ГҐГ¤Г Г­Г­Г®ГЈГ®
+   * Гў ГЇГ Г°Г Г¬ГҐГІГ°ГҐ ГЎГ«Г®ГЄГ .
    *
-   * @param aBlock - блок, индекс которого необходимо определить
-   * @return - индекс блока в массиве блоков с одинаковым именем. Возвращается 0, если блок присутсвует в
-   * единственном числе. -1 - если такой блок отсутствует
+   * @param aBlock - ГЎГ«Г®ГЄ, ГЁГ­Г¤ГҐГЄГ± ГЄГ®ГІГ®Г°Г®ГЈГ® Г­ГҐГ®ГЎГµГ®Г¤ГЁГ¬Г® Г®ГЇГ°ГҐГ¤ГҐГ«ГЁГІГј
+   * @return - ГЁГ­Г¤ГҐГЄГ± ГЎГ«Г®ГЄГ  Гў Г¬Г Г±Г±ГЁГўГҐ ГЎГ«Г®ГЄГ®Гў Г± Г®Г¤ГЁГ­Г ГЄГ®ГўГ»Г¬ ГЁГ¬ГҐГ­ГҐГ¬. Г‚Г®Г§ГўГ°Г Г№Г ГҐГІГ±Гї 0, ГҐГ±Г«ГЁ ГЎГ«Г®ГЄ ГЇГ°ГЁГ±ГіГІГ±ГўГіГҐГІ Гў
+   * ГҐГ¤ГЁГ­Г±ГІГўГҐГ­Г­Г®Г¬ Г·ГЁГ±Г«ГҐ. -1 - ГҐГ±Г«ГЁ ГІГ ГЄГ®Г© ГЎГ«Г®ГЄ Г®ГІГ±ГіГІГ±ГІГўГіГҐГІ
    */
   public int GetBlockIndex( ModelBlock aBlock ){
     int result = -1;
@@ -471,7 +480,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
       try {
         currentBlock.SetToInitCondition();
       } catch (ModelException e) {
-        ScriptException e1 = new ScriptException( "Ошибка при установке начальных значений в блоке \"" + currentBlock.GetFullName() + "\" " + e.getMessage() );
+        ScriptException e1 = new ScriptException( "ГЋГёГЁГЎГЄГ  ГЇГ°ГЁ ГіГ±ГІГ Г­Г®ГўГЄГҐ Г­Г Г·Г Г«ГјГ­Г»Гµ Г§Г­Г Г·ГҐГ­ГЁГ© Гў ГЎГ«Г®ГЄГҐ \"" + currentBlock.GetFullName() + "\" " + e.getMessage() );
         throw e1;
       }
       i++;
@@ -486,7 +495,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
       block = Get( aBlockName, aBlockIndex );
     }
     if ( block == null ){
-      ScriptException e = new ScriptException("Отсутствует блок \"" + aBlockName + "\" с индексом \"" + Integer.toString( aBlockIndex ) + "\"");
+      ScriptException e = new ScriptException("ГЋГІГ±ГіГІГ±ГІГўГіГҐГІ ГЎГ«Г®ГЄ \"" + aBlockName + "\" Г± ГЁГ­Г¤ГҐГЄГ±Г®Г¬ \"" + Integer.toString( aBlockIndex ) + "\"");
       throw e;
     }
     ModelBlockParam param;
@@ -505,7 +514,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
           throws ScriptException {
     ModelBlock block = this.Get( aBlockName, aBlockIndex );
     if ( block == null ){
-      ScriptException e = new ScriptException("Отсутствует блок \"" + aBlockName + "\"");
+      ScriptException e = new ScriptException("ГЋГІГ±ГіГІГ±ГІГўГіГҐГІ ГЎГ«Г®ГЄ \"" + aBlockName + "\"");
       throw e;
     }
     ModelBlockParam param;
@@ -517,29 +526,29 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
       throw e1;
     }
     if ( param == null ){
-      ScriptException e = new ScriptException("Отсутствует параметр \"" + aParamName + "\" в блоке \"" + aBlockName + "\"");
+      ScriptException e = new ScriptException("ГЋГІГ±ГіГІГ±ГІГўГіГҐГІ ГЇГ Г°Г Г¬ГҐГІГ° \"" + aParamName + "\" Гў ГЎГ«Г®ГЄГҐ \"" + aBlockName + "\"");
       throw e;
     }
     ModelInputBlockParam inputParam = null;
     if (!( param instanceof  ModelInputBlockParam)) {
-      ScriptException e = new ScriptException("Параметр \"" + aParamName + "\" должен быть входным параметром");
+      ScriptException e = new ScriptException("ГЏГ Г°Г Г¬ГҐГІГ° \"" + aParamName + "\" Г¤Г®Г«Г¦ГҐГ­ ГЎГ»ГІГј ГўГµГ®Г¤Г­Г»Г¬ ГЇГ Г°Г Г¬ГҐГІГ°Г®Г¬");
       throw e;
     }
     inputParam = (ModelInputBlockParam) param;
     ModelExecutionManager manager = ModelExecutionContext.GetManager( aModelToConnect );
     if ( manager == null ){
-      ScriptException e = new ScriptException("В системе отсутствует модель \"" + aModelToConnect +
-              "\". Выполнение операции ReConnect невозможно");
+      ScriptException e = new ScriptException("Г‚ Г±ГЁГ±ГІГҐГ¬ГҐ Г®ГІГ±ГіГІГ±ГІГўГіГҐГІ Г¬Г®Г¤ГҐГ«Гј \"" + aModelToConnect +
+              "\". Г‚Г»ГЇГ®Г«Г­ГҐГ­ГЁГҐ Г®ГЇГҐГ°Г Г¶ГЁГЁ ReConnect Г­ГҐГўГ®Г§Г¬Г®Г¦Г­Г®");
       throw e;
     }
     if ( !( manager instanceof Model ) ){
-      ScriptException e = new ScriptException("Выполнение операции ReConnect невозможно. Модель для коннекта не является моделью");
+      ScriptException e = new ScriptException("Г‚Г»ГЇГ®Г«Г­ГҐГ­ГЁГҐ Г®ГЇГҐГ°Г Г¶ГЁГЁ ReConnect Г­ГҐГўГ®Г§Г¬Г®Г¦Г­Г®. ГЊГ®Г¤ГҐГ«Гј Г¤Г«Гї ГЄГ®Г­Г­ГҐГЄГІГ  Г­ГҐ ГїГўГ«ГїГҐГІГ±Гї Г¬Г®Г¤ГҐГ«ГјГѕ");
       throw e;
     }
     Model modelToConnect = (Model) manager;
     ModelBlock blockToConnect = modelToConnect.Get(aBlockToConnect, aBlockIndexToConnect);
     if ( blockToConnect == null ){
-      ScriptException e = new ScriptException("Отсутствует блок \"" + aBlockToConnect + "\"");
+      ScriptException e = new ScriptException("ГЋГІГ±ГіГІГ±ГІГўГіГҐГІ ГЎГ«Г®ГЄ \"" + aBlockToConnect + "\"");
       throw e;
     }
     ModelBlockParam paramToConnect = null;
@@ -550,7 +559,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
       throw e1;
     }
     if ( paramToConnect == null ){
-      ScriptException e = new ScriptException("Отсутствует параметр \"" + aParamToConnect + "\" в блоке \"" + aBlockToConnect + "\"");
+      ScriptException e = new ScriptException("ГЋГІГ±ГіГІГ±ГІГўГіГҐГІ ГЇГ Г°Г Г¬ГҐГІГ° \"" + aParamToConnect + "\" Гў ГЎГ«Г®ГЄГҐ \"" + aBlockToConnect + "\"");
       throw e;
     }
     try {
@@ -645,16 +654,22 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		stopTime.Add(modelTimePeriod);
 		stopTimesStack.push(stopTime);
 		noForkStepDelay = FStepDelay;
-		
+
+		FStepDelay = 0;
 		contextRegFlag = false;
 		timeManagerInit = false;
+		forkCounter++;
+
 		Thread tr = new Thread(this);
 		tr.start();
 		synchronized(this) {
 			try {
-				this.wait();
+
+				this.wait(2000);
 			} catch (InterruptedException e) {				
 				e.printStackTrace();
+				tr.dumpStack();
+
 			}
 		}
 		contextRegFlag = true;
@@ -674,17 +689,27 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 	    FCurrentModelTime.rollbackTo(label);
 	    stopTimesStack.pop();
 	    if ( stopTimesStack.isEmpty() ) {
-	    	// задержку в выполнении основного потока модели восстанавливаем когда стек форков пуст
+	    	// Г§Г Г¤ГҐГ°Г¦ГЄГі Гў ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГЁ Г®Г±Г­Г®ГўГ­Г®ГЈГ® ГЇГ®ГІГ®ГЄГ  Г¬Г®Г¤ГҐГ«ГЁ ГўГ®Г±Г±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГ¬ ГЄГ®ГЈГ¤Г  Г±ГІГҐГЄ ГґГ®Г°ГЄГ®Гў ГЇГіГ±ГІ
 	    	FStepDelay = noForkStepDelay;
 	    }	    
 	    FTimeManager =  timeManagerFixedStates.get(label);
 	    timeManagerFixedStates.remove(label);
 	    FTimeManager.rollback(label);	  
+
+	    forkCounter--;
 	   
 		} catch (ModelException e) {			
 			 throw new ScriptException( e.getMessage() );
-		}
-		
+		}		
+	}
+	
+	public int forkStatus(){
+		return forkCounter;		
+	}
+	
+	public boolean isForkMode(){
+		return (forkCounter > 0);
+
 	}
 
 }

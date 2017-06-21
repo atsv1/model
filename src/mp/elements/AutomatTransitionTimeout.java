@@ -8,8 +8,8 @@ import java.util.UUID;
 
 import mp.parser.ScriptException;
 
-/** Класс отвечает за реализацию перехода по тайм-айту - то есть периодически, один раз за указанный в параметре
- * период времени.
+/** ГЉГ«Г Г±Г± Г®ГІГўГҐГ·Г ГҐГІ Г§Г  Г°ГҐГ Г«ГЁГ§Г Г¶ГЁГѕ ГЇГҐГ°ГҐГµГ®Г¤Г  ГЇГ® ГІГ Г©Г¬-Г Г©ГІГі - ГІГ® ГҐГ±ГІГј ГЇГҐГ°ГЁГ®Г¤ГЁГ·ГҐГ±ГЄГЁ, Г®Г¤ГЁГ­ Г°Г Г§ Г§Г  ГіГЄГ Г§Г Г­Г­Г»Г© Гў ГЇГ Г°Г Г¬ГҐГІГ°ГҐ
+ * ГЇГҐГ°ГЁГ®Г¤ ГўГ°ГҐГ¬ГҐГ­ГЁ.
  */
 public class AutomatTransitionTimeout extends AutomatTransition {
   ModelTime FNextExecTime = null;
@@ -31,8 +31,8 @@ public class AutomatTransitionTimeout extends AutomatTransition {
   }
 
 
-  /**Функция проверяет, возможен ли переход, за который "ответственен" данный объект
-  * Внимание! Если переход возможен, то автоматически изменится дата следующего срабатывания.
+  /**Г”ГіГ­ГЄГ¶ГЁГї ГЇГ°Г®ГўГҐГ°ГїГҐГІ, ГўГ®Г§Г¬Г®Г¦ГҐГ­ Г«ГЁ ГЇГҐГ°ГҐГµГ®Г¤, Г§Г  ГЄГ®ГІГ®Г°Г»Г© "Г®ГІГўГҐГІГ±ГІГўГҐГ­ГҐГ­" Г¤Г Г­Г­Г»Г© Г®ГЎГєГҐГЄГІ
+  * Г‚Г­ГЁГ¬Г Г­ГЁГҐ! Г…Г±Г«ГЁ ГЇГҐГ°ГҐГµГ®Г¤ ГўГ®Г§Г¬Г®Г¦ГҐГ­, ГІГ® Г ГўГІГ®Г¬Г ГІГЁГ·ГҐГ±ГЄГЁ ГЁГ§Г¬ГҐГ­ГЁГІГ±Гї Г¤Г ГІГ  Г±Г«ГҐГ¤ГіГѕГ№ГҐГЈГ® Г±Г°Г ГЎГ ГІГ»ГўГ Г­ГЁГї.
   * @param aCurrentTime
   * @return
   * @throws ModelException
@@ -82,7 +82,7 @@ public class AutomatTransitionTimeout extends AutomatTransition {
     FTransitionVar = this.GetVarByName( aVarName );
     if ( !(FTransitionVar.GetTypeName().equalsIgnoreCase("real") ||
             FTransitionVar.GetTypeName().equalsIgnoreCase("integer") ) )  {
-      ModelException e = new ModelException("Параметр \"" + aVarName + "\" должен быть числовым");
+      ModelException e = new ModelException("ГЏГ Г°Г Г¬ГҐГІГ° \"" + aVarName + "\" Г¤Г®Г«Г¦ГҐГ­ ГЎГ»ГІГј Г·ГЁГ±Г«Г®ГўГ»Г¬");
       throw e;
     }
     FNextExecTime.Add( FTransitionVar );
@@ -101,8 +101,8 @@ public class AutomatTransitionTimeout extends AutomatTransition {
       if ( owner != null ){
         ownerName = owner.GetName();
       }
-      ModelException e1 = new ModelException("Ошибка при обработке скрипта перехода в элементе \"" +
-              ownerName + "." + this.GetName() + "\" Ошибка: " + e.getMessage());
+      ModelException e1 = new ModelException("ГЋГёГЁГЎГЄГ  ГЇГ°ГЁ Г®ГЎГ°Г ГЎГ®ГІГЄГҐ Г±ГЄГ°ГЁГЇГІГ  ГЇГҐГ°ГҐГµГ®Г¤Г  Гў ГЅГ«ГҐГ¬ГҐГ­ГІГҐ \"" +
+              ownerName + "." + this.GetName() + "\" ГЋГёГЁГЎГЄГ : " + e.getMessage());
       throw e1;
     }
     FApplyFlag = true;
@@ -113,7 +113,7 @@ public class AutomatTransitionTimeout extends AutomatTransition {
 	@Override
 	public void fixState(UUID stateLabel) throws ModelException {
 		if (fixedStates.containsKey(stateLabel)) {
-  		throw new ModelException("Дублирование фиксированного состояния "+ this.GetFullName());
+  		throw new ModelException("Г„ГіГЎГ«ГЁГ°Г®ГўГ Г­ГЁГҐ ГґГЁГЄГ±ГЁГ°Г®ГўГ Г­Г­Г®ГЈГ® Г±Г®Г±ГІГ®ГїГ­ГЁГї "+ this.GetFullName());
   	}   	
 		ModelTime t = new ModelTime();
 		t.StoreValue(FNextExecTime);
@@ -125,10 +125,12 @@ public class AutomatTransitionTimeout extends AutomatTransition {
 	public void rollbackTo(UUID stateLabel) throws ModelException {
 		ModelTime t = fixedStates.get(stateLabel);
 		if ( t == null ) {
-			throw new ModelException("Пустое время для отката состояния "+ this.GetFullName());
+			throw new ModelException("ГЏГіГ±ГІГ®ГҐ ГўГ°ГҐГ¬Гї Г¤Г«Гї Г®ГІГЄГ ГІГ  Г±Г®Г±ГІГ®ГїГ­ГЁГї "+ this.GetFullName());
 		}
 		FNextExecTime.StoreValue(t);
-		
+
+		fixedStates.remove(stateLabel);
+
 		
 	}
 
