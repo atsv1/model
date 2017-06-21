@@ -60,43 +60,45 @@ public class ModelSimpleBlock extends ModelBlock {
     UpdateAllParams( aCurrentTime );
   }
 
-  /**Выполнение обновления значений всех параметров. Выполнение производится только в том случае, если модельное
-   * время превысило следующее целое значение.
-   * Метод вызывается только тогда, когда в блоке нет ни одного стэйтчарта
+  /**Г‚Г»ГЇГ®Г«Г­ГҐГ­ГЁГҐ Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГї Г§Г­Г Г·ГҐГ­ГЁГ© ГўГ±ГҐГµ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў. Г‚Г»ГЇГ®Г«Г­ГҐГ­ГЁГҐ ГЇГ°Г®ГЁГ§ГўГ®Г¤ГЁГІГ±Гї ГІГ®Г«ГјГЄГ® Гў ГІГ®Г¬ Г±Г«ГіГ·Г ГҐ, ГҐГ±Г«ГЁ Г¬Г®Г¤ГҐГ«ГјГ­Г®ГҐ
+   * ГўГ°ГҐГ¬Гї ГЇГ°ГҐГўГ»Г±ГЁГ«Г® Г±Г«ГҐГ¤ГіГѕГ№ГҐГҐ Г¶ГҐГ«Г®ГҐ Г§Г­Г Г·ГҐГ­ГЁГҐ.
+   * ГЊГҐГІГ®Г¤ ГўГ»Г§Г»ГўГ ГҐГІГ±Гї ГІГ®Г«ГјГЄГ® ГІГ®ГЈГ¤Г , ГЄГ®ГЈГ¤Г  Гў ГЎГ«Г®ГЄГҐ Г­ГҐГІ Г­ГЁ Г®Г¤Г­Г®ГЈГ® Г±ГІГЅГ©ГІГ·Г Г°ГІГ 
    * @param aCurrentTime
    * @throws ModelException
    * @throws ScriptException
    */
   private void ExecuteInTime(ModelTime aCurrentTime) throws ModelException, ScriptException{
     if ( aCurrentTime == null ){
-      ModelException e = new ModelException("В элемент \"" + GetFullName() + "\" передана пустая ссылка на модельное время");
+      ModelException e = new ModelException("Г‚ ГЅГ«ГҐГ¬ГҐГ­ГІ \"" + GetFullName() + "\" ГЇГҐГ°ГҐГ¤Г Г­Г  ГЇГіГ±ГІГ Гї Г±Г±Г»Г«ГЄГ  Г­Г  Г¬Г®Г¤ГҐГ«ГјГ­Г®ГҐ ГўГ°ГҐГ¬Гї");
       throw e;
     }
     if ( GlobalParams.ExecTimeOutputEnabled() ){
-      System.out.println( "Начало выполнения параметров в блоке " + this.GetFullName() + ". Время модели = " +
-              Double.toString(aCurrentTime.GetValue()) + " последнее время выполнения блока = " + Integer.toString(FLastExecutionTime) );
+      System.out.println( "ГЌГ Г·Г Г«Г® ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГї ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў Гў ГЎГ«Г®ГЄГҐ " + this.GetFullName() + ". Г‚Г°ГҐГ¬Гї Г¬Г®Г¤ГҐГ«ГЁ = " +
+              Double.toString(aCurrentTime.GetValue()) + " ГЇГ®Г±Г«ГҐГ¤Г­ГҐГҐ ГўГ°ГҐГ¬Гї ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГї ГЎГ«Г®ГЄГ  = " + Integer.toString(FLastExecutionTime) );
     }
     int currentTimeValue = aCurrentTime.GetIntValue();    
     if ( currentTimeValue > FLastExecutionTime){      
-    	// сделано специально, чтобы параметры обновлялись только если модельное время переваливает очередное целое значение
+
+    	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+
     	ExecuteParamsUpdate( aCurrentTime );  
       FLastExecutionTime = currentTimeValue;
     } else {
       if ( GlobalParams.ExecTimeOutputEnabled() ){
-        System.out.println( "Ничего не выполнялось " + this.GetFullName() + " последнее время выполнения блока = " + Integer.toString(FLastExecutionTime)  );
+        System.out.println( "ГЌГЁГ·ГҐГЈГ® Г­ГҐ ГўГ»ГЇГ®Г«Г­ГїГ«Г®Г±Гј " + this.GetFullName() + " ГЇГ®Г±Г«ГҐГ¤Г­ГҐГҐ ГўГ°ГҐГ¬Гї ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГї ГЎГ«Г®ГЄГ  = " + Integer.toString(FLastExecutionTime)  );
       }
     }
   }
 
 
-  /** Метод обеспечивает передачу модельного времени в стэйтчарты данного блока. Если стэйтчарта нет, то вызывается
-   * метод Execute() - который без параметров.
-   * Метод действует следующим образом:
-   * 1. Передается модельное время в стэйтчарты
-   * 2. Пересчитываются значения для тех переменных блока, которые нуждаются в пересчете.
-   * Правила вызова метода Execute(), если в блоке отсутствует стэйтчарт:
-   * метод вызывается только тогда, когда значение модельного времени переваливает через очередное целове значение.
-   * @param aCurrentTime - значение текущего модельного времени
+  /** ГЊГҐГІГ®Г¤ Г®ГЎГҐГ±ГЇГҐГ·ГЁГўГ ГҐГІ ГЇГҐГ°ГҐГ¤Г Г·Гі Г¬Г®Г¤ГҐГ«ГјГ­Г®ГЈГ® ГўГ°ГҐГ¬ГҐГ­ГЁ Гў Г±ГІГЅГ©ГІГ·Г Г°ГІГ» Г¤Г Г­Г­Г®ГЈГ® ГЎГ«Г®ГЄГ . Г…Г±Г«ГЁ Г±ГІГЅГ©ГІГ·Г Г°ГІГ  Г­ГҐГІ, ГІГ® ГўГ»Г§Г»ГўГ ГҐГІГ±Гї
+   * Г¬ГҐГІГ®Г¤ Execute() - ГЄГ®ГІГ®Г°Г»Г© ГЎГҐГ§ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў.
+   * ГЊГҐГІГ®Г¤ Г¤ГҐГ©Г±ГІГўГіГҐГІ Г±Г«ГҐГ¤ГіГѕГ№ГЁГ¬ Г®ГЎГ°Г Г§Г®Г¬:
+   * 1. ГЏГҐГ°ГҐГ¤Г ГҐГІГ±Гї Г¬Г®Г¤ГҐГ«ГјГ­Г®ГҐ ГўГ°ГҐГ¬Гї Гў Г±ГІГЅГ©ГІГ·Г Г°ГІГ»
+   * 2. ГЏГҐГ°ГҐГ±Г·ГЁГІГ»ГўГ ГѕГІГ±Гї Г§Г­Г Г·ГҐГ­ГЁГї Г¤Г«Гї ГІГҐГµ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»Гµ ГЎГ«Г®ГЄГ , ГЄГ®ГІГ®Г°Г»ГҐ Г­ГіГ¦Г¤Г ГѕГІГ±Гї Гў ГЇГҐГ°ГҐГ±Г·ГҐГІГҐ.
+   * ГЏГ°Г ГўГЁГ«Г  ГўГ»Г§Г®ГўГ  Г¬ГҐГІГ®Г¤Г  Execute(), ГҐГ±Г«ГЁ Гў ГЎГ«Г®ГЄГҐ Г®ГІГ±ГіГІГ±ГІГўГіГҐГІ Г±ГІГЅГ©ГІГ·Г Г°ГІ:
+   * Г¬ГҐГІГ®Г¤ ГўГ»Г§Г»ГўГ ГҐГІГ±Гї ГІГ®Г«ГјГЄГ® ГІГ®ГЈГ¤Г , ГЄГ®ГЈГ¤Г  Г§Г­Г Г·ГҐГ­ГЁГҐ Г¬Г®Г¤ГҐГ«ГјГ­Г®ГЈГ® ГўГ°ГҐГ¬ГҐГ­ГЁ ГЇГҐГ°ГҐГўГ Г«ГЁГўГ ГҐГІ Г·ГҐГ°ГҐГ§ Г®Г·ГҐГ°ГҐГ¤Г­Г®ГҐ Г¶ГҐГ«Г®ГўГҐ Г§Г­Г Г·ГҐГ­ГЁГҐ.
+   * @param aCurrentTime - Г§Г­Г Г·ГҐГ­ГЁГҐ ГІГҐГЄГіГ№ГҐГЈГ® Г¬Г®Г¤ГҐГ«ГјГ­Г®ГЈГ® ГўГ°ГҐГ¬ГҐГ­ГЁ
    * @throws ModelException
    * @throws ScriptException
    */
@@ -105,12 +107,12 @@ public class ModelSimpleBlock extends ModelBlock {
     ExecuteEvents();
     int size = FRootStates.size();
     if ( size == 0 ){
-      //ни одного стэйтчарта нет.
+      //Г­ГЁ Г®Г¤Г­Г®ГЈГ® Г±ГІГЅГ©ГІГ·Г Г°ГІГ  Г­ГҐГІ.
       ExecuteInTime( aCurrentTime );
       AddSelfToTimeManager( aCurrentTime );
       return;
     }
-    //стэйтчарты есть
+    //Г±ГІГЅГ©ГІГ·Г Г°ГІГ» ГҐГ±ГІГј
     int i = 0;
     AutomatState state = null;
     while ( i < size ){
@@ -123,7 +125,7 @@ public class ModelSimpleBlock extends ModelBlock {
     ExecuteInTime( aCurrentTime );
     AddSelfToTimeManager( aCurrentTime );
     if ( GlobalParams.ExecTimeOutputEnabled() ){
-      System.out.println("Добавили блок " + GetFullName() + " в менеджер времени. Текущее время " + aCurrentTime.toString()); 
+      System.out.println("Г„Г®ГЎГ ГўГЁГ«ГЁ ГЎГ«Г®ГЄ " + GetFullName() + " Гў Г¬ГҐГ­ГҐГ¤Г¦ГҐГ° ГўГ°ГҐГ¬ГҐГ­ГЁ. Г’ГҐГЄГіГ№ГҐГҐ ГўГ°ГҐГ¬Гї " + aCurrentTime.toString()); 
     }
     long duration = System.nanoTime() - startTime;
     if ( duration < 0 ) duration = 0;
@@ -143,21 +145,23 @@ public class ModelSimpleBlock extends ModelBlock {
   }
 
   public void ApplyNodeInformation() throws ModelException, ScriptException{
-    //вызываем метод ApplyNodeInformation() для всех параметров блока (внутренних, внешних и выходных).
-    //Поный список параметров хранится в контейнере класса ModelElement
+    //ГўГ»Г§Г»ГўГ ГҐГ¬ Г¬ГҐГІГ®Г¤ ApplyNodeInformation() Г¤Г«Гї ГўГ±ГҐГµ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў ГЎГ«Г®ГЄГ  (ГўГ­ГіГІГ°ГҐГ­Г­ГЁГµ, ГўГ­ГҐГёГ­ГЁГµ ГЁ ГўГ»ГµГ®Г¤Г­Г»Гµ).
+    //ГЏГ®Г­Г»Г© Г±ГЇГЁГ±Г®ГЄ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў ГµГ°Г Г­ГЁГІГ±Гї Гў ГЄГ®Г­ГІГҐГ©Г­ГҐГ°ГҐ ГЄГ«Г Г±Г±Г  ModelElement
     ApplyAllElementsNodeInformation();
     PrepareBlock();
-    // вызываем метод ApplyNodeInformation() для стэйтчартов блока
+    // ГўГ»Г§Г»ГўГ ГҐГ¬ Г¬ГҐГІГ®Г¤ ApplyNodeInformation() Г¤Г«Гї Г±ГІГЅГ©ГІГ·Г Г°ГІГ®Гў ГЎГ«Г®ГЄГ 
     ApplyStatechartNodeInfo();
-    //чтение информации об обработчиках событий
+    //Г·ГІГҐГ­ГЁГҐ ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГЁ Г®ГЎ Г®ГЎГ°Г ГЎГ®ГІГ·ГЁГЄГ Гµ Г±Г®ГЎГ»ГІГЁГ©
     ApplyEventNodeInfo();
   }
   
   private  Map<UUID, Integer> fixedStates = new HashMap<UUID, Integer> ();
   public void fixState(UUID stateLabel) throws ModelException{
   	super.fixState(stateLabel);  	  	
+
   	ModelBlockParam forkModeParam = super.GetInnerParam("isForkMode");
   	forkModeParam.GetVariable().SetValue(true);
+
   	fixedStates.put(stateLabel, new Integer(FLastExecutionTime));
   }
   
@@ -165,10 +169,12 @@ public class ModelSimpleBlock extends ModelBlock {
   	super.rollbackTo(stateLabel);
   	FLastExecutionTime = fixedStates.get(stateLabel);
   	fixedStates.remove(stateLabel);
+
   	if ( fixedStates.isEmpty() ) {
   		ModelBlockParam forkModeParam = super.GetInnerParam("isForkMode");
     	forkModeParam.GetVariable().SetValue(false);  		
   	}
+
   	
   }
 
