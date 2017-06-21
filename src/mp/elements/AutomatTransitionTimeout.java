@@ -128,7 +128,7 @@ public class AutomatTransitionTimeout extends AutomatTransition {
 			throw new ModelException("Пустое время для отката состояния "+ this.GetFullName());
 		}
 		FNextExecTime.StoreValue(t);
-		
+		fixedStates.remove(stateLabel);
 		
 	}
 

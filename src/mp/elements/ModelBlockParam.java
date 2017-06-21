@@ -318,6 +318,7 @@ public abstract class ModelBlockParam extends ModelElement{
   		throw new  ModelException("Отсутствует метка для отката " + this.GetFullName());  		
   	}
   	this.GetVariable().SetValue( fixedStates.get(stateLabel) ); 
+  	fixedStates.remove(stateLabel);
   	  	
   }
 

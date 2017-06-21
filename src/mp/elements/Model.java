@@ -369,6 +369,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     	init();
     } catch (Exception e1) {
     	System.out.println(e1.getMessage());
+    	e1.printStackTrace();
     	FErrorString = e1.getMessage();
     	return;
     }
@@ -657,9 +658,10 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		tr.start();
 		synchronized(this) {
 			try {
-				this.wait();
+				this.wait(2000);
 			} catch (InterruptedException e) {				
 				e.printStackTrace();
+				tr.dumpStack();
 			}
 		}
 		contextRegFlag = true;

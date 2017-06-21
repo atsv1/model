@@ -147,8 +147,7 @@ public class ModelTime {
   		throw new  ModelException("Отсутствует метка для отката");  		
   	}
   	FValue =  fixedStates.get(stateLabel);
-  	
-  	  	
+  	fixedStates.remove(stateLabel);
   }
 
 }
