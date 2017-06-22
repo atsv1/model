@@ -25,8 +25,8 @@ public class ExecutionContextTest extends TestCase {
     super( testName );
   }
 
-  /**ГЏГ°Г®ГўГҐГ°ГїГҐГІГ±Гї Г®Г±ГІГ Г­Г®ГўГЄГ  Г°Г ГЎГ®ГІГ» Г¬Г®Г¤ГҐГ«ГЁ Г± ГўГ»Г§Г®ГўГ®Г¬ ГґГіГ­ГЄГ¶ГЁГЁ StopExecution ГЁГ§Г­ГіГІГ°ГЁ ГЎГ«Г®ГЄГ  Гў Г®Г±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГ¬Г®Г© Г¬Г®Г¤ГҐГ«ГЁ
-   * ГђГҐГ§ГіГ«ГјГІГ ГІ Г°Г ГЎГ®ГІГ» ГЇГ°Г®Г¶ГҐГ¤ГіГ°Г» Г®Г±ГІГ Г­Г®ГўГЄГЁ Г¬Г®Г¤ГҐГ«ГЁ Г§Г ГЇГЁГ±Г»ГўГ ГҐГІГ±Гї Гў Г®ГІГ¤ГҐГ«ГјГ­ГіГѕ ГЇГҐГ°ГҐГ¬ГҐГ­Г­ГіГѕ
+  /**Проверяется остановка работы модели с вызовом функции StopExecution изнутри блока в останавливаемой модели
+   * Результат работы процедуры остановки модели записывается в отдельную переменную
    */
   public void testInnerStop_WithResultVariable(){
     mp.parser.ModelExecutionContext.ClearExecutionContext();
@@ -72,7 +72,7 @@ public class ExecutionContextTest extends TestCase {
     assertTrue( block != null );
     assertEquals( block.GetIntValue("var1"), 500 );
     ModelExecutionManager manager = null;
-    manager = mp.parser.ModelExecutionContext.GetManager("ГЊГ®Г¤ГҐГ«Гј1");
+    manager = mp.parser.ModelExecutionContext.GetManager("Модель1");
     assertTrue( manager != null );
     mp.parser.ModelExecutionContext.ClearExecutionContext();
   }
@@ -117,13 +117,13 @@ public class ExecutionContextTest extends TestCase {
     }
     assertTrue( f );
     assertTrue( model != null );
-    //ГЇГ°Г®ГўГҐГ°ГїГҐГ¬, ГЇГ°ГЁГ±ГіГІГ±ГІГўГіГѕГІ Г«ГЁ Гў Г±ГЇГЁГ±ГЄГҐ Г¬Г®Г¤ГҐГ«ГҐГ© Г®ГЎГҐ Г¬Г®Г¤ГҐГ«ГЁ
+    //проверяем, присутствуют ли в списке моделей обе модели
     ModelExecutionManager manager = null;
-    manager = mp.parser.ModelExecutionContext.GetManager("ГЊГ®Г¤ГҐГ«Гј1");
+    manager = mp.parser.ModelExecutionContext.GetManager("Модель1");
     assertTrue( manager != null );
-    manager = mp.parser.ModelExecutionContext.GetManager("ГЊГ®Г¤ГҐГ«Гј3");
+    manager = mp.parser.ModelExecutionContext.GetManager("Модель3");
     assertTrue( manager == null );
-    manager = mp.parser.ModelExecutionContext.GetManager("ГЊГ®Г¤ГҐГ«Гј2");
+    manager = mp.parser.ModelExecutionContext.GetManager("Модель2");
     assertTrue( manager != null );
     Model model2 = (Model) manager;
     model.run();
@@ -184,8 +184,8 @@ public class ExecutionContextTest extends TestCase {
     assertTrue( block != null );
   }
 
-  /**ГЏГ°Г®ГўГҐГ°ГЄГ  Г®ГёГЁГЎГ®Г·Г­Г®Г© Г±ГЁГІГіГ Г¶ГЁГЁ: Г±Г®Г§Г¤Г ГҐГІГ±Гї ГЄГ®Г°Г­ГҐГўГ Гї Г¬Г®Г¤ГҐГ«Гј ГЁ Г¤ГўГҐ Г¤Г°ГіГЈГЁГµ Г¬Г®Г¤ГҐГ«ГЁ, ГЄГ®ГІГ®Г°Г»ГҐ ГЁГ¬ГҐГѕГІ Г®Г¤ГЁГ­Г ГЄГ®ГўГ»Г© Г­Г®Г¬ГҐГ°.
-   * Г‘ГЁГ±ГІГҐГ¬Г  Г¤Г®Г«Г¦Г­Г  ГўГ»Г¤Г ГІГј Г®ГёГЁГЎГЄГі ГЇГ°ГЁ Г°Г Г§ГЎГ®Г°ГҐ Г¬Г®Г¤ГҐГ«ГЁ
+  /**Проверка ошибочной ситуации: создается корневая модель и две других модели, которые имеют одинаковый номер.
+   * Система должна выдать ошибку при разборе модели
    */
   public void testEqualModelName(){
     mp.parser.ModelExecutionContext.ClearExecutionContext();
@@ -208,7 +208,7 @@ public class ExecutionContextTest extends TestCase {
     assertTrue( !f );
   }
 
-  /**ГЇГ°Г®ГўГҐГ°ГЄГ  ГІГ°Г®Г©Г­Г®ГЈГ® ГіГ°Г®ГўГ­Гї ГўГ«Г®Г¦ГҐГ­Г­Г®Г±ГІГЁ Г¬Г®Г¤ГҐГ«ГҐГ©
+  /**проверка тройного уровня вложенности моделей
    *
    */
   public void test3Level(){
@@ -232,11 +232,11 @@ public class ExecutionContextTest extends TestCase {
     assertTrue( f );
     f = false;
     ModelExecutionManager manager = null;
-    manager = ModelExecutionContext.GetManager("ГЊГ®Г¤ГҐГ«Гј1");
+    manager = ModelExecutionContext.GetManager("Модель1");
     assertTrue( manager != null );
-    manager = ModelExecutionContext.GetManager("ГЊГ®Г¤ГҐГ«Гј2");
+    manager = ModelExecutionContext.GetManager("Модель2");
     assertTrue( manager != null );
-    manager = ModelExecutionContext.GetManager("ГЊГ®Г¤ГҐГ«Гј3");
+    manager = ModelExecutionContext.GetManager("Модель3");
     assertTrue( manager != null );
 
     model.run();
@@ -245,14 +245,14 @@ public class ExecutionContextTest extends TestCase {
     ModelBlock block = (ModelBlock) model3.Get( "block3" );
     assertEquals( block.GetIntValue("var1"), 499 );
 
-    manager = ModelExecutionContext.GetManager("ГЊГ®Г¤ГҐГ«Гј2");
+    manager = ModelExecutionContext.GetManager("Модель2");
     Model model2 = (Model) manager;
     block = (ModelBlock) model2.Get("block2");
     assertEquals( block.GetIntValue("var1"), 498 );
   }
 
-  /**ГЏГ°Г®ГўГҐГ°ГїГҐГІГ±Гї ГЇГ°Г ГўГЁГ«ГјГ­Г®Г±ГІГј Г°Г ГЎГ®ГІГ» ГґГіГ­ГЄГ¶ГЁГЁ Г±ГЄГ°ГЁГЇГІГ  SetToInitConditions() ГўГ­ГіГІГ°ГЁ Г®Г¤Г­Г®Г© Г¬Г®Г¤ГҐГ«ГЁ ГЁ ГЎГҐГ§
-   * Г±ГІГЅГ©ГІГ·Г Г°ГІГ 
+  /**Проверяется правильность работы функции скрипта SetToInitConditions() внутри одной модели и без
+   * стэйтчарта
    *
    */
   public void testSetToInit(){
@@ -308,12 +308,12 @@ public class ExecutionContextTest extends TestCase {
       System.out.println( errorStr );
     }
     assertTrue( f );
-    ModelExecutionManager manager = ModelExecutionContext.GetManager("ГЊГ®Г¤ГҐГ«Гј2");
+    ModelExecutionManager manager = ModelExecutionContext.GetManager("Модель2");
     assertTrue( manager != null );
     //ModelBlock
   }
 
-  /**ГЏГ°Г®ГўГҐГ°ГїГҐГІГ±Гї ГЇГ°Г ГўГЁГ«ГјГ­Г®Г±ГІГј ГЇГ®Г«ГіГ·ГҐГ­ГЁГї Г¤Г Г­Г­Г»Гµ ГЁГ§ Г¤Г°ГіГЈГ®Г© Г¬Г®Г¤ГҐГ«ГЁ
+  /**Проверяется правильность получения данных из другой модели
    *
    */
   public void testConnectToAnotherModel(){
@@ -388,7 +388,7 @@ public class ExecutionContextTest extends TestCase {
     }
     assertTrue( f );
     model.run();
-    ModelExecutionManager manager= ModelExecutionContext.GetManager( "ГЊГ®Г¤ГҐГ«Гј2" );
+    ModelExecutionManager manager= ModelExecutionContext.GetManager( "Модель2" );
     Model model2 = (Model) manager;
     ModelBlock block = (ModelBlock) model2.Get("block2");
     assertTrue( block != null );
@@ -415,7 +415,7 @@ public class ExecutionContextTest extends TestCase {
     assertTrue( f );
     model.run();
 
-    ModelExecutionManager manager= ModelExecutionContext.GetManager( "ГЊГ®Г¤ГҐГ«Гј2" );
+    ModelExecutionManager manager= ModelExecutionContext.GetManager( "Модель2" );
     Model model2 = (Model) manager;
     ModelBlock block = model2.Get("block2", 5);
     assertTrue( block != null );
@@ -447,8 +447,8 @@ public class ExecutionContextTest extends TestCase {
     assertEquals( block.GetIntValue("var"), 499 );
   }
 
-  /**ГЇГ°Г®ГўГҐГ°ГїГҐГІГ±Гї ГЇГ°Г ГўГЁГ«ГјГ­Г®Г±ГІГј Г°Г ГЎГ®ГІГ» ГґГіГ­ГЄГ¶ГЁГЁ Get Гў ГіГ±Г«Г®ГўГЁГїГµ, ГЄГ®ГЈГ¤Г  ГЁГ­Г¤ГҐГЄГ± ГЎГ«Г®ГЄГ  Г¤Г Г­ Гў ГўГЁГ¤ГҐ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г©,
-   * Г  Г­ГҐ ГЄГ®Г­Г±ГІГ Г­ГІГ»
+  /**проверяется правильность работы функции Get в условиях, когда индекс блока дан в виде переменной,
+   * а не константы
    *
    */
   public void testGetValueWithVarParam(){
@@ -552,7 +552,7 @@ public class ExecutionContextTest extends TestCase {
   }
   
   /**
-   * ГЇГ°Г®ГўГҐГ°ГїГҐГ¬ ГўГ®Г§Г¬Г®Г¦Г­Г®Г±ГІГј ГЇГ®Г¤ГЄГ«ГѕГ·ГҐГ­ГЁГї ГЄ ГЎГ«Г®ГЄГ Г¬ Г®Г±Г­Г®ГўГ­Г®Г© Г¬Г®Г¤ГҐГ«ГЁ ГЁГ§ ГЎГ«Г®ГЄГ®Гў Г¬Г®Г¤ГҐГ«ГЁ, ГЄГ®ГІГ®Г°Г Гї ГЇГ®Г¤ГЄГ«ГѕГ·ГҐГ­Г  ГЁГ§ Г±ГҐГЄГ¶ГЁГЁ <ModelList><ParallelModel
+   * проверяем возможность подключения к блокам основной модели из блоков модели, которая подключена из секции <ModelList><ParallelModel
    */
   public void testConnectBlocks_FromParallelModel(){
   	mp.parser.ModelExecutionContext.ClearExecutionContext();
@@ -572,8 +572,8 @@ public class ExecutionContextTest extends TestCase {
       e.printStackTrace();
     }
     assertTrue( f );
-    Model mainModel = (Model) ModelExecutionContext.GetManager( "ГЊГ®Г¤ГҐГ«Гј18" );
-    Model subModel = (Model) ModelExecutionContext.GetManager( "ГЊГ®Г¤ГҐГ«Гј18_1" );
+    Model mainModel = (Model) ModelExecutionContext.GetManager( "Модель18" );
+    Model subModel = (Model) ModelExecutionContext.GetManager( "Модель18_1" );
     assertTrue(mainModel != null);
     assertTrue(subModel != null);
     f = false;
@@ -596,11 +596,11 @@ public class ExecutionContextTest extends TestCase {
   }
 
   /////////////////////////////////////////////////////////////////////////
-  ///////// ГІГҐГ±ГІГЁГ°ГіГҐГ¬ ГЄГ®Г­Г±ГІГ Г­ГІГ» Гў Г¬Г®Г¤ГҐГ«ГЁ //////////////////////////////////
+  ///////// тестируем константы в модели //////////////////////////////////
   /////////////////////////////////////////////////////////////////////////
 
-  /**ГЇГ°Г®ГўГҐГ°ГїГҐГІГ±Гї ГЇГ°Г®Г±ГІГ®ГҐ Г±Г®Г§Г¤Г Г­ГЁГҐ ГЄГ®Г­Г±ГІГ Г­ГІГ» ГЁГ§ ГґГ Г©Г«Г  Г¬Г®Г¤ГҐГ«ГЁ, ГҐГҐ ГЇГ®Г«ГіГ·ГҐГ­ГЁГҐ
-   * ГЁГ§ Г¬Г®Г¤ГҐГ«ГЁ
+  /**проверяется простое создание константы из файла модели, ее получение
+   * из модели
    *
    */
   public void testCreateConstant(){
@@ -626,7 +626,7 @@ public class ExecutionContextTest extends TestCase {
     assertTrue( constant != null );
   }
 
-  /**ГЇГ°Г®ГўГҐГ°ГїГҐГІГ±Гї ГЇГ°Г ГўГЁГ«ГјГ­Г®Г±ГІГј Г®ГІГ°Г ГЎГ®ГІГЄГЁ ГЄГ®Г­Г±ГІГ Г­ГІГ» Гў Г ГІГ°ГЁГЎГіГІГҐ initvalue ГЇГ Г°Г Г¬ГҐГІГ°Г  ГЎГ«Г®ГЄГ 
+  /**проверяется правильность отработки константы в атрибуте initvalue параметра блока
    *
    */
   public void testConstantInInitValueAttr(){
@@ -696,7 +696,7 @@ public class ExecutionContextTest extends TestCase {
     assertEquals( model.GetBlockCount("block"), 5 );
   }
 
-  /**ГЇГ°Г®ГўГҐГ°ГїГҐГІГ±Гї ГЇГ°Г ГўГЁГ«ГјГ­Г®Г±ГІГј Г®ГЎГ°Г ГЎГ®ГІГЄГЁ ГЄГ®Г­Г±ГІГ Г­ГІ ГўГ­ГіГІГ°ГЁ Г±ГЄГ°ГЁГЇГІГ®Гў
+  /**проверяется правильность обработки констант внутри скриптов
    *
    */
   public void testConstantInScript(){
@@ -729,13 +729,13 @@ public class ExecutionContextTest extends TestCase {
 
 
   /////////////////////////////////////////////////////////////////////////
-  ///////// ГІГҐГ±ГІГЁГ°ГіГҐГ¬ ГўГ®Г§Г¬Г®Г¦Г­Г®Г±ГІГј ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГї Г®Г¤Г­Г®Г© ГЁ ГІГ®Г© Г¦ГҐ Г¬Г®Г¤ГҐГ«ГЁ Г®Г¤Г­Г®ГўГ°ГҐГ¬ГҐГ­Г­Г®, Г­Г® Гў Г°Г Г§Г­Г»Гµ ГЇГ®ГІГ®ГЄГ Гµ //////////////////////////////////
+  ///////// тестируем возможность выполнения одной и той же модели одновременно, но в разных потоках //////////////////////////////////
   /////////////////////////////////////////////////////////////////////////
  public static String syncFlag = "123";
  public static Model globalModel = null;
   
   /**
-   * ГЏГ°Г®ГўГҐГ°ГЄГ  ГўГ®Г§Г¬Г®Г¦Г­Г®Г±ГІГЁ Г¤ГўГ®Г©Г­Г®ГЈГ® Г§Г ГЇГіГ±ГЄГ  Г®Г¤Г­Г®Г© ГЁ ГІГ®Г© Г¦ГҐ Г¬Г®Г¤ГҐГ«ГЁ
+   * Проверка возможности двойного запуска одной и той же модели
    */
   public void test2SameModelsRun(){
   	mp.parser.ModelExecutionContext.ClearExecutionContext();
@@ -793,9 +793,7 @@ public class ExecutionContextTest extends TestCase {
   
   
   ////////////////////////////////////////////////////////////////////////////////
-
-  /////////////// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ fork ////////////////////////////////////////////
-
+  /////////////// новая функция fork ////////////////////////////////////////////
   
   public void testFixState_CalculatedElement(){
   	ModelBlockParam param = new ModelCalculatedElement((ModelElement)null, "name", 1);
@@ -963,7 +961,6 @@ public class ExecutionContextTest extends TestCase {
 			block.AddInnerParam(param1);
 			block.AddOutParam(param2);
 			block.AddOutParam(param3);
-
 			
 			ModelLanguageBuilder builder = new ModelLanguageBuilder( null );
 	    builder.UpdateBlock( block );
@@ -973,7 +970,6 @@ public class ExecutionContextTest extends TestCase {
 		} catch (ScriptException e) {			
 			f = false;
 			e.printStackTrace();
-
 		}
   	assertTrue(f);
   	UUID uid = java.util.UUID.randomUUID();
@@ -1025,12 +1021,11 @@ public class ExecutionContextTest extends TestCase {
 			innerState1.AddElement(trans1);
 			
 			block.AddState(state);
-
 			
 			ModelLanguageBuilder builder = new ModelLanguageBuilder( null );
 	    builder.UpdateBlock( block );
 			
-
+			
 			f = true;
 		} catch (Exception e) {			
 			e.printStackTrace();
@@ -1109,10 +1104,8 @@ public class ExecutionContextTest extends TestCase {
     assertTrue(i != null);
     assertTrue(i >= new Integer(20));
     i = getIntValue(subModel, "sub_block", 0, "innerCounter");
-
-    /*пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 11, пїЅ пїЅпїЅ 10 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ,
-     * пїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-
+    /*проверяем 11, а не 10 потому что перед завершением все элементы модели получают возможность выполниться в основном цикле выполнения,
+     * а в следующий цикл модель не заходит
      * */
     assertEquals(i, new Integer(11));
   }
@@ -1171,10 +1164,8 @@ public class ExecutionContextTest extends TestCase {
   }
   
   public void testFork_StatechartTimeoutTransitionAfterFork(){
-
   	mp.parser.ModelExecutionContext.ClearExecutionContext();  	
     boolean f = false;    
-
     try {
       ModelTreeBuilder builder = new ModelTreeBuilder();
       builder.SetElementFactory( new ModelElementFactory() );
@@ -1199,7 +1190,6 @@ public class ExecutionContextTest extends TestCase {
   	i = getIntValue(mainModel, "block", 0, "counter");
   	assertEquals(i, new Integer(10));
   	i = getIntValue(subModel, "sub_block", 0, "subCounter");
-
   	assertEquals(i, new Integer(10));  	
   }
   
@@ -1224,9 +1214,7 @@ public class ExecutionContextTest extends TestCase {
     mainModel.run();
     assertTrue(mainModel != null);
     Integer i = getIntValue(mainModel, "block", 0, "forkResult");
-    assertEquals(i, new Integer(100));
-
-  	
+    assertEquals(i, new Integer(100));  	
   }
    
   

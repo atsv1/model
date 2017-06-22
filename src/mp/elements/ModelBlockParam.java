@@ -17,45 +17,43 @@ import org.w3c.dom.Node;
  */
 public abstract class ModelBlockParam extends ModelElement{
   protected ScriptLanguageExt FLanguageExt = null;
-  //ГЉГ®Г­Г±ГІГ Г­ГІГ», Г®ГЇГЁГ±Г»ГўГ ГѕГ№ГЁГҐ Г°Г Г±ГЇГ®Г«Г®Г¦ГҐГ­ГЁГҐ ГЇГ Г°Г Г¬ГҐГІГ°Г  ГўГ­ГіГІГ°ГЁ ГЎГ«Г®ГЄГ 
-  public static int PLACEMENT_TYPE_INNER = 1;// ГўГ­ГіГІГ°ГҐГ­Г­ГЁГ© ГЇГ Г°Г Г¬ГҐГІГ°
-  public static int PLACEMENT_TYPE_OUT = 2; // ГўГ»ГµГ®Г¤Г­Г®Г© ГЇГ Г°Г Г¬ГҐГІГ°
-  public static int PLACEMENT_TYPE_INPUT = 3;// ГўГµГ®Г¤Г­Г®Г© ГЇГ Г°Г Г¬ГҐГІГ°
+  //Константы, описывающие расположение параметра внутри блока
+  public static int PLACEMENT_TYPE_INNER = 1;// внутренний параметр
+  public static int PLACEMENT_TYPE_OUT = 2; // выходной параметр
+  public static int PLACEMENT_TYPE_INPUT = 3;// входной параметр
 
-  //ГЉГ®Г­Г±ГІГ Г­ГІГ», Г®ГЇГЁГ±Г»ГўГ ГѕГ№ГЁГҐ ГІГЁГЇ ГЇГ Г°Г Г¬ГҐГІГ°Г  - Г¬Г ГІГҐГ°ГЁГ Г«ГјГ­Г»Г© ГЁГ«ГЁ Г­ГҐГ¬Г ГІГҐГ°ГЁГ Г«ГјГ­Г»Г©
-  public static final int PARAM_TYPE_INFORM = 1; //Г­ГҐГ¬Г ГІГҐГ°ГЁГ Г«ГјГ­Г»Г© ГЇГ Г°Г Г¬ГҐГІГ°
-  public static final int PARAM_TYPE_MATERIAL = 2; //Г¬Г ГІГҐГ°ГЁГ Г«ГјГ­Г»Г© ГЇГ Г°Г Г¬ГҐГІГ°
+  //Константы, описывающие тип параметра - материальный или нематериальный
+  public static final int PARAM_TYPE_INFORM = 1; //нематериальный параметр
+  public static final int PARAM_TYPE_MATERIAL = 2; //материальный параметр
 
   private int FParamPlacementType = 0;
   protected int FParamType = 0;
 
-  private Vector FDependElements = null; //Г•Г°Г Г­ГЁГІ Г±ГЇГЁГ±Г®ГЄ ГЅГ«ГҐГ¬ГҐГ­ГІГ®Гў, ГЄГ®ГІГ®Г°Г»ГҐ ГЁГ±ГЇГ®Г«ГјГ§ГіГѕГІ Гў Г±ГўГ®ГЁГµ ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГїГµ
-                                                        //Г¤Г Г­Г­Г»Г© ГЇГ Г°Г Г¬ГҐГІГ°
-  private boolean FIsInpParamChanged = true; //ГЇГ®ГЄГ Г§Г»ГўГ ГҐГІ, ГЁГ§Г¬ГҐГ­ГЁГ«Г±Гї Г«ГЁ ГµГ®ГІГї ГЎГ» Г®Г¤ГЁГ­ ГЁГ§ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў, ГЄГ®ГІГ®Г°Г»ГҐ ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГІ
-                                             // Г¤Г Г­Г­Г»Г© ГЇГ Г°Г Г¬ГҐГІГ°
-  protected ModelElementContainer FInpElements = null;//Г§Г¤ГҐГ±Гј ГµГ°Г Г­ГЁГІГ±Гї Г±ГЇГЁГ±Г®ГЄ ГЅГ«ГҐГ¬ГҐГ­ГІГ®Гў, ГЄГ®ГІГ®Г°Г»ГҐ ГЁГ±ГЇГ®Г«ГјГ§ГіГѕГІГ±Гї
-                                                    // Г¤Г Г­Г­Г»Г¬ ГЇГ Г°Г Г¬ГҐГІГ°Г®Г¬
+  private Vector FDependElements = null; //Хранит список элементов, которые используют в своих вычислениях
+                                                        //данный параметр
+  private boolean FIsInpParamChanged = true; //показывает, изменился ли хотя бы один из параметров, которые использует
+                                             // данный параметр
+  protected ModelElementContainer FInpElements = null;//здесь хранится список элементов, которые используются
+                                                    // данным параметром
   protected Variable FVariable = null;
   private String FInitValue = null;
   protected ExecutionContext FExecutionContext = null;
 
-  /**ГќГІГ® ГЇГ®Г«ГҐ Г¤Г®Г«Г¦ГҐГ­ ГЎГіГ¤ГҐГІ Г§Г ГЇГ®Г«Г­ГЁГІГј Г®ГЎГєГҐГЄГІ, ГЄГ®ГІГ®Г°Г»Г© Г¦ГҐГ«Г ГҐГІ ГЇГ®Г«ГіГ·Г ГІГј ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГѕ Г® ГІГ®Г¬, Г­ГіГ¦Г­Г® Г«ГЁ ГўГ» ГЄГ ГЄГЁГ¬-ГІГ® Г®ГЎГ°Г Г§Г®Г¬
-   * ГўГ»ГЇГ®Г«Г­ГїГІГј Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГҐ ГЅГІГ®ГЈГ® ГЅГ«ГҐГ¬ГҐГ­ГІГ .
-   * ГќГІГ® Г¬Г®Г¦ГҐГІ ГЎГ»ГІГј ГЎГ«Г®ГЄ, ГЄГ®ГІГ®Г°Г»Г© ГЎГіГ¤ГҐГІ ГўГ»Г§Г»ГўГ ГІГј Г¬ГҐГІГ®Г¤ Update() ГІГ®Г«ГјГЄГ® Г¤Г«Гї ГІГҐГµ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў, ГЄГ®ГІГ®Г°Г»ГҐ Г­ГіГ¦Г­Г®
-   * ГЇГҐГ°ГҐГ±Г·ГЁГІГ ГІГј (Г  ГЇГҐГ°ГҐГ±Г·ГЁГІГ»ГўГ ГІГј ГЇГ Г°Г Г¬ГҐГІГ° Г­ГіГ¦Г­Г® ГІГ®ГЈГ¤Г , ГЄГ®ГЈГ¤Г  ГЁГ§Г¬ГҐГ­ГЁГ«Г®Г±Гј ГµГ®ГІГї ГЎГ» Г®Г¤Г­Г® Г§Г­Г Г·ГҐГ­ГЁГҐ Гў Г±ГЇГЁГ±ГЄГҐ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў,
-   * Г®ГІ ГЄГ®ГІГ®Г°Г»Гµ Г§Г ГўГЁГ±ГЁГІ Г¤Г Г­Г­Г»Г© ГЇГ Г°Г Г¬ГҐГІГ°)
+  /**Это поле должен будет заполнить объект, который желает получать информацию о том, нужно ли вы каким-то образом
+   * выполнять обновление этого элемента.
+   * Это может быть блок, который будет вызывать метод Update() только для тех параметров, которые нужно
+   * пересчитать (а пересчитывать параметр нужно тогда, когда изменилось хотя бы одно значение в списке параметров,
+   * от которых зависит данный параметр)
    *
    */
   private ModelExecuteList FExecList = null;
   /*
-   * Г‚ ГЅГІГ®Г¬ Г«ГЁГ±ГІГҐГ­ГҐГ°ГҐ Г¤Г®Г«Г¦Г­Г  ГЎГіГ¤ГҐГІ ГµГ°Г Г­ГЁГІГјГ±Гї ГЁГ±ГІГ®Г°ГЁГї ГЁГ§Г¬ГҐГ­ГҐГ­ГЁГ© ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г©
+   * В этом листенере должна будет храниться история изменений переменной
    * */
   private ValueChangeListener FVarChangeListener = null;
 
   /**
-
-   *  пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
-
+   *  хранилище состояний для отката на прежнюю точку
    */
   protected Map<UUID, Object> fixedStates = new HashMap<UUID, Object> ();
 
@@ -91,8 +89,8 @@ public abstract class ModelBlockParam extends ModelElement{
   public void Update( ModelTime aCurrentTime ) throws ScriptException, ModelException{
     Update();
     if ( GlobalParams.ExecTimeOutputEnabled() && (aCurrentTime != null) ){
-      System.out.println("Г‚Г»ГЇГ®Г«Г­ГҐГ­ГЁГҐ ГЇГ Г°Г Г¬ГҐГІГ°Г  " + this.GetFullName() + ". Г‚Г°ГҐГ¬Гї Г¬Г®Г¤ГҐГ«ГЁ = " +
-              Double.toString(aCurrentTime.GetValue()) + " Г‡Г­Г Г·ГҐГ­ГЁГҐ ГЇГ Г°Г Г¬ГҐГІГ°Г  = " +  FVariable.toString());
+      System.out.println("Выполнение параметра " + this.GetFullName() + ". Время модели = " +
+              Double.toString(aCurrentTime.GetValue()) + " Значение параметра = " +  FVariable.toString());
     }
   }
 
@@ -100,10 +98,10 @@ public abstract class ModelBlockParam extends ModelElement{
     FDependElements.add( aElement );
   }
 
-  /**Г”ГіГ­ГЄГ¶ГЁГї ГўГ®Г§ГўГ°Г Г№Г ГҐГІ Г±Г±Г»Г«ГЄГі Г­Г  ГЇГ Г°Г Г¬ГҐГІГ°, ГЄГ®ГІГ®Г°Г»Г© Г§Г ГўГЁГ±ГЁГІ Г®ГІ Г¤Г Г­Г­Г®ГЈГ® ГЇГ Г°Г Г¬ГҐГІГ°Г 
+  /**Функция возвращает ссылку на параметр, который зависит от данного параметра
    *
-   * @param index - ГЁГ­Г¤ГҐГЄГ± ГЅГ«ГҐГ¬ГҐГ­ГІГ 
-   * @return - Г±Г±Г»Г«ГЄГ  Г­Г  Г§Г ГўГЁГ±ГЁГ¬Г»Г© ГЇГ Г°Г Г¬ГҐГІГ°, Г«ГЁГЎГ® null, ГҐГ±Г«ГЁ ГЁГ­Г¤ГҐГЄГ± ГўГ»ГµГ®Г¤ГЁГІ Г§Г  ГЇГ°ГҐГ¤ГҐГ«Г» Г±ГЇГЁГ±ГЄГ  Г§Г ГўГЁГ±ГЁГ¬Г»Гµ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў
+   * @param index - индекс элемента
+   * @return - ссылка на зависимый параметр, либо null, если индекс выходит за пределы списка зависимых параметров
    */
   public ModelElement GetDependElement(int index){
     if ( index < 0 || FDependElements.size() <= index ){
@@ -121,8 +119,8 @@ public abstract class ModelBlockParam extends ModelElement{
 
   }
 
-  /** ГЏГ°Г®ГўГҐГ°ГїГҐГІГ±Гї, ГїГўГ«ГїГҐГІГ±Гї Г«ГЁ ГЇГҐГ°ГҐГ¤Г Г­Г­Г»Г© Гў ГЇГ Г°Г Г¬ГҐГІГ°ГҐ ГЅГ«ГҐГ¬ГҐГ­ГІ Г§Г ГўГЁГ±ГЁГ¬Г»Г¬ ГЅГ«ГҐГ¬ГҐГ­ГІГ®Г¬. Г‡Г ГўГЁГ±ГЁГ¬Г»Г¬ ГЅГ«ГҐГ¬ГҐГ­ГІГ®Г¬
-   * Г±Г·ГЁГІГ ГҐГІГ±Гї ГІГ ГЄГ®Г© ГЅГ«ГҐГ¬ГҐГ­ГІ, ГЄГ®ГІГ®Г°Г»Г© ГЇГ®Г«ГіГ·Г ГҐГІ Г¤Г Г­Г­Г»ГҐ ГЁГ§ ГЅГІГ®ГЈГ® ГЅГ«ГҐГ¬ГҐГ­ГІГ 
+  /** Проверяется, является ли переданный в параметре элемент зависимым элементом. Зависимым элементом
+   * считается такой элемент, который получает данные из этого элемента
    *
    * @param aElement
    * @return
@@ -136,15 +134,15 @@ public abstract class ModelBlockParam extends ModelElement{
     try {
       FVariable.SetValueWithTypeCheck( FInitValue );
     } catch (ScriptException e) {
-      ModelException e1 = new ModelException("ГЋГёГЁГЎГЄГ  Гў ГЅГ«ГҐГ¬ГҐГ­ГІГҐ \"" + GetFullName() + "\": " + e.getMessage() );
+      ModelException e1 = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage() );
       throw e1;
     }
   }
 
-  /**Г‘Г®Г§Г¤Г Г­ГЁГҐ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г© (Г®ГЎГєГҐГЄГІГ  Variable).
+  /**Создание переменной (объекта Variable).
    *
-   * @param aVarType - ГІГҐГЄГ±ГІГ®ГўГ®ГҐ Г­Г Г§ГўГ Г­ГЁГҐ ГІГЁГЇГ  ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г©: integer, real, boolean
-   * @param aInitValue - ГІГҐГЄГ±ГІГ®ГўГ®ГҐ Г§Г­Г Г·ГҐГ­ГЁГҐ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г©
+   * @param aVarType - текстовое название типа переменной: integer, real, boolean
+   * @param aInitValue - текстовое значение переменной
    */
   public void SetVarInfo(String aVarType, String aInitValue) throws ModelException{
     ModelElement owner = this.GetOwner();
@@ -165,7 +163,7 @@ public abstract class ModelBlockParam extends ModelElement{
       error = e.getMessage();
     }
     if ( owner == null ){
-      ModelException e1 = new ModelException( "ГЋГёГЁГЎГЄГ  Гў ГЅГ«ГҐГ¬ГҐГ­ГІГҐ \"" + GetFullName() + "\": " + error );
+      ModelException e1 = new ModelException( "Ошибка в элементе \"" + GetFullName() + "\": " + error );
       throw e1;
     }
     ModelBlock block = (ModelBlock) owner;
@@ -173,7 +171,7 @@ public abstract class ModelBlockParam extends ModelElement{
 
     ModelConstant cnst = model.GetConstant( aInitValue );
     if ( cnst == null ) {
-      ModelException e1 = new ModelException("ГЋГёГЁГЎГЄГ  Гў ГЅГ«ГҐГ¬ГҐГ­ГІГҐ \"" + GetFullName() + "\": " + error );
+      ModelException e1 = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + error );
       throw e1;
     }
 
@@ -188,9 +186,9 @@ public abstract class ModelBlockParam extends ModelElement{
 
   }
 
-  /**Г„Г Г­Г­ГіГѕ ГґГіГ­ГЄГ¶ГЁГѕ ГўГ»Г§Г»ГўГ ГҐГІ Гі Г¤Г Г­Г­Г®ГЈГ® ГЇГ Г°Г Г¬ГҐГІГ°Г  Г¤Г°ГіГЈГ®Г© ГЇГ Г°Г Г¬ГҐГІГ° (ГЇГ Г°Г Г¬ГҐГІГ°-ГЁГ±ГІГ®Г·Г­ГЁГЄ), ГЄГ®ГІГ®Г°Г»Г© ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГІГ±Гї Гў
-   * ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГїГµ Г§Г­Г Г·ГҐГ­ГЁГї  Г¤Г«Гї ГЅГІГ®ГЈГ® ГЇГ Г°Г Г¬ГҐГІГ°Г . Г‚Г»Г§Г®Гў ГЇГ°Г®ГЁГ±ГµГ®Г¤ГЁГІ, ГҐГ±Г«ГЁ Г§Г­Г Г·ГҐГ­ГЁГҐ ГЇГ Г°Г Г¬ГҐГІГ°Г -ГЁГ±ГІГ®Г·Г­ГЁГЄГ  ГЁГ§Г¬ГҐГ­ГЁГ«Г®Г±Гј.
-   * @param aChangedParam - Г±Г±Г»Г«ГЄГ  Г­Г  ГЇГ Г°Г Г¬ГҐГІГ°-ГЁГ±ГІГ®Г·Г­ГЁГЄ
+  /**Данную функцию вызывает у данного параметра другой параметр (параметр-источник), который используется в
+   * вычислениях значения  для этого параметра. Вызов происходит, если значение параметра-источника изменилось.
+   * @param aChangedParam - ссылка на параметр-источник
    */
   public void InputParamChanged(ModelElement aChangedParam){
     FIsInpParamChanged = true;
@@ -203,17 +201,17 @@ public abstract class ModelBlockParam extends ModelElement{
     }
   }
 
-  /**Г”ГіГ­ГЄГ¶ГЁГї ГўГ®Г§ГўГ°Г Г№Г ГҐГІ "Г¤Г ", ГҐГ±Г«ГЁ Г¤Г Г­Г­Г»Г© ГЇГ Г°Г Г¬ГҐГІГ° Г­ГіГ¦Г¤Г ГҐГІГ±Гї Гў ГЇГҐГ°ГҐГ±Г·ГҐГІГҐ, ГІ.ГҐ. ГЇГ°ГЁ ГўГ»Г§Г®ГўГҐ ГЇГ°Г®Г¶ГҐГ¤ГіГ°Г» Update() Г§Г­Г Г·ГҐГ­ГЁГҐ
-   * ГЅГІГ®ГЈГ® ГЇГ Г°Г Г¬ГҐГІГ°Г  ГЁГ§Г¬ГҐГ­ГЁГІГ±Гї.
+  /**Функция возвращает "да", если данный параметр нуждается в пересчете, т.е. при вызове процедуры Update() значение
+   * этого параметра изменится.
    * @return
    */
   public boolean IsNeedToUpdate(){
     return FIsInpParamChanged;
   }
 
-  /** Г”ГіГ­ГЄГ¶ГЁГї ГЇГ°Г®ГўГҐГ°ГїГҐГІ, ГїГўГ«ГїГҐГІГ±Гї Г«ГЁ ГЇГҐГ°ГҐГ¤Г Г­Г­Г»Г© Гў ГЇГ Г°Г Г¬ГҐГІГ°ГҐ ГЅГ«ГҐГ¬ГҐГ­ГІ ГІГҐГ¬ ГЇГ Г°Г Г¬ГҐГІГ°Г®Г¬, ГЄГ®ГІГ®Г°Г»Г© ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГІГ±Гї Гў
-   * ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГїГµ ГўГ­ГіГІГ°ГЁ Г¤Г Г­Г­Г®ГЈГ® ГЇГ Г°Г Г¬ГҐГІГ°Г .
-   * @param aElement - ГЇГ°Г®ГўГҐГ°ГїГҐГ¬Г»Г© ГЇГ Г°Г Г¬ГҐГІГ°
+  /** Функция проверяет, является ли переданный в параметре элемент тем параметром, который используется в
+   * вычислениях внутри данного параметра.
+   * @param aElement - проверяемый параметр
    * @return
    */
   public boolean IsInputParam(ModelElement aElement){
@@ -273,9 +271,9 @@ public abstract class ModelBlockParam extends ModelElement{
   }
 
   /**
-   *  ГЏГ°ГЁГ§Г­Г ГЄ Г±Г®ГµГ°Г Г­ГїГѕГ№ГҐГ©Г±Гї ГЁГ±ГІГ®Г°ГЁГЁ ГЁГ§Г¬ГҐГ­ГҐГ­ГЁГ©
+   *  Признак сохраняющейся истории изменений
    *
-   * @return true, ГҐГ±Г«ГЁ Г¤Г«Гї Г¤Г Г­Г­Г®ГЈГ® ГЇГ Г°Г Г¬ГҐГІГ°Г  Г±Г®ГµГ°Г Г­ГїГҐГІГ±Гї ГЁГ±ГІГ®Г°ГЁГї ГЁГ§Г¬ГҐГ­ГҐГ­ГЁГ© ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г©
+   * @return true, если для данного параметра сохраняется история изменений переменной
    */
   public boolean IsHistoryExists(){
   	return (FVarChangeListener != null);
@@ -290,8 +288,8 @@ public abstract class ModelBlockParam extends ModelElement{
 
   /**
    *
-   * @return ГўГ®Г§ГўГ°Г Г№Г ГҐГІ true, ГҐГ±Г«ГЁ Г¤Г«Гї Г¤Г Г­Г­Г®ГЈГ® ГЇГ Г°Г Г¬ГҐГІГ°Г  Г­ГіГ¦Г­Г® ГўГ»Г§Г»ГўГ ГІГј Г¬ГҐГІГ®Г¤ Update() ГўГ® ГўГ°ГҐГ¬Гї ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГї Г¬Г®Г¤ГҐГ«ГЁ.
-   * Г’.ГҐ. ГЅГІГ® Г®Г§Г­Г Г·Г ГҐГІ, Г·ГІГ® ГЇГ°ГЁ ГўГ»Г§Г®ГўГҐ Г¬ГҐГІГ®Г¤Г  Update() ГҐГ±ГІГј Г­Г Г¤ГҐГ¦Г¤Г  Г­Г  ГІГ®, Г·ГІГ® Г§Г­Г Г·ГҐГ­ГЁГҐ ГЇГ Г°Г Г¬ГҐГІГ°Г  Г¬Г®Г¦ГҐГІ ГЁГ§Г¬ГҐГ­ГЁГІГјГ±Гї
+   * @return возвращает true, если для данного параметра нужно вызывать метод Update() во время выполнения модели.
+   * Т.е. это означает, что при вызове метода Update() есть надежда на то, что значение параметра может измениться
    */
   public abstract boolean IsNeedRuntimeUpdate();
 
@@ -300,7 +298,7 @@ public abstract class ModelBlockParam extends ModelElement{
 		if (paramNode != null) {
 			ModelAttributeReader reader = ServiceLocator.GetAttributeReader();
 			reader.SetNode(paramNode);
-			// ГЇГ°Г®ГўГҐГ°ГїГҐГ¬, Г­ГҐ Г¤Г®Г«Г¦ГҐГ­ Г«ГЁ ГЇГ Г°Г Г¬ГҐГІГ° Г±Г®ГµГ°Г Г­ГїГІГј Г±ГўГ®Гѕ ГЁГ±ГІГ®Г°ГЁГѕ
+			// проверяем, не должен ли параметр сохранять свою историю
 			if (reader.GetSaveHistoryFlag()) {
 				AddHistoryChangeListener();
 			}
@@ -310,21 +308,17 @@ public abstract class ModelBlockParam extends ModelElement{
   
   public void fixState(UUID stateLabel) throws ModelException{
   	if (fixedStates.containsKey(stateLabel)) {
-
-  		throw new ModelException("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "+ this.GetFullName());
-
+  		throw new ModelException("Дублирование фиксированного состояния "+ this.GetFullName());
   	}   	
   	fixedStates.put(stateLabel, this.GetVariable().GetObject());
   }
     
   public void rollbackTo(UUID stateLabel) throws ModelException{
   	if (!fixedStates.containsKey(stateLabel)) {
-
-  		throw new  ModelException("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ " + this.GetFullName());  		
+  		throw new  ModelException("Отсутствует метка для отката " + this.GetFullName());  		
   	}
   	this.GetVariable().SetValue( fixedStates.get(stateLabel) ); 
   	fixedStates.remove(stateLabel);
-
   	  	
   }
 
