@@ -1214,8 +1214,7 @@ public class ExecutionContextTest extends TestCase {
     mainModel.run();
     assertTrue(mainModel != null);
     Integer i = getIntValue(mainModel, "block", 0, "forkResult");
-    assertEquals(i, new Integer(100));
-  	
+    assertEquals(i, new Integer(100));  	
   }
    
   
