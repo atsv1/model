@@ -348,6 +348,91 @@ public class ScriptOperationFunction extends ScriptOperation {
     result.SetValue( op1.GetIntValue() - i * op2.GetIntValue() );
     return 3;
   }
+  
+  private int ExecMin(int aProgramPointer ) throws ScriptException{
+  	Operand op1 = InitOperand( aProgramPointer + 1 );
+    Operand op2 = InitOperand( aProgramPointer + 2 );
+    Operand result = InitOperand( aProgramPointer + 3 );
+    float op1Value = op1.GetFloatValue();
+    float op2Value = op2.GetFloatValue();
+    float minVal;
+    if ( op1Value < op2Value ) {
+    	minVal = op1Value; 
+    } else minVal = op2Value;
+    if ( result.GetType() ==  Operand.OPERAND_TYPE_INTEGER) {
+    	result.SetValue( (int)minVal );
+    } else {
+    	result.SetValue( minVal );
+    }
+    return 3;
+  }
+  
+  private int ExecMin3(int aProgramPointer ) throws ScriptException{
+  	Operand op1 = InitOperand( aProgramPointer + 1 );
+    Operand op2 = InitOperand( aProgramPointer + 2 );
+    Operand op3 = InitOperand( aProgramPointer + 3 );
+    Operand result = InitOperand( aProgramPointer + 4 );
+    float op1Value = op1.GetFloatValue();
+    float op2Value = op2.GetFloatValue();
+    float op3Value = op3.GetFloatValue();
+    float minVal;
+    if ( op1Value < op2Value ) {
+    	minVal = op1Value; 
+    } else minVal = op2Value;
+    
+    if ( op3Value < minVal ) {
+    	minVal = op3Value;
+    }
+    
+    if ( result.GetType() ==  Operand.OPERAND_TYPE_INTEGER) {
+    	result.SetValue( (int)minVal );
+    } else {
+    	result.SetValue( minVal );
+    }
+    return 4;  	
+  }
+  
+  private int ExecMax(int aProgramPointer ) throws ScriptException{
+  	Operand op1 = InitOperand( aProgramPointer + 1 );
+    Operand op2 = InitOperand( aProgramPointer + 2 );
+    Operand result = InitOperand( aProgramPointer + 3 );
+    float op1Value = op1.GetFloatValue();
+    float op2Value = op2.GetFloatValue();
+    float maxVal;
+    if ( op1Value > op2Value ) {
+    	maxVal = op1Value; 
+    } else maxVal = op2Value;
+    if ( result.GetType() ==  Operand.OPERAND_TYPE_INTEGER) {
+    	result.SetValue( (int)maxVal );
+    } else {
+    	result.SetValue( maxVal );
+    }
+    return 3;
+  }
+  
+  private int ExecMax3(int aProgramPointer ) throws ScriptException{
+  	Operand op1 = InitOperand( aProgramPointer + 1 );
+    Operand op2 = InitOperand( aProgramPointer + 2 );
+    Operand op3 = InitOperand( aProgramPointer + 3 );
+    Operand result = InitOperand( aProgramPointer + 4 );
+    float op1Value = op1.GetFloatValue();
+    float op2Value = op2.GetFloatValue();
+    float op3Value = op3.GetFloatValue();
+    float maxVal;
+    if ( op1Value > op2Value ) {
+    	maxVal = op1Value; 
+    } else maxVal = op2Value;
+    if (maxVal < op3Value) {
+    	maxVal = op3Value;
+    }
+    
+    if ( result.GetType() ==  Operand.OPERAND_TYPE_INTEGER) {
+    	result.SetValue( (int)maxVal );
+    } else {
+    	result.SetValue( maxVal );
+    }
+    return 4;
+  }
 
   private int ExecReLink(int aProgramPointer ) throws ScriptException{
     Operand modelName = InitOperand( aProgramPointer + 1 );
@@ -452,6 +537,18 @@ public class ScriptOperationFunction extends ScriptOperation {
       }
       case 22:{
         return ExecReLink( aProgramPointer );
+      }
+      case 23:{
+        return ExecMin( aProgramPointer );
+      }
+      case 24:{
+        return ExecMin3( aProgramPointer );
+      }
+      case 25:{
+        return ExecMax( aProgramPointer );
+      }
+      case 26:{
+        return ExecMax3( aProgramPointer );
       }
       case 100:{
         return ExecPrint( aProgramPointer );

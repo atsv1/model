@@ -14,7 +14,7 @@ import java.util.Vector;
  *
  */
 public class VariableList {
-  private Hashtable FVariables;
+  private Hashtable<String, Operand> FVariables;
   private int FTempVariablesCount = 0;
   private String FTempVariablePrefix = ScriptLanguageDef.GetTempVarPrefix();
   private Enumeration FElements = null;
