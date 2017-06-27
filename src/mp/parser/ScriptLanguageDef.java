@@ -162,6 +162,10 @@ public class ScriptLanguageDef {
       {"real",               "20", "",         "real"},
       {"mod",                "21", "integer","integer"},
       {"ReLinkParam",        "22", "",         "boolean"},
+      {"min",                "23", "",         "real"},
+      {"min3",               "24", "",         "real"},
+      {"max",                "25", "",         "real"},
+      {"max3",               "26", "",         "real"},
       {"print",              "100", "integer/real/string/boolean", "boolean"},
 
        //функции, связанные с матрицами

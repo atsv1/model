@@ -941,8 +941,7 @@ public class ModelScriptTest extends TestCase {
     assertTrue( f1 );
    }
 
-  public void testParseMov_3()
-  {
+  public void testParseMov_3() {
     VariableList variables = new VariableList();
     Variable var1 = new Variable(8);
     var1.SetName("var1");
@@ -982,16 +981,74 @@ public class ModelScriptTest extends TestCase {
       int i = (int)var1.GetFloatValue();
       f1 = (i == 5);
       f = true;
-    } catch (ScriptException e)
-    {
-      System.out.println( e.getMessage() );
+    } catch (ScriptException e) {
+      e.printStackTrace();
     }
     assertTrue(f);
     assertTrue(f1);
   }
+  
+  public void testMinFunc(){
+  	VariableList variables = new VariableList();
+    Variable var1 = new Variable((float)0);
+    var1.SetName("var1");
+    Variable var2 = new Variable((float)0);
+    var2.SetName("var2");
+    Variable var3 = new Variable((float)0);
+    var3.SetName("var3");
+    variables.AddVariable( var1 );
+    variables.AddVariable( var2 );
+    variables.AddVariable( var3 );
+    PascalParser parser = new PascalParser( variables );
+    boolean f = false;    
+    try {
+      parser.ParseScript(" var v1, v2, v3 : integer; v1 := 9; v2 := 57;"
+      		+ " var1 := min(v1, v2);"
+      		+ " v3 := 0-1;"
+      		+ " var2 := min (var1, v3 );"
+      		+ " var3 := min3(var1, var2, 70);");
+      parser.ExecuteScript();
+      int i = (int)var1.GetFloatValue();
+      assertEquals(i, 9);
+      i = (int)var2.GetFloatValue();
+      assertEquals(i, -1);
+      i = (int)var3.GetFloatValue();
+      assertEquals(i, -1);
+      f = true;
+    } catch (ScriptException e) {
+      e.printStackTrace();
+    }
+    assertTrue(f);
+  }
+  
+  public void testMaxFunc(){
+  	VariableList variables = new VariableList();
+    Variable var1 = new Variable((float)10);
+    var1.SetName("var1");
+    Variable var2 = new Variable((float)20);
+    var2.SetName("var2");
+    Variable var3 = new Variable((float)30);
+    var3.SetName("var3");
+    variables.AddVariable( var1 );
+    variables.AddVariable( var2 );
+    variables.AddVariable( var3 );
+    PascalParser parser = new PascalParser( variables );
+    boolean f = false;    
+    try {
+    	int i = (int)var1.GetFloatValue();
+    	assertEquals(i, 10);
+      parser.ParseScript(" var1 := max3(var1, var2, var3); ");
+      parser.ExecuteScript();
+      i = (int)var1.GetFloatValue();
+      assertEquals(i, 30);      
+      f = true;
+    } catch (ScriptException e) {
+      e.printStackTrace();
+    }
+    assertTrue(f);
+  }
 
-  public void testFunctionASin()
-  {
+  public void testFunctionASin() {
     VariableList variables = new VariableList();
     Variable var1 = new Variable((float)0);
     var1.SetName("var1");
@@ -1005,16 +1062,14 @@ public class ModelScriptTest extends TestCase {
       int i = (int)var1.GetFloatValue();
       f1 = (i == 5);
       f = true;
-    } catch (ScriptException e)
-    {
-      System.out.println( e.getMessage() );
+    } catch (ScriptException e) {
+      e.printStackTrace();
     }
     assertTrue(f);
     assertTrue(f1);
   }
 
-  public void testFunctionCos()
-  {
+  public void testFunctionCos() {
     VariableList variables = new VariableList();
     Variable var1 = new Variable((float)0);
     var1.SetName("var1");
