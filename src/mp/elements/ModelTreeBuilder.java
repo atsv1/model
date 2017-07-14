@@ -1,8 +1,9 @@
 package mp.elements;
 
 import org.xml.sax.SAXException;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
+import org.xml.sax.SAXException;
+import org.w3c.dom.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,11 +62,11 @@ public class ModelTreeBuilder {
     return null;
   }
 
-  private void ReadSubModels( Node aRootNode, Model parentModel) throws ModelException, IOException, SAXException {
-    if ( aRootNode == null ){
+  private void ReadSubModels( ModelElementDataSource aRootDataSource, Model parentModel) throws ModelException, IOException, SAXException {
+    if ( aRootDataSource == null ){
       return;
     }
-    Node modelListNode = GetModelListNode( aRootNode );
+    ModelElementDataSource modelListElements = GetModelListNode( aRootNode );
     if ( modelListNode == null ){
       return;
     }
@@ -86,7 +87,7 @@ public class ModelTreeBuilder {
         ModelXMLReader modelReader = new ModelXMLReader( FElementFactory );
         modelReader.ReadModel( FPath + FFileSeparator + modelFileName );
         subModel = (Model)modelReader.GetRootElement();
-        ReadSubModels( subModel.GetNode(), subModel );
+        ReadSubModels( subModel.GetDataSource(), subModel );
         modelList.add(subModel);
         try {
 	        ModelExecutionContext.AddModelExecutionManager(subModel);
@@ -123,7 +124,8 @@ public class ModelTreeBuilder {
 		} catch (ScriptException e) {
 			throw new ModelException( e.getMessage() );
 		}
-    ReadSubModels( FRootModel.GetNode(), FRootModel );
+    
+    ReadSubModels( FRootModel.GetDataSource(), FRootModel );
     Model subModel;
     int i = 0;
     while (i < modelList.size()) {

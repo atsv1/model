@@ -3,7 +3,7 @@ package mp.elements;
 import mp.utils.ModelAttributeReader;
 import mp.utils.ServiceLocator;
 import mp.parser.*;
-import org.w3c.dom.Node;
+
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -25,7 +25,7 @@ public class ModelArrayElement extends ModelCalculatedElement{
     super(aOwner, aElementName, aElementId);
   }
 
-  protected void ReadVariableInfo( ModelAttributeReader aAttrReader ) throws ModelException{
+  protected void ReadVariableInfo( ModelElementDataSource aAttrReader ) throws ModelException{
     ScriptArray array = new ScriptArray();
     array.SetName( this.GetName() );
     this.SetVariable( array );
@@ -33,7 +33,7 @@ public class ModelArrayElement extends ModelCalculatedElement{
     ReadArrayInfo( GetNode() );
   }
 
-  private int GetValueType( ModelAttributeReader attrReader ) throws ModelException {
+  private int GetValueType( ModelElementDataSource attrReader ) throws ModelException {
     String typeName = attrReader.GetValueType();
     int type =  Operand.GetTypCodeByName( typeName );
     if ( type == -1 ){

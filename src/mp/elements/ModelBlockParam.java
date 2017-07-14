@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
-import org.w3c.dom.Node;
+
 
 /**
  * User: atsv
@@ -222,7 +222,7 @@ public abstract class ModelBlockParam extends ModelElement{
     return (e != null);
   }
 
-  protected void ReadVariableInfo( ModelAttributeReader aAttrReader ) throws ModelException{
+  protected void ReadVariableInfo( ModelElementDataSource aAttrReader ) throws ModelException{
     String typeName = aAttrReader.GetAttrParamType();
     String initValue = aAttrReader.GetAttrInitValue();
     SetVarInfo( typeName, initValue );

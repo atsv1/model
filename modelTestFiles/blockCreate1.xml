@@ -9,6 +9,7 @@
           <Formula>
             <![CDATA[
               CreateBlock( "CreateBlock1Model1", "block" );
+              StopExecution("CreateBlock1Model1");              
            ]]>
           </Formula>
         </Param>

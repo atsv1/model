@@ -167,6 +167,7 @@ public class ScriptLanguageDef {
       {"max",                "25", "",         "real"},
       {"max3",               "26", "",         "real"},
       {"print",              "100", "integer/real/string/boolean", "boolean"},
+      {"CreateBlock", "101", "", "integer"},
 
        //функции, связанные с матрицами
       {"GetArrayValue",           "200", "", "integer" },

@@ -553,6 +553,10 @@ public class ScriptOperationFunction extends ScriptOperation {
       case 100:{
         return ExecPrint( aProgramPointer );
       }
+      case 101:{
+        return ExecCreateNewBlock( aProgramPointer );
+      }
+      
       case 200:{
         return ExecArray_GetValue( aProgramPointer );
       }
@@ -1058,6 +1062,23 @@ public class ScriptOperationFunction extends ScriptOperation {
   	return 3;  	
   }  
   
+  
+  //////////////////////////////////////
+  //////////// Создание нового блока во время выполнения модели
+  
+  private int ExecCreateNewBlock(int aProgramPointer) throws ScriptException {
+  	Operand op1 = InitOperand( aProgramPointer + 1 );
+  	ModelExecutionManager manager = ModelExecutionContext.GetManager( op1.GetStringValue() );
+  	if ( manager == null ){      
+      throw new ScriptException("Отсутствует модель с именем \"" + op1.GetStringValue() + "\"");      
+    }
+  	Operand op2 = InitOperand( aProgramPointer + 2 );
+  	String blockName = op2.GetStringValue();
+  	manager.createNewBlock(blockName);
+  	
+  	return 3;
+  	
+  }
   
   
 }

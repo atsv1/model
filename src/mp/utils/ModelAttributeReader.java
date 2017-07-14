@@ -8,6 +8,7 @@ import org.w3c.dom.CDATASection;
 import java.awt.*;
 import java.util.Hashtable;
 
+import mp.elements.ModelElementDataSource;
 import mp.elements.ModelException;
 
 /**
@@ -15,18 +16,26 @@ import mp.elements.ModelException;
  * Date: 23.09.2006
  * Класс читает значения атрибутов
  */
-public class ModelAttributeReader {
+public class ModelAttributeReader implements ModelElementDataSource{
   private Node FNode = null;
+  private ModelElementDataSource parentElement = null;
   private Hashtable FConstantList = new Hashtable();
 
 
-  public ModelAttributeReader( Node aNode ) {
+  public ModelAttributeReader( Node aNode, ModelElementDataSource parent ) {
     FNode = aNode;
+    this.parentElement = parent;
   }
 
   public Node GetNode() {
     return FNode;
   }
+  
+  public ModelElementDataSource getParent(){
+  	return parentElement;
+  }
+  
+   
 
   public void SetNode(Node aNode) throws ModelException {
     if (aNode == null){
@@ -48,6 +57,7 @@ public class ModelAttributeReader {
     return attr.getNodeValue();
   }
 
+  @Override
   public String GetAttrName() throws ModelException{
     String result = GetAttrValue("name");
     if ( result == null ){
@@ -57,10 +67,12 @@ public class ModelAttributeReader {
     return result;
   }
 
+  @Override
   public String GetValueAttr(){
     return GetAttrValue("value");
   }
 
+  @Override
   public int GetNumberAttr(){
   	String s = GetAttrValue("number");
   	int res;
@@ -68,6 +80,7 @@ public class ModelAttributeReader {
     return res;
   }
 
+  @Override
   public int GetAttrCount() throws ModelException{
     String s = GetAttrValue( "count" );
     if ( s == null || s.equalsIgnoreCase("") )
@@ -90,10 +103,12 @@ public class ModelAttributeReader {
     return i;
   }
 
+  @Override
   public String GetAttrParamType() throws ModelException{
     return GetAttrValue("type");
   }
 
+  @Override
   public String GetAttrInitValue() throws ModelException{
     String s = GetAttrValue("initvalue");
     String constValue = GetConstantValue( s );
@@ -103,35 +118,43 @@ public class ModelAttributeReader {
     return s;
   }
 
+  @Override
   public String GetLinkedModelName(){
     return GetAttrValue("modelLink");
   }
 
+  @Override
   public String GetLinkedBlockName() throws ModelException{
     return GetAttrValue("blockLink");
   }
 
+  @Override
   public String GetLinkedParamName() throws ModelException{
     return GetAttrValue("paramLink");
   }
 
 
+  @Override
   public String GetTransitionType() throws ModelException{
     return GetAttrValue("type");
   }
 
+  @Override
   public String GetAutomatCodeType() throws ModelException{
     return GetAttrValue("type");
   }
 
+  @Override
   public String GetTransitionValue()throws ModelException{
     return GetAttrValue("value");
   }
 
+  @Override
   public String GetNextStateName() throws ModelException{
     return GetAttrValue("nextstate");
   }
 
+  @Override
   public int GetTransitionPriority() throws ModelException {
     String val = GetAttrValue("priority");
     if ( val == null || "".equalsIgnoreCase( val ) ){
@@ -146,10 +169,12 @@ public class ModelAttributeReader {
     }
   }
 
+  @Override
   public String GetModelStep() throws ModelException {
     return GetAttrValue("step");
   }
 
+  @Override
   public String GetFormulaType(){
     return GetAttrValue("type");
   }
@@ -161,6 +186,7 @@ public class ModelAttributeReader {
    * чего-либо он хотел бы получить из параметра-источника. Именно для рассчета этого количества служит формула.
    * @return  true - если переданная нода содержит формулу для расчета количества. Иначе возвращается false
    */
+  @Override
   public boolean IsCountFormula(){
     String s = FNode.getNodeName();
     if ( !"formula".equalsIgnoreCase(s) ){
@@ -178,6 +204,7 @@ public class ModelAttributeReader {
    *
    * @return  -true, если нода содержит формулу, по которой определяется, возможен ли обмен. false - если не содержит
    */
+  @Override
   public boolean IsEnableFormula(){
     String s = FNode.getNodeName();
     if ( !"formula".equalsIgnoreCase(s) ){
@@ -195,6 +222,7 @@ public class ModelAttributeReader {
    * количеству, которое появится на выходе данного элемента.
    * @return
    */
+  @Override
   public boolean IsOutgoingFormula(){
     String s = FNode.getNodeName();
     if ( !"formula".equalsIgnoreCase(s) ){
@@ -208,42 +236,52 @@ public class ModelAttributeReader {
 
   }
 
+  @Override
   public String GetCountVar(){
     return GetAttrValue("countvar");
   }
 
+  @Override
   public String GetSourceBlockName(){
     return GetAttrValue("sourceblock");
   }
 
+  @Override
   public String GetSourceBlockIndex(){
     return GetAttrValue("sourceindex");
   }
 
+  @Override
   public String GetSourceParamName(){
     return GetAttrValue("sourceparam");
   }
 
+  @Override
   public String GetValueType(){
     return GetAttrValue("valuetype");
   }
 
+  @Override
   public String GetDynamicEtalonName(){
     return GetAttrValue("etalonname");
   }
 
+  @Override
   public String GetDynamicOwnerName(){
     return GetAttrValue("ownername");
   }
 
+  @Override
   public String GetSkipFirstValue(){
     return GetAttrValue("skipfirst");
   }
 
+  @Override
   public String GetBlockLinkIndex(){
     return GetAttrValue("blockIndex");
   }
 
+  @Override
   public int GetMaxEnableBlockCount() throws ModelException {
     String s = GetAttrValue("maxCount");
     if ( s == null || "".equalsIgnoreCase( s ) ){
@@ -257,6 +295,7 @@ public class ModelAttributeReader {
     }
   }
 
+  @Override
   public int GetStepDelay() throws ModelException {
     String s = GetAttrValue("delay");
     if ( s == null || "".equalsIgnoreCase( s ) ){
@@ -269,6 +308,7 @@ public class ModelAttributeReader {
     }
   }
 
+  @Override
   public int GetDurationPrintInterval(){
     String s = GetAttrValue("printDurationInterval");
     if ( s == null || "".equalsIgnoreCase( s ) ){
@@ -281,42 +321,52 @@ public class ModelAttributeReader {
     }
   }
 
+  @Override
   public String GetAggregatorFunctionType(){
     return GetAttrValue("functiontype");
   }
 
+  @Override
   public String GetArrayDimensionValue( int aDimensionNum ){
     return GetAttrValue("dimension" + Integer.toString( aDimensionNum ) );
   }
 
+  @Override
   public String GetArrayDimensionValue( ){
     return GetAttrValue("dimension" );
   }
 
+  @Override
   public String GetArray_EnableFlagName(){
     return GetAttrValue("enable" );
   }
 
+  @Override
   public String GetArray_ForEachValue(){
     return GetAttrValue("arrayvalue" );
   }
 
+  @Override
   public String GetArray_CoordinateParamName(){
     return GetAttrValue("coordinate" );
   }
 
+  @Override
   public String GetArray_CoordinateParamName(int aCoordinateNum){
     return GetAttrValue("coordinate" + Integer.toString( aCoordinateNum ));
   }
 
+  @Override
   public String GetSwitchParamName(){
     return GetAttrValue("switchparam");
   }
 
+  @Override
   public String GetSwitchValue(){
     return GetAttrValue("switchvalue");
   }
 
+  @Override
   public boolean GetSaveHistoryFlag(){
   	String s = GetAttrValue("storeHistory");
   	if ("true".equalsIgnoreCase(s)) {
@@ -627,7 +677,9 @@ public class ModelAttributeReader {
     return GetAttrValue("file");
   }
 
-  public void AddConstant( String aConstName, String aConstValue ){
+  public void AddConstant( String aConstName, String aConstValue ) throws ModelException{
+  	throw new ModelException("КОНСТАНТЫ!!!!");
+  	/*
     if ( aConstName == null || "".equalsIgnoreCase( aConstName ) ){
       return;
     }
@@ -638,6 +690,7 @@ public class ModelAttributeReader {
       constRec[1] = aConstValue;
       FConstantList.put( aConstName.toUpperCase(), constRec );
     }
+    */
   }
 
   public String GetConstantValue( String aConstName ){
@@ -655,8 +708,14 @@ public class ModelAttributeReader {
     FConstantList.clear();
   }
 
-  public String GetModelAttrValue(){
+  @Override
+	public String GetModelAttrValue(){
   	return GetAttrValue("model");
   }
+
+	@Override
+	public String GetElementName() {		
+		return FNode.getNodeName();
+	}
 
 }

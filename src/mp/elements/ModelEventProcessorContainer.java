@@ -8,8 +8,6 @@ import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * User: atsv

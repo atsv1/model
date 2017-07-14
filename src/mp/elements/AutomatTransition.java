@@ -5,8 +5,6 @@ import mp.utils.ModelAttributeReader;
 
 import java.util.UUID;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**  ласс отвечает за реализацию переходов между состо€ни€ми стэйтчарта: вы€снение возможности перехода, выполнение
  * кода перехода.

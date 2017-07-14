@@ -7,7 +7,6 @@ import org.w3c.dom.NodeList;
 
 import java.util.UUID;
 
-import org.w3c.dom.Node;
 
 /**
  * User: atsv
@@ -326,7 +325,7 @@ public class ModelMaterialParam extends ModelInputBlockParam {
     Link( linkedBlock , FSourceElement);
   }
 
-  protected void ReadVariableInfo( ModelAttributeReader aAttrReader ) throws ModelException{
+  protected void ReadVariableInfo( ModelElementDataSource aAttrReader ) throws ModelException{
     Variable var = this.GetVariable();
     if ( var != null ){
       ModelException e = new ModelException("Попытка повторного создания переменной в элементе \"" + this.GetFullName() + "\"");

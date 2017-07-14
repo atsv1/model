@@ -7,9 +7,6 @@ import mp.utils.ServiceLocator;
 
 import java.util.Vector;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 /**
  * User: саша
  * Date: 30.05.2008

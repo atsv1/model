@@ -2,8 +2,6 @@ package mp.elements;
 
 import java.util.Vector;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import mp.parser.ParserFactory;
 import mp.parser.ScriptArray;
@@ -17,7 +15,7 @@ import mp.utils.ModelAttributeReader;
 public class ModelFunction extends ModelCalculatedElement {
 	private ScriptOperationUserFunction Function;
 	private Vector<ModelBlockParam> InnerVariables = null;
-	ModelAttributeReader FAttrReader = null;
+	
 
 	private String NODE_NAME_FORMULA = "Formula";
 	private String NODE_NAME_PARAM = "Param";
@@ -31,10 +29,10 @@ public class ModelFunction extends ModelCalculatedElement {
 		return Function;
 	}
 
-	public void ReadFunctionInfo(ModelAttributeReader aAttrReader) throws ModelException{
-		String funcName = aAttrReader.GetAttrName();
-    String typeName = aAttrReader.GetAttrParamType();
-    FAttrReader = aAttrReader;
+	public void ReadFunctionInfo(ModelElementDataSource dataSource) throws ModelException{
+		String funcName = dataSource.GetAttrName();
+    String typeName = dataSource.GetAttrParamType();
+    
     Function.SetName(funcName);
     try {
 	    Function.SetResultInfo(typeName);
@@ -44,7 +42,7 @@ public class ModelFunction extends ModelCalculatedElement {
 	}
 
 	public void ApplyNodeInformation() throws ModelException{
-		Node functionNode = GetNode();
+		ModelElementDataSource functionSource = GetDataSource();
 		NodeList nodes = functionNode.getChildNodes();
     if (nodes == null || nodes.getLength() == 0) {
       throw new ModelException("В функции " + Function.GetName() + " отсутствует исполняемый код");
@@ -113,7 +111,7 @@ public class ModelFunction extends ModelCalculatedElement {
 	 * @return
 	 * @throws ModelException
 	 */
-	private boolean IsVarParam(ModelAttributeReader attrReader) throws ModelException{
+	private boolean IsVarParam(ModelElementDataSource attrReader) throws ModelException{
 		String paramType = attrReader.GetAttrParamType();
 		if ("array".equalsIgnoreCase(paramType)) {
 			return true;

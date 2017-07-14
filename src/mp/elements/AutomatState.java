@@ -9,9 +9,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 
 /**
  * Порядок вызова скриптов при смене состояния:

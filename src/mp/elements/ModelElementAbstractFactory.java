@@ -1,5 +1,5 @@
 package mp.elements;
-import org.w3c.dom.Node;
+
 
 /**
  * User: atsv
@@ -20,16 +20,16 @@ public abstract class ModelElementAbstractFactory {
     return "";
   }
 
-  protected static String GetNodeName( Node aNode ){
-    if ( aNode == null ){
+  protected static String GetName( ModelElementDataSource aDataSource ){
+    if ( aDataSource == null ){
       return "";
     }
-    return aNode.getNodeName();
+    return aDataSource.GetElementName();
   }
 
-  protected String GetFunctionCode(Node aCurrentNode, Node aNewNode) throws ModelException{
-    String currentNodeName = GetNodeName( aCurrentNode );
-    String newNodeName = GetNodeName(aNewNode);
+  protected String GetFunctionCode(ModelElementDataSource aCurrentSource, ModelElementDataSource aNewSource) throws ModelException{
+    String currentNodeName = GetName( aCurrentSource );
+    String newNodeName = GetName(aNewSource);
     String functionCode = GetFunctionCode(currentNodeName, newNodeName);
     if ( "".equalsIgnoreCase( functionCode ) ){
       ModelException e = new ModelException("Не получить функцию для работы с объектом.  Текущая нода " + currentNodeName +
@@ -41,16 +41,17 @@ public abstract class ModelElementAbstractFactory {
 
 
 
-  public abstract ModelForReadInterface GetNewElement(Node aCurrentNode, ModelForReadInterface aCurrentElement,
-                                                      Node aNewNode, int aNewId) throws ModelException;
+  public abstract ModelForReadInterface GetNewElement(ModelElementDataSource aCurrentNode, ModelForReadInterface aCurrentElement,
+  		ModelElementDataSource aNewNode, int aNewId) throws ModelException;
 
   public abstract String[][] GetMatrix();
 
-  public abstract boolean IsLastNode( Node aNode );
+  public abstract boolean IsLastNode( ModelElementDataSource aNode ); 
+  
 
   public abstract boolean IsLastElement(ModelForReadInterface aElement);
 
-  public abstract void ExecuteDoSomethingFunction( Node aParentNode, Node aCurrentNode,
+  public abstract void ExecuteDoSomethingFunction( ModelElementDataSource aParentNode, ModelElementDataSource aCurrentNode,
                                                    ModelForReadInterface aCurrentElement,
                                            ModelForReadInterface aNewElement  ) throws ModelException;
 

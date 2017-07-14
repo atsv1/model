@@ -1,7 +1,5 @@
 package mp.elements;
 import java.util.UUID;
-
-import org.w3c.dom.Node;
 import mp.parser.ScriptException;
 import mp.utils.NameService;
 import mp.utils.ServiceLocator;
@@ -17,7 +15,7 @@ public class ModelElement implements ModelForReadInterface {
   private NameService FNames = ServiceLocator.GetNamesList();
   private ModelElement FOwner = null;
   private ModelElementContainer FElements = null;
-  private Node FNode = null;
+  protected ModelElementDataSource elementSource = null;
   private String FFullName = null;
   private Integer FNameIndexObj = null;
 
@@ -72,15 +70,7 @@ public class ModelElement implements ModelForReadInterface {
   public ModelElementContainer GetElements() {
     return FElements;
   }
-
-  public Node GetNode() {
-    return FNode;
-  }
-
-  public void SetNode(Node aNode) {
-    this.FNode = aNode;
-  }
-
+  
   public void AddElement(ModelElement aElement) throws ModelException{
     FElements.AddElement( aElement );
   }
@@ -151,5 +141,15 @@ public class ModelElement implements ModelForReadInterface {
   public void rollbackTo(UUID stateLabel) throws ModelException{
   	throw new  ModelException("invalid object operation");  	
   }
+
+	@Override
+	public ModelElementDataSource GetDataSource() {		 
+		return elementSource;
+	}
+
+	@Override
+	public void SetDataSource(ModelElementDataSource dataSource) {
+		this.elementSource = dataSource;
+	}
 
 }

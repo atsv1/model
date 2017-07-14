@@ -80,9 +80,8 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   /**„тение шага моделировани€ из файла модели. Ўаг считываетс€ и записываетс€ в переменную FTimeIncrement.
    * ≈сли шаг моделировани€ в модели отсутствует, то указанна€ переменна€  создаетс€ со значением 1.
    */
-  private void ReadTimeIncrement() throws ModelException {
-    FAttrReader.SetNode( this.GetNode() );
-    String s = FAttrReader.GetModelStep();
+  private void ReadTimeIncrement() throws ModelException {    
+    String s = elementSource.GetModelStep();
     double d;
     if ( s == null || "".equalsIgnoreCase(s) ){
       d = 1;
@@ -700,6 +699,17 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 	
 	public boolean isForkMode(){
 		return (forkCounter > 0);
+	}
+
+	@Override
+	public int createNewBlock(String blockName) throws ScriptException{
+		ModelBlock block = Get(blockName, 0);
+		if ( block == null ) {
+			throw new ScriptException("ќтсутствует блок \"" + blockName + "\"");
+		}
+		
+		
+		return 0;
 	}
 
 }

@@ -1,8 +1,6 @@
 package mp.elements;
 
-import org.w3c.dom.Node;
-import mp.utils.ModelAttributeReader;
-import mp.utils.ServiceLocator;
+
 
 /**
  * User: atsv
@@ -22,8 +20,7 @@ public class ModelElementFactory extends ModelElementAbstractFactory {
   private static String TRANSITION_TYPE_VALUE = "ByValue";
   private static String TRANSITION_TYPE_TIMEOUT = "Timeout";
 
-  private ModelAttributeReader FAttrReader = null;
-
+  
    /** Массив предназначен для хранения информации, которая будет использоваться при создании новых элементов
     * модели
    * Назначение столбцов массива:
@@ -69,75 +66,69 @@ public class ModelElementFactory extends ModelElementAbstractFactory {
 
   public ModelElementFactory() throws ModelException{
     //FAttrReader = new ModelAttributeReader(null);
-    FAttrReader = ServiceLocator.GetAttributeReader();
+    
   }
 
 
-  private ModelElement GetNewModel(ModelElement aNewElementOwner, Node aSourceNode , int aNewId) throws ModelException{
-    FAttrReader.SetNode( aSourceNode );
-    Model result = new Model(aNewElementOwner, FAttrReader.GetAttrName() ,  aNewId );
-    result.SetNode( aSourceNode );
+  private ModelElement GetNewModel(ModelElement aNewElementOwner, ModelElementDataSource aDataSource , int aNewId) throws ModelException{    
+    Model result = new Model(aNewElementOwner, aDataSource.GetAttrName() ,  aNewId );    
     return result;
   }
 
-  private ModelElement GetNewBlock(ModelElement aNewElementOwner, Node aSourceNode , int aNewId) throws ModelException{
-    FAttrReader.SetNode( aSourceNode );
-    ModelSimpleBlock result = new ModelSimpleBlock(aNewElementOwner, FAttrReader.GetAttrName() , aNewId);
-    result.SetNode( aSourceNode );
+  private ModelElement GetNewBlock(ModelElement aNewElementOwner, ModelElementDataSource dataSource , int aNewId) throws ModelException{    
+    ModelSimpleBlock result = new ModelSimpleBlock(aNewElementOwner, dataSource.GetAttrName() , aNewId);
+    result.SetDataSource( dataSource );
     return result;
   }
 
-  private ModelElement GetNewInpParam(ModelElement aNewElementOwner, Node aSourceNode, int aNewId) throws ModelException{
-    FAttrReader.SetNode( aSourceNode );
-    String s = FAttrReader.GetAttrParamType();
+  private ModelElement GetNewInpParam(ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException{    
+    String s = aSourceNode.GetAttrParamType();
     ModelBlockParam result;
     if ( "material".equalsIgnoreCase( s ) ){
-      result = new ModelMaterialParam( aNewElementOwner, FAttrReader.GetAttrName() , aNewId  );
+      result = new ModelMaterialParam( aNewElementOwner, aSourceNode.GetAttrName() , aNewId  );
     } else {
-      result = new ModelInputBlockParam(aNewElementOwner, FAttrReader.GetAttrName() , aNewId );
+      result = new ModelInputBlockParam(aNewElementOwner, aSourceNode.GetAttrName() , aNewId );
     }
-    result.SetNode( aSourceNode );
-    result.ReadVariableInfo( FAttrReader );
+    result.SetDataSource(aSourceNode);    
+    result.ReadVariableInfo( aSourceNode );
     return result;
   }
 
-  private ModelElement GetNewNotInpParam(ModelElement aNewElementOwner, Node aSourceNode, int aNewId) throws ModelException{
-    FAttrReader.SetNode( aSourceNode );
+  private ModelElement GetNewNotInpParam(ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException{    
     ModelBlockParam result = null;
-    String s = FAttrReader.GetAttrParamType();
+    String s = aSourceNode.GetAttrParamType();
     if ( "material".equalsIgnoreCase( s ) ){
-      result = new ModelMaterialParam(aNewElementOwner, FAttrReader.GetAttrName() , aNewId );
+      result = new ModelMaterialParam(aNewElementOwner, aSourceNode.GetAttrName() , aNewId );
     } else{
       if ( "array".equalsIgnoreCase( s ) ){
-        result = new ModelArrayElement( aNewElementOwner, FAttrReader.GetAttrName() , aNewId );
+        result = new ModelArrayElement( aNewElementOwner, aSourceNode.GetAttrName() , aNewId );
       } else{
-        result = new ModelCalculatedElement(aNewElementOwner, FAttrReader.GetAttrName() , aNewId );
+        result = new ModelCalculatedElement(aNewElementOwner, aSourceNode.GetAttrName() , aNewId );
       }
     }
-    result.SetNode( aSourceNode );
-    result.ReadVariableInfo( FAttrReader );
+    result.SetDataSource( aSourceNode );
+    result.ReadVariableInfo( aSourceNode );
     return result;
   }
 
-  private ModelElement GetNewInnerParam(ModelElement aNewElementOwner, Node aSourceNode, int aNewId) throws ModelException{
+  private ModelElement GetNewInnerParam(ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException{
     return GetNewNotInpParam(aNewElementOwner, aSourceNode, aNewId);
   }
 
-  private ModelElement GetNewOutParam(ModelElement aNewElementOwner, Node aSourceNode, int aNewId) throws ModelException{
+  private ModelElement GetNewOutParam(ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException{
     return GetNewNotInpParam(aNewElementOwner, aSourceNode, aNewId);
   }
 
-  private ModelElement GetNewState(ModelElement aNewElementOwner, Node aSourceNode, int aNewId) throws ModelException{
-    FAttrReader.SetNode( aSourceNode );
-    AutomatState result = new AutomatState(aNewElementOwner, FAttrReader.GetAttrName(),  aNewId );
-    result.SetNode( aSourceNode );
+  private ModelElement GetNewState(ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException{    
+    AutomatState result = new AutomatState(aNewElementOwner, aSourceNode.GetAttrName(),  aNewId );
+    result.SetDataSource( aSourceNode );
     return result;
   }
 
-  private ModelElement GetNewTransition( ModelElement aNewElementOwner, Node aSourceNode, int aNewId) throws ModelException{
-    FAttrReader.SetNode( aSourceNode );
+  private ModelElement GetNewTransition( ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException{
+    
     AutomatTransition result = null;
-    String typeName = FAttrReader.GetTransitionType();
+    String typeName = aSourceNode.GetTransitionType();
     String ownerName;
     if ( aNewElementOwner == null ){
       ownerName = "";
@@ -145,139 +136,134 @@ public class ModelElementFactory extends ModelElementAbstractFactory {
       ownerName = aNewElementOwner.GetName();
     }
     if ( typeName == null ||  "".equalsIgnoreCase(typeName) ){
-      ModelException e = new ModelException("Отсутствует тип перехода в переходе \"" + ownerName + "." + FAttrReader.GetAttrName() + "\"");
+      ModelException e = new ModelException("Отсутствует тип перехода в переходе \"" + ownerName + "." + aSourceNode.GetAttrName() + "\"");
       throw e;
     }
     if ( typeName.equalsIgnoreCase( TRANSITION_TYPE_VALUE ) ){
-      result = new AutomatTransitionByValue(aNewElementOwner, FAttrReader.GetAttrName() ,aNewId);
-      result.SetNode( aSourceNode );
+      result = new AutomatTransitionByValue(aNewElementOwner, aSourceNode.GetAttrName() ,aNewId);
+      result.SetDataSource( aSourceNode );
       return result;
     }
     if ( typeName.equalsIgnoreCase( TRANSITION_TYPE_TIMEOUT ) ){
-      result = new AutomatTransitionTimeout( aNewElementOwner, FAttrReader.GetAttrName() ,aNewId );
-      result.SetNode( aSourceNode );
+      result = new AutomatTransitionTimeout( aNewElementOwner, aSourceNode.GetAttrName() ,aNewId );
+      result.SetDataSource( aSourceNode );
       return result;
     }
     ModelException e = new ModelException("Неизвестный тип перехода в элементе \""  + ownerName + "." +
-            FAttrReader.GetAttrName() + "\": " + typeName );
+    		aSourceNode.GetAttrName() + "\": " + typeName );
     throw e;
   }
 
-  private ModelElement GetNewMux(ModelElement aNewElementOwner, Node aSourceNode, int aNewId) throws ModelException{
-    FAttrReader.SetNode( aSourceNode );
+  private ModelElement GetNewMux(ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException{    
     ModelMultiplexor result = null;
-    String skipValue = FAttrReader.GetSkipFirstValue();
+    String skipValue = aSourceNode.GetSkipFirstValue();
     if ( skipValue == null || "".equalsIgnoreCase( skipValue ) ) {
-      result = new ModelMultiplexor(aNewElementOwner, FAttrReader.GetAttrName(),  aNewId);
+      result = new ModelMultiplexor(aNewElementOwner, aSourceNode.GetAttrName(),  aNewId);
     } else {
-      result = new ModelMultiplexorWithSkipParam( aNewElementOwner, FAttrReader.GetAttrName(),  aNewId );
+      result = new ModelMultiplexorWithSkipParam( aNewElementOwner, aSourceNode.GetAttrName(),  aNewId );
     }
-    result.SetNode( aSourceNode );
+    result.SetDataSource( aSourceNode );
     return result;
   }
 
-  private static ModelEventProcessorContainer GetNewEventContainer( ModelElement aNewElementOwner, Node aSourceNode ){
+  private static ModelEventProcessorContainer GetNewEventContainer( ModelElement aNewElementOwner, ModelElementDataSource aSourceNode ){
     ModelEventProcessorContainer result = new ModelEventProcessorContainer(aNewElementOwner);
-    result.SetNode( aSourceNode );
+    result.SetDataSource( aSourceNode );
     return result;
   }
 
-  private ModelElement GetNewConstant(ModelElement aNewElementOwner, Node aSourceNode, int aNewId) throws ModelException{
-    FAttrReader.SetNode( aSourceNode );
-    String name = FAttrReader.GetAttrName();
+  private ModelElement GetNewConstant(ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException{    
+    String name = aSourceNode.GetAttrName();
     ModelConstant result;
-    String s = FAttrReader.GetAttrParamType();
+    String s = aSourceNode.GetAttrParamType();
     if ( "array".equalsIgnoreCase( s ) ){
       result = new ModelConstant( aNewElementOwner, name, aNewId );;
-      ModelArrayElement el = new ModelArrayElement( aNewElementOwner, FAttrReader.GetAttrName() , aNewId );
-      el.SetNode(aSourceNode);
-      el.ReadVariableInfo(FAttrReader);
+      ModelArrayElement el = new ModelArrayElement( aNewElementOwner, aSourceNode.GetAttrName() , aNewId );
+      el.SetDataSource(aSourceNode);
+      el.ReadVariableInfo(aSourceNode);
       result.SetVariable( el.GetArray() );
-      FAttrReader.AddConstant( name, FAttrReader.GetAttrInitValue() );
+      aSourceNode.AddConstant( name, aSourceNode.GetAttrInitValue() );
       return result;
     }
     result = new ModelConstant( aNewElementOwner, name, aNewId );
-    ((ModelConstant)result).SetConstantDescr( name, FAttrReader.GetAttrParamType(), FAttrReader.GetAttrInitValue() );
-    FAttrReader.AddConstant( name, FAttrReader.GetAttrInitValue() );
+    ((ModelConstant)result).SetConstantDescr( name, aSourceNode.GetAttrParamType(), aSourceNode.GetAttrInitValue() );
+    aSourceNode.AddConstant( name, aSourceNode.GetAttrInitValue() );
     return result;
   }
 
-  private ModelAggregator GetNewAggregator(ModelElement aNewElementOwner, Node aSourceNode, int aNewId) throws ModelException{
-    FAttrReader.SetNode( aSourceNode );
-    String name = FAttrReader.GetAttrName();
+  private ModelAggregator GetNewAggregator(ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException{    
+    String name = aSourceNode.GetAttrName();
     ModelAggregator result = new ModelAggregator( aNewElementOwner, name, aNewId );
-    result.SetNode( aSourceNode );
+    result.SetDataSource( aSourceNode );
     return result;
   }
 
-  private ModelForReadInterface GetNewFunction(ModelElement aNewElementOwner, Node aSourceNode, int aNewId) throws ModelException {
-  	FAttrReader.SetNode( aSourceNode );
-    String name = FAttrReader.GetAttrName();
+  private ModelForReadInterface GetNewFunction(ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException {  	
+    String name = aSourceNode.GetAttrName();
     ModelFunction result = new ModelFunction(aNewElementOwner, name, aNewId);
-    result.SetNode(aSourceNode);
-    result.ReadFunctionInfo(FAttrReader);
+    result.SetDataSource(aSourceNode);
+    result.ReadFunctionInfo(aSourceNode);
     return result;
   }
 
-  public ModelForReadInterface GetNewElement(Node aCurrentNode, ModelForReadInterface aCurrentElement,
-                                             Node aNewNode, int aNewId) throws ModelException {
-    String functionCode = GetFunctionCode( aCurrentNode, aNewNode );
+  public ModelForReadInterface GetNewElement(ModelElementDataSource aCurrentNode, ModelForReadInterface aCurrentElement, ModelElementDataSource newElementSource, int aNewId) throws ModelException {
+    String functionCode = GetFunctionCode( aCurrentNode, newElementSource );
     int i = Integer.parseInt( functionCode );
     switch (i){
       case -1:{
         return aCurrentElement;
       }
       case 0:{
-        return GetNewModel((ModelElement)aCurrentElement, aNewNode, aNewId);
+        return GetNewModel((ModelElement)aCurrentElement, newElementSource, aNewId);
       }
         case 1:{
           return aCurrentElement;
         }
         //Создание нового блока
         case 2:{
-          return GetNewBlock( (ModelElement)aCurrentElement, aNewNode, aNewId );
+          return GetNewBlock( (ModelElement)aCurrentElement, newElementSource, aNewId );
         }
         case 3:{
-          return GetNewInpParam( (ModelElement)aCurrentElement, aNewNode, aNewId );
+          return GetNewInpParam( (ModelElement)aCurrentElement, newElementSource, aNewId );
         }
         case 4:{
-          return GetNewInnerParam( (ModelElement)aCurrentElement, aNewNode, aNewId );
+          return GetNewInnerParam( (ModelElement)aCurrentElement, newElementSource, aNewId );
         }
         case 5:{
-          return GetNewOutParam( (ModelElement)aCurrentElement, aNewNode, aNewId );
+          return GetNewOutParam( (ModelElement)aCurrentElement, newElementSource, aNewId );
         }
         case 6:{
-          return GetNewState( (ModelElement)aCurrentElement, aNewNode, aNewId );
+          return GetNewState( (ModelElement)aCurrentElement, newElementSource, aNewId );
         }
         case 7:{
-          return GetNewState( (ModelElement)aCurrentElement, aNewNode, aNewId );
+          return GetNewState( (ModelElement)aCurrentElement, newElementSource, aNewId );
         }
         case 8:{
           return null;
         }
         case 9:{
-          return GetNewTransition( (ModelElement)aCurrentElement, aNewNode, aNewId );
+          return GetNewTransition( (ModelElement)aCurrentElement, newElementSource, aNewId );
         }
         case 10:{
-          return GetNewMux( (ModelElement)aCurrentElement, aNewNode, aNewId );
+          return GetNewMux( (ModelElement)aCurrentElement, newElementSource, aNewId );
         }
         case 11:{
-          return GetNewEventContainer((ModelElement) aCurrentElement, aNewNode );
+          return GetNewEventContainer((ModelElement) aCurrentElement, newElementSource );
         }
         case 12:{
-          return GetNewConstant( (ModelElement) aCurrentElement, aNewNode, aNewId );
+          return GetNewConstant( (ModelElement) aCurrentElement, newElementSource, aNewId );
         }
         case 13:{
-          return GetNewAggregator( (ModelElement) aCurrentElement, aNewNode, aNewId );
+          return GetNewAggregator( (ModelElement) aCurrentElement, newElementSource, aNewId );
         }
         case 14: {
-           return GetNewFunction((ModelElement) aCurrentElement, aNewNode, aNewId);
+           return GetNewFunction((ModelElement) aCurrentElement, newElementSource, aNewId);
         }
         default:{
-          FAttrReader.SetNode( aNewNode );
-          String s = FAttrReader.GetAttrName();
+          
+          String s = aCurrentNode.GetAttrName();
           ModelException e = new ModelException("Неверный код функции создания элемента модели. Нода \"" +
-                  aNewNode.getNodeName() + "\" название: \"" + s + "\" код =" + Integer.toString(i));
+          		newElementSource.GetElementName() + "\" название: \"" + s + "\" код =" + Integer.toString(i));
           throw e;
         }
     }//case
@@ -286,34 +272,34 @@ public class ModelElementFactory extends ModelElementAbstractFactory {
   public String[][] GetMatrix() {
     return ModelDef;
   }
-
-  public boolean IsLastNode(Node aNode) {
+  
+  public boolean IsLastNode(ModelElementDataSource aNode) {
     if ( aNode == null ){
       return false;
     }
-    String nodeName = aNode.getNodeName();
+    String nodeName = aNode.GetElementName();
     //проверяем ситуацию, когда читается нода Code, принадлежащая мультипексору
     if ( "Code".equalsIgnoreCase( nodeName ) ){
-      Node muxNode = aNode.getParentNode();
+    	ModelElementDataSource muxNode = aNode.getParent();
       if ( muxNode == null ){
         return false;
       }
-      if ( "Multiplexor".equalsIgnoreCase( muxNode.getNodeName() ) ){
+      if ( "Multiplexor".equalsIgnoreCase( muxNode.GetElementName() ) ){
         return true;
       }
     }
     if ( "EventList".equalsIgnoreCase( nodeName ) ){
-      Node muxNode = aNode.getParentNode();
+    	ModelElementDataSource muxNode = aNode.getParent();
       if ( muxNode == null ){
         return false;
       }
-      if ( "Multiplexor".equalsIgnoreCase( muxNode.getNodeName() ) ){
+      if ( "Multiplexor".equalsIgnoreCase( muxNode.GetElementName() ) ){
         return true;
       }
     }
     if ( "Value".equalsIgnoreCase( nodeName ) || "Function".equalsIgnoreCase( nodeName ) ){
-      Node aggrNode = aNode.getParentNode();
-      return aggrNode != null && "Aggregator".equalsIgnoreCase(aggrNode.getNodeName());
+    	ModelElementDataSource aggrNode = aNode.getParent();
+      return aggrNode != null && "Aggregator".equalsIgnoreCase(aggrNode.GetElementName());
     }
     return false;
   }
@@ -394,9 +380,9 @@ public class ModelElementFactory extends ModelElementAbstractFactory {
 
   }
 
-  public void ExecuteDoSomethingFunction( Node aParentNode, Node aCurrentNode, ModelForReadInterface aCurrentElement,
+  public void ExecuteDoSomethingFunction( ModelElementDataSource aParentNode, ModelElementDataSource aCurrentNode, ModelForReadInterface aCurrentElement,
                                            ModelForReadInterface aNewElement  ) throws ModelException{
-    int i = Integer.parseInt( GetFunctionCode(GetNodeName( aParentNode ), GetNodeName(aCurrentNode)  ) );
+    int i = Integer.parseInt( GetFunctionCode(aParentNode,  aCurrentNode ) );
     switch (i){
       case -1:{
         break;
@@ -459,13 +445,16 @@ public class ModelElementFactory extends ModelElementAbstractFactory {
         	break;
         }
         default:{
-          FAttrReader.SetNode( aCurrentNode );
-          String s = FAttrReader.GetAttrName();
+          
+          String s = aCurrentNode.GetAttrName();
           ModelException e = new ModelException("Неверный код функции для выполнения действия с элементом модели. Нода " +
-                  aCurrentNode.getNodeName() + " название: " + s + " код = " + Integer.toString(i));
+                  aCurrentNode.GetElementName() + " название: " + s + " код = " + Integer.toString(i));
           throw e;
         }
     }
   }
+
+
+
 
 }

@@ -1,6 +1,6 @@
 package mp.elements;
 
-import org.w3c.dom.Node;
+
 import mp.parser.ScriptException;
 import mp.parser.Variable;
 import mp.parser.ScriptLanguageExt;

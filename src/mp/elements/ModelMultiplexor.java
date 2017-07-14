@@ -6,8 +6,6 @@ import mp.utils.ModelAttributeReader;
 
 import java.util.Vector;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * User: atsv

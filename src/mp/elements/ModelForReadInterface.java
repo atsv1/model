@@ -1,5 +1,5 @@
 package mp.elements;
-import org.w3c.dom.Node;
+
 
 /**
  * User: atsv
@@ -7,7 +7,7 @@ import org.w3c.dom.Node;
  */
 public interface ModelForReadInterface {
 
-  public Node GetNode();
+  public ModelElementDataSource GetDataSource();
 
-  public void SetNode(Node aNode);
+  public void SetDataSource(ModelElementDataSource dataSource);
 }

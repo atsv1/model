@@ -28,5 +28,7 @@ public interface ModelExecutionManager {
   
   public void rollback(UUID label) throws ScriptException;
   
+  public int createNewBlock(String blockName) throws ScriptException;
+  
 
 }

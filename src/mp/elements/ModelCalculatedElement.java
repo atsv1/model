@@ -1,8 +1,6 @@
 package mp.elements;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.CDATASection;
+
 import mp.parser.*;
 import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
