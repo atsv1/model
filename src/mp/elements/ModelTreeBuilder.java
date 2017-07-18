@@ -66,7 +66,11 @@ public class ModelTreeBuilder {
     if ( aRootDataSource == null ){
       return;
     }
-    ModelElementDataSource modelListElements = GetModelListNode( aRootNode );
+    Node rootNode = null;
+    if ( aRootDataSource instanceof ModelAttributeReader ) {
+    	rootNode = ((ModelAttributeReader) aRootDataSource).GetNode();
+    }
+    Node modelListNode = GetModelListNode( rootNode );
     if ( modelListNode == null ){
       return;
     }

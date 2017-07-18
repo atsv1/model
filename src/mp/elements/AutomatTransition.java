@@ -12,17 +12,15 @@ import java.util.UUID;
 public abstract class AutomatTransition extends ModelEventGenerator{
   private ScriptParser FParser = null;
   protected ScriptLanguageExt FLanguageExt = null;
-  private String FNextStateName = null;
-  protected ModelAttributeReader FAttrReader = null;
+  private String FNextStateName = null;  
   protected Variable FTransitionVar = null;
   private int FTransitionCount = 0; //переменная используется в тестовых целях. Для обчной работы она не нужна
   private int FPriority = 0;
   protected ExecutionContext FExecutionContext = null;
 
   public AutomatTransition(ModelElement aOwner, String aElementName, int aElementId) {
-    super(aOwner, aElementName, aElementId);
-      FAttrReader = new ModelAttributeReader(null);
-      FExecutionContext = new ExecutionContext(  this.GetFullName() );
+    super(aOwner, aElementName, aElementId);      
+    FExecutionContext = new ExecutionContext(  this.GetFullName() );
   }
 
   protected void SetCode(String aCode) throws ModelException, ScriptException{
@@ -100,19 +98,17 @@ public abstract class AutomatTransition extends ModelEventGenerator{
     return GetTransitionTime();
   }
 
-  protected void ReadNextState() throws ModelException{
-    FAttrReader.SetNode( this.GetNode() );
-    this.SetNextStateName( FAttrReader.GetNextStateName() );
+  protected void ReadNextState() throws ModelException{    
+    this.SetNextStateName( this.GetDataSource().GetNextStateName() );
   }
 
   protected abstract boolean IsValue(String aTransValue);
 
   protected void ReadValueInfo() throws ModelException {
-    FAttrReader.SetNode( this.GetNode() );
-    String transValue = FAttrReader.GetTransitionValue();
-    String ownerName;
-    FAttrReader.SetNode( this.GetNode() );
-    FPriority = FAttrReader.GetTransitionPriority();
+  	ModelElementDataSource ds = this.GetDataSource();    
+    String transValue = ds.GetTransitionValue();
+    String ownerName;    
+    FPriority = ds.GetTransitionPriority();
     ModelElement owner = this.GetOwner();
       if ( owner != null ){
         ownerName = owner.GetName();
@@ -137,18 +133,8 @@ public abstract class AutomatTransition extends ModelEventGenerator{
   }
 
   protected void ReadTransitionCode() throws ScriptException{
-    Node currentNode;
-    NodeList nodes = this.GetNode().getChildNodes();
-    int i = 0;
-    String code = null;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item(i);
-      if ( currentNode.getNodeType() == Node.CDATA_SECTION_NODE ){
-        code = currentNode.getNodeValue();
-        break;
-      }
-      i++;
-    }
+    
+    String code = this.GetDataSource().GetexecutionCode();
     if ( code == null ){
       return;
     }

@@ -6,6 +6,7 @@ import mp.parser.*;
 
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -30,7 +31,7 @@ public class ModelArrayElement extends ModelCalculatedElement{
     array.SetName( this.GetName() );
     this.SetVariable( array );
     FArray = array;
-    ReadArrayInfo( GetNode() );
+    ReadArrayInfo( this.GetDataSource() );
   }
 
   private int GetValueType( ModelElementDataSource attrReader ) throws ModelException {
@@ -74,29 +75,28 @@ public class ModelArrayElement extends ModelCalculatedElement{
    *
    * @param aNode
    */
-  private void ReadArrayInfo( Node aNode) throws ModelException {
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    attrReader.SetNode( aNode );
+  private void ReadArrayInfo( ModelElementDataSource aSourceElement) throws ModelException {
+    
     ArrayDefinition arrayDef = new ArrayDefinition();
-    arrayDef.SetValueType( GetValueType( attrReader ) );
-    arrayDef.SetInitValue( attrReader.GetAttrInitValue() );
+    arrayDef.SetValueType( GetValueType( aSourceElement ) );
+    arrayDef.SetInitValue( aSourceElement.GetAttrInitValue() );
     //читаем информацию о размерностях массива
-    String startDimension = attrReader.GetArrayDimensionValue();
+    String startDimension = aSourceElement.GetArrayDimensionValue();
     if ( startDimension == null || "".equalsIgnoreCase( startDimension ) ){
       ModelException e = new ModelException( "Ошибка в массиве \"" + GetFullName() + "\": отсутствует информация о размерности" );
       throw e;
     }
     // определяем количество размерностей
     int dimCounter = 1;
-    String dim = attrReader.GetArrayDimensionValue( dimCounter );
+    String dim = aSourceElement.GetArrayDimensionValue( dimCounter );
     while ( dim != null ){
       dimCounter++;
-      dim = attrReader.GetArrayDimensionValue( dimCounter );
+      dim = aSourceElement.GetArrayDimensionValue( dimCounter );
     }
     dimCounter--;
     int elementsCount = 0;
     while ( dimCounter > 0 ){
-      dim = attrReader.GetArrayDimensionValue( dimCounter );
+      dim = aSourceElement.GetArrayDimensionValue( dimCounter );
       elementsCount = GetElementsCount( dim );
       arrayDef.AddDimension( elementsCount );
       dimCounter--;
@@ -124,10 +124,8 @@ public class ModelArrayElement extends ModelCalculatedElement{
   	FCoordinates = new int[ FArray.GetDimension() ];  	
   }
 
-  private void ReadCoordinates( Node aForEachNode ) throws ModelException {
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    attrReader.SetNode( aForEachNode );
-    String coordName = attrReader.GetArray_CoordinateParamName();
+  private void ReadCoordinates( ModelElementDataSource aForEachElement ) throws ModelException {    
+    String coordName = aForEachElement.GetArray_CoordinateParamName();
     if ( coordName == null || "".equalsIgnoreCase( coordName ) ){
       FCoordinateVariables = null;
       return;
@@ -147,7 +145,7 @@ public class ModelArrayElement extends ModelCalculatedElement{
         throw e;
       }
       FCoordinateVariables.add( coordParam.GetVariable() );
-      coordName = attrReader.GetArray_CoordinateParamName( coordCounter );
+      coordName = aForEachElement.GetArray_CoordinateParamName( coordCounter );
       coordCounter++;
     }//while
     if ( FCoordinateVariables.size() != FArray.GetDimension() ){
@@ -158,8 +156,13 @@ public class ModelArrayElement extends ModelCalculatedElement{
   }
 
   private void ReadForEachSection() throws ModelException{
-    Node forEachNode = GetChildNodeByName( "ForEach" );
-    if ( forEachNode == null ){
+  	ModelElementDataSource ds = this.GetDataSource();
+  	List<ModelElementDataSource> forEachList = ds.GetChildElements ( "ForEach" );
+  	if ( forEachList == null || forEachList.isEmpty() ) {
+  		return;
+  	}
+  	ModelElementDataSource aForEachElement = forEachList.get(0);
+    if ( aForEachElement == null ){
       return;
     }
     ModelBlock owner = (ModelBlock) this.GetOwner();
@@ -167,12 +170,11 @@ public class ModelArrayElement extends ModelCalculatedElement{
       ModelException e = new ModelException("Ошибка в массиве \"" + GetFullName() + "\": " + " отсутствует владелец элемента");
       throw e;
     }
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    attrReader.SetNode( forEachNode );
+   
     ModelBlockParam param = null;
 
     //читаем переменную, в которую будут записываться значения массива
-    String valueName = attrReader.GetArray_ForEachValue();
+    String valueName = aForEachElement.GetArray_ForEachValue();
     if ( valueName == null || "".equalsIgnoreCase( valueName ) ){
       ModelException e = new ModelException("Ошибка в массиве \"" + GetFullName() + "\": " + " отсутствует значение атрибута arrayvalue");
       throw e;
@@ -185,7 +187,7 @@ public class ModelArrayElement extends ModelCalculatedElement{
     FArrayValueVar = param.GetVariable();
 
     //читаем разрешеющую переменную
-    String enableName = attrReader.GetArray_EnableFlagName();
+    String enableName = aForEachElement.GetArray_EnableFlagName();
     if ( enableName != null && !"".equalsIgnoreCase( enableName ) ){
       param = (ModelBlockParam) owner.Get( enableName );
       if ( param == null ){
@@ -201,7 +203,7 @@ public class ModelArrayElement extends ModelCalculatedElement{
     }
 
     // читаем исходный код
-    String sourceCode = ModelAttributeReader.GetSourceCode( forEachNode );
+    String sourceCode = aForEachElement.GetexecutionCode();
     if ( sourceCode == null ){
       ModelException e = new  ModelException("Ошибка в массиве \"" + GetFullName() + "\": " + "отсутствует исполняемый код");
       throw e;
@@ -212,7 +214,7 @@ public class ModelArrayElement extends ModelCalculatedElement{
       ModelException e1 = new  ModelException("Ошибка в массиве \"" + GetFullName() + "\": " + e.getMessage());
       throw e1;
     }
-    ReadCoordinates( forEachNode );
+    ReadCoordinates( aForEachElement );
   }
 
 

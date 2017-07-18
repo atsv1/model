@@ -5,6 +5,7 @@ import mp.elements.AutomatTransitionTimeout;
 import mp.utils.ModelAttributeReader;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
@@ -46,34 +47,18 @@ public class AutomatState extends ModelEventGenerator{
     FExecutionContext = new ExecutionContext(this.GetFullName());
   }
 
-  private void ReadCode(Node aCodeNode) throws ModelException, ScriptException {
-    NodeList nodes = aCodeNode.getChildNodes();
-    if ( nodes == null ){
-      return;
-    }
-    FAttrReader.SetNode( aCodeNode );
-    String s = FAttrReader.GetAutomatCodeType();
+  private void ReadCode(ModelElementDataSource aCodeElement) throws ModelException, ScriptException {
+    String s = aCodeElement.GetAutomatCodeType();
     if ( s == null || "".equalsIgnoreCase( s ) ){
       ModelException e = new ModelException("Незаполнено значение типа исполняемого кода в элементе \"" + this.GetFullName() + "\"");
       throw e;
     }
-    Node currentNode;
-    int i = 0;
-    String code = null;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item(i);
-      if ( currentNode.getNodeType() == Node.CDATA_SECTION_NODE ){
-        code = currentNode.getNodeValue();
-        break;
-      }
-      i++;
-    }
+    String code = aCodeElement.GetexecutionCode();    
     if ( code == null ){
       return;
     }
     if ( CODE_TYPE_BEFORE_OUT.equalsIgnoreCase( s ) ){
-      SetBeforeOutCode( code );
-      //System.out.println( GetFullName() + " before out " + code );
+      SetBeforeOutCode( code );      
       return;
     }
     if ( CODE_TYPE_INIT.equalsIgnoreCase( s ) ){
@@ -81,8 +66,7 @@ public class AutomatState extends ModelEventGenerator{
       return;
     }
     if ( CODE_TYPE_AFTER_IN.equalsIgnoreCase( s ) ){
-      SetAfterInCode( code );
-      //System.out.println( GetFullName() + " after in " + code );
+      SetAfterInCode( code );      
       return;
     }
     ModelException e = new ModelException("Неизвестный тип исполняемого кода в элементе \"" + this.GetName() + "\"");
@@ -110,25 +94,19 @@ public class AutomatState extends ModelEventGenerator{
   }
 
   public void ApplyNodeInformation() throws ModelException, ScriptException{
-    Node node = this.GetNode();
-    if ( node == null ){
+    ModelElementDataSource ds = this.GetDataSource();
+    if ( ds == null ){
       ModelException e = new ModelException("Пустая нода в элементе \"" + this.GetFullName() + "\"");
       throw e;
     }
-    if ( FAttrReader == null ){
-      FAttrReader = new ModelAttributeReader(node);
-    }
+    
     // читаем исполняемый код
-    NodeList nodes = node.getChildNodes();
-    int i = 0;
-    Node currentNode;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item(i);
-      if ( currentNode.getNodeType() == Node.ELEMENT_NODE && currentNode.getNodeName().equalsIgnoreCase("Code") ){
-        ReadCode( currentNode );
-      }
-      i++;
-    }
+    List<ModelElementDataSource> codeList = ds.GetCodeElements();
+    if ( codeList != null ) {
+    	for ( ModelElementDataSource codeElement : codeList ) {
+    		ReadCode( codeElement );
+    	}
+    }    
     ApplyTransitionNodeInformation();
     ApplyChildNodeInformation();
   }

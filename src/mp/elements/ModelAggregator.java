@@ -5,6 +5,7 @@ import mp.parser.ScriptLanguageExt;
 import mp.utils.ModelAttributeReader;
 import mp.utils.ServiceLocator;
 
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -14,13 +15,13 @@ import java.util.Vector;
 public class ModelAggregator extends ModelDynamicBlock {
   private boolean FIsNodesApplied = false;
 
-  private Vector FValueNodes;
-  private Vector FValueExecutors = null;
+  private List<ModelElementDataSource> FValueNodes;
+  private List<MultiBlockExecutor> FValueExecutors = null;
 
-  private Vector FFunctionNodes;
-  private Vector FFunctionExecutors = null;
+  private List<ModelElementDataSource> FFunctionNodes;
+  private Vector<MultiBlockExecutor> FFunctionExecutors = null;
 
-  private Node FEnableNode = null;
+  private ModelElementDataSource FEnableElement = null;
   private EnableExecutor FEnableExecutor = null;
 
   private boolean FIsBlockAdded = false;
@@ -114,7 +115,7 @@ public class ModelAggregator extends ModelDynamicBlock {
 
   }
 
-  private void PrepareExecutorsList( Vector aExecutors ) throws ModelException {
+  private void PrepareExecutorsList( List<MultiBlockExecutor> aExecutors ) throws ModelException {
     if ( aExecutors == null || aExecutors.size() == 0 ){
       return;
     }
@@ -149,7 +150,7 @@ public class ModelAggregator extends ModelDynamicBlock {
     PrepareExecutorsList( FFunctionExecutors );
   }
 
-  private void AddSourceBlock( Vector aExecutorList, ModelBlock aBlock ) throws ModelException {
+  private void AddSourceBlock( List<MultiBlockExecutor> aExecutorList, ModelBlock aBlock ) throws ModelException {
     if ( aExecutorList == null || aExecutorList.size() == 0 ){
       return;
     }
@@ -196,31 +197,26 @@ public class ModelAggregator extends ModelDynamicBlock {
    *
    */
   private void ReadNodes() throws ModelException{
-    Node node = GetNode();
-    NodeList childNodes = node.getChildNodes();
-    if ( childNodes == null || childNodes.getLength() == 0 ){
-      ModelException e = new ModelException("Ошибка в аггрегаторе \"" + GetFullName() + "\": отсутствуют все внутренности");
-      throw e;
-    }
-    int i = 0;
-    Node childNode;
-    String nodeName;
-    while ( i < childNodes.getLength() ){
-      childNode = childNodes.item( i );
-      if ( childNode.getNodeType() == Node.ELEMENT_NODE ){
-        nodeName = childNode.getNodeName();
-        if ( "Code".equalsIgnoreCase( nodeName ) ){
-          FEnableNode = childNode;
-        }
-        if ( "Value".equalsIgnoreCase( nodeName ) ){
-          FValueNodes.add( childNode );
-        }
-        if ( "Function".equalsIgnoreCase( nodeName ) ){
-          FFunctionNodes.add( childNode );  
-        }
+  	ModelElementDataSource ds = this.GetDataSource();
+  	List<ModelElementDataSource> childElements = ds.GetChildElements(); 
+  	if ( childElements == null || childElements.isEmpty() ) {
+  		throw new ModelException("Ошибка в аггрегаторе \"" + GetFullName() + "\": отсутствуют все внутренности");
+  	}
+  	String elementName;
+  	for (ModelElementDataSource childElement : childElements ) {
+  		elementName = childElement.GetElementName();
+  		if ( "Code".equalsIgnoreCase( elementName ) ){
+        FEnableElement = childElement;
       }
-      i++;
-    }
+      if ( "Value".equalsIgnoreCase( elementName ) ){
+        FValueNodes.add( childElement );
+      }
+      if ( "Function".equalsIgnoreCase( elementName ) ){
+        FFunctionNodes.add( childElement );  
+      }
+  	}
+  	
+    
   }
 
   /**Обработка нод Value
@@ -228,7 +224,7 @@ public class ModelAggregator extends ModelDynamicBlock {
    */
   private void ProcessValueNodes() throws ModelException {
     int i = 0;
-    Node valueNode;
+    ModelElementDataSource valueNode;
     ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
     String valueName;
     String valueType;
@@ -246,11 +242,10 @@ public class ModelAggregator extends ModelDynamicBlock {
     ValueExecutor ve;
     String source = null;
     while ( i < nodesCount ){
-      valueNode = (Node) FValueNodes.get( i );
-      attrReader.SetNode( valueNode );
-      valueName = attrReader.GetAttrName();
-      valueType = attrReader.GetAttrParamType();
-      initValue = attrReader.GetAttrInitValue();
+      valueNode =  FValueNodes.get( i );      
+      valueName = valueNode.GetAttrName();
+      valueType = valueNode.GetAttrParamType();
+      initValue = valueNode.GetAttrInitValue();
 
       valueParam = new ModelBlockParam( this, valueName, ServiceLocator.GetNextId() ) {
         protected void UpdateParam() throws ScriptException, ModelException {
@@ -269,7 +264,7 @@ public class ModelAggregator extends ModelDynamicBlock {
          throw e1;
       }
 
-      source = ModelAttributeReader.GetSourceCode( valueNode );
+      source = valueNode.GetexecutionCode();      		
       ve = new ValueExecutor( this, valueParam, source );
       FValueExecutors.add( ve );
       i++;
@@ -280,7 +275,7 @@ public class ModelAggregator extends ModelDynamicBlock {
    *
    */
   private void ProcessEnableNode() throws ModelException {
-    if ( FEnableNode == null ){
+    if ( FEnableElement == null ){
       return;
     }
     //разрешающий скрипт есть. создаем параметр, в котором будет храниться текущее разрешение
@@ -293,22 +288,20 @@ public class ModelAggregator extends ModelDynamicBlock {
       throw e1;
     }
     this.AddInnerParam( enableParam );
-    FEnableExecutor = new EnableExecutor( this, enableParam, ModelAttributeReader.GetSourceCode( FEnableNode ) );
+    FEnableExecutor = new EnableExecutor( this, enableParam, FEnableElement.GetexecutionCode() );
   }
 
-  private void CreateInnerFunctionParams() throws ModelException {
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
+  private void CreateInnerFunctionParams() throws ModelException {    
     String functionValueName;
     String functionValueType;
     String initValue;
     int i = 0;
-    Node funcNode;
+    ModelElementDataSource funcElement;
     while ( i < FFunctionNodes.size() ){
-      funcNode = (Node) FFunctionNodes.get( i );
-      attrReader.SetNode( funcNode );
-      functionValueName = attrReader.GetAttrName();
-      functionValueType = attrReader.GetAttrParamType();
-      initValue = attrReader.GetAttrInitValue();
+    	funcElement =  FFunctionNodes.get( i );      
+      functionValueName = funcElement.GetAttrName();
+      functionValueType = funcElement.GetAttrParamType();
+      initValue = funcElement.GetAttrInitValue();
       ModelBlockParam functionParam;
       functionParam = new ModelBlockParam( this, functionValueName, ServiceLocator.GetNextId() ) {
         protected void UpdateParam() throws ScriptException, ModelException {   }
@@ -324,16 +317,15 @@ public class ModelAggregator extends ModelDynamicBlock {
 
   }
 
-  private MultiBlockExecutor GetNewFunctionExecutor( Node aFunctionNode ) throws ModelException {
-    if ( aFunctionNode == null ){
+  private MultiBlockExecutor GetNewFunctionExecutor( ModelElementDataSource aFunctionElement ) throws ModelException {
+    if ( aFunctionElement == null ){
       return null;
     }
     String funcType = null;
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    attrReader.SetNode( aFunctionNode );
-    funcType = attrReader.GetAggregatorFunctionType();
+    
+    funcType = aFunctionElement.GetAggregatorFunctionType();
     String functionValueName;
-    functionValueName = attrReader.GetAttrName();
+    functionValueName = aFunctionElement.GetAttrName();
     ModelBlockParam functionParam = (ModelBlockParam) this.Get( functionValueName );
     if ( funcType == null ){
       return null;
@@ -341,7 +333,7 @@ public class ModelAggregator extends ModelDynamicBlock {
     if ( funcType.equalsIgnoreCase("summ") ){
 
       FunctionExecutorSumm result = new FunctionExecutorSumm( this, functionParam, "" );
-      result.SetParameterName( attrReader.GetValueAttr() );
+      result.SetParameterName( aFunctionElement.GetValueAttr() );
       result.SetEnableExecutor( FEnableExecutor );
       return result;
     }
@@ -350,15 +342,15 @@ public class ModelAggregator extends ModelDynamicBlock {
 
   private void ProcessFunctionNodes() throws ModelException {
     int i = 0;
-    Node functionNode = null;
+    ModelElementDataSource functionElement = null;
     if ( FFunctionNodes == null || FFunctionNodes.size() == 0 ){
       return;
     }
     FFunctionExecutors = new Vector();
     MultiBlockExecutor functionExecutor = null;
     while ( i < FFunctionNodes.size() ){
-      functionNode = (Node) FFunctionNodes.get( i );
-      functionExecutor = GetNewFunctionExecutor( functionNode );
+    	functionElement =  FFunctionNodes.get( i );
+      functionExecutor = GetNewFunctionExecutor( functionElement );
       if ( functionExecutor != null){
         FFunctionExecutors.add( functionExecutor );
       }
@@ -377,14 +369,13 @@ public class ModelAggregator extends ModelDynamicBlock {
   public void ApplyNodeInformation() throws ModelException {
     if ( FIsNodesApplied ){
       return;
-    }
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
+    }    
     ProcessValueNodes();
     ProcessEnableNode();
     ProcessFunctionNodes();
-    attrReader.SetNode( this.GetNode() );
-    FEtalonName = attrReader.GetDynamicEtalonName();
-    FOwnerName = attrReader.GetDynamicOwnerName();
+    ModelElementDataSource ds = this.GetDataSource();
+    FEtalonName = ds.GetDynamicEtalonName();
+    FOwnerName = ds.GetDynamicOwnerName();
     FIsNodesApplied = true;
   }
 

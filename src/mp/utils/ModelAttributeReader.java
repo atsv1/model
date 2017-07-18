@@ -6,7 +6,9 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.CDATASection;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import mp.elements.ModelElementDataSource;
 import mp.elements.ModelException;
@@ -716,6 +718,82 @@ public class ModelAttributeReader implements ModelElementDataSource{
 	@Override
 	public String GetElementName() {		
 		return FNode.getNodeName();
+	}
+
+	@Override
+	public List<ModelElementDataSource> GetCodeElements() {
+		if ( FNode == null ) {
+			return null;
+		}
+		ArrayList<ModelElementDataSource> result = new ArrayList<ModelElementDataSource>();
+		NodeList nodes = FNode.getChildNodes();
+	  int i = 0;
+	  Node currentNode;
+	  while ( i < nodes.getLength() ){
+	    currentNode = nodes.item(i);
+	    if ( currentNode.getNodeType() == Node.ELEMENT_NODE && currentNode.getNodeName().equalsIgnoreCase("Code") ){	      	
+	      result.add(  new ModelAttributeReader(currentNode, this) );
+	    }
+	    i++;
+	  }
+		return result;
+	}
+
+	@Override
+	public String GetexecutionCode() {
+		if ( FNode == null ) {
+			return null;
+		}
+		NodeList nodes = FNode.getChildNodes();
+	  int i = 0;
+	  Node currentNode;
+	  while ( i < nodes.getLength() ){
+	    currentNode = nodes.item(i);
+	    if ( currentNode.getNodeType() == Node.CDATA_SECTION_NODE ){	      	
+	      return currentNode.getNodeValue();
+	    }
+	    i++;
+	  }
+	
+		return null;
+	}
+
+	@Override
+	public List<ModelElementDataSource> GetChildElements() {
+		if ( FNode == null ) {
+			return null;
+		}
+		ArrayList<ModelElementDataSource> result = new ArrayList<ModelElementDataSource>();
+		NodeList nodes = FNode.getChildNodes();
+	  int i = 0;
+	  Node currentNode;
+	  while ( i < nodes.getLength() ){
+	    currentNode = nodes.item(i);
+	    if ( currentNode.getNodeType() == Node.ELEMENT_NODE ){	      	
+	      result.add(  new ModelAttributeReader(currentNode, this) );
+	    }
+	    i++;
+	  }
+		return result;
+	}
+
+	@Override
+	public List<ModelElementDataSource> GetChildElements(String elementName) {
+		if ( FNode == null ) {
+			return null;
+		}
+		ArrayList<ModelElementDataSource> result = new ArrayList<ModelElementDataSource>();
+		NodeList nodes = FNode.getChildNodes();
+	  int i = 0;
+	  Node currentNode;
+	  while ( i < nodes.getLength() ){
+	    currentNode = nodes.item(i);
+	    if ( currentNode.getNodeType() == Node.ELEMENT_NODE ){	      	
+	      result.add(  new ModelAttributeReader(currentNode, this) );
+	    }
+	    i++;
+	  }
+		return result;
 	}
 
 }

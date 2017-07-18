@@ -1,5 +1,7 @@
 package mp.elements;
 
+import java.util.List;
+
 public interface ModelElementDataSource {
 	
 	public ModelElementDataSource getParent();
@@ -91,6 +93,14 @@ public interface ModelElementDataSource {
 	String GetLinkedParamName() throws ModelException;
 	
 	void AddConstant(String aConstName, String aConstValue) throws ModelException;
+	
+	public List<ModelElementDataSource> GetCodeElements();
+	
+	public List<ModelElementDataSource> GetChildElements();
+	
+	public List<ModelElementDataSource> GetChildElements(String elementName);
+	
+	public String GetexecutionCode();
 	
 	 
 
