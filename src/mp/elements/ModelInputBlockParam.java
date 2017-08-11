@@ -101,14 +101,14 @@ public class ModelInputBlockParam extends ModelBlockParam{
     }
   }
 
-  protected ModelElement GetLinkedBlock( ModelAttributeReader aAttrReader ) throws ModelException {
-    String blockName = aAttrReader.GetLinkedBlockName();
+  protected ModelElement GetLinkedBlock( ModelElementDataSource elementSource ) throws ModelException {
+    String blockName = elementSource.GetLinkedBlockName();
     if ( blockName == null){
       return null;
     }
     ModelElement result = null;
     Model model = null;
-    String modelName = aAttrReader.GetLinkedModelName();
+    String modelName = elementSource.GetLinkedModelName();
     if ( modelName == null || "".equalsIgnoreCase( modelName ) ){
       model = (Model) FRealOwner.GetOwner();
     } else {
@@ -121,7 +121,7 @@ public class ModelInputBlockParam extends ModelBlockParam{
       }
       model = (Model) manager;
     }
-    String blockIndex = aAttrReader.GetBlockLinkIndex();
+    String blockIndex = elementSource.GetBlockLinkIndex();
     if ( blockIndex == null || "".equalsIgnoreCase( blockIndex ) ){
       return model.Get( blockName) ;
     }
@@ -145,7 +145,7 @@ public class ModelInputBlockParam extends ModelBlockParam{
       error = e.getMessage();
       /*ModelException e1 = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());
       throw e1;*/
-      s = aAttrReader.GetConstantValue( blockIndex );
+      s = elementSource.GetConstantValue( blockIndex );
       if ( s == null ){
         ModelException e1 = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());
         throw e1;
@@ -157,9 +157,9 @@ public class ModelInputBlockParam extends ModelBlockParam{
     return result;
   }
 
-  private void ReadLinkInfo(ModelAttributeReader aAttrReader  ) throws ModelException{
-    String blockName = aAttrReader.GetLinkedBlockName();
-    String paramName = aAttrReader.GetLinkedParamName();
+  private void ReadLinkInfo(ModelElementDataSource elementSource  ) throws ModelException{
+    String blockName = elementSource.GetLinkedBlockName();
+    String paramName = elementSource.GetLinkedParamName();
     if ( blockName == null && paramName == null ){
       return;
     }
@@ -173,7 +173,7 @@ public class ModelInputBlockParam extends ModelBlockParam{
               "присутствует название переменной, но отсутствует название блока");
       throw e;
     }
-    ModelElement block = GetLinkedBlock( aAttrReader );
+    ModelElement block = GetLinkedBlock( elementSource );
     if ( block == null ){
       ModelException e = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": отсутстствует блок \"" +
               blockName + "\"");
@@ -190,9 +190,8 @@ public class ModelInputBlockParam extends ModelBlockParam{
    * @throws ModelException
    */
   public void ApplyNodeInformation() throws ModelException{
-  	super.ApplyNodeInformation();
-     ModelAttributeReader attrReader = new ModelAttributeReader( GetNode() );
-     ReadLinkInfo( attrReader );
+  	super.ApplyNodeInformation();     
+     ReadLinkInfo( elementSource );
   }
 
   public ModelElement GetRealOwner(){

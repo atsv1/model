@@ -54,12 +54,17 @@ public  class ModelXMLReader {
     if ( FElementFactory.IsLastElement( aElementsOwner) ){
       return;
     }    
+    ModelAttributeReader previousSource = new  ModelAttributeReader(aPreviousNode, null);
     ModelAttributeReader attrReader = new  ModelAttributeReader(aCurrentNode, aElementsOwner.GetDataSource());    
     int instancesCount = attrReader.GetAttrCount();
     ModelForReadInterface element;     
     while (instancesCount > 0){
-      element = FElementFactory.GetNewElement( aElementsOwner.GetDataSource(), aElementsOwner, attrReader, GetNewId() );
-      FElementFactory.ExecuteDoSomethingFunction( aElementsOwner.GetDataSource().getParent(), attrReader, aElementsOwner, element);
+    	int newId = GetNewId();
+      element = FElementFactory.GetNewElement( previousSource, aElementsOwner, attrReader, newId );     
+      if ( element != aElementsOwner ) {
+        element.SetDataSource(attrReader);
+      }
+      FElementFactory.ExecuteDoSomethingFunction( previousSource, attrReader, aElementsOwner, element);
       WalkOnDocument( aCurrentNode, element, attrReader );
       instancesCount--;
     }
@@ -94,6 +99,7 @@ public  class ModelXMLReader {
   	Element rootNode = FDocument.getDocumentElement();
   	ModelAttributeReader attrReader = new ModelAttributeReader(rootNode, null);
     FRootElement = FElementFactory.GetNewElement(null, null, attrReader, GetNewId());
+    FRootElement.SetDataSource(attrReader);
     WalkOnDocument( rootNode, FRootElement, null );
   }
 

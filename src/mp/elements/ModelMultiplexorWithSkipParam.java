@@ -85,10 +85,8 @@ public class ModelMultiplexorWithSkipParam extends ModelMultiplexor{
     FMaxList = new Vector( 5 );
   }
 
-  private void ReadSkipFirstParam() throws ModelException {
-    ModelAttributeReader reader = ServiceLocator.GetAttributeReader();
-    reader.SetNode( GetNode() );
-    String text = reader.GetSkipFirstValue();
+  private void ReadSkipFirstParam() throws ModelException {    
+    String text = elementSource.GetSkipFirstValue();
     if ( text == null || "".equalsIgnoreCase( text ) ){
       return;
     }
@@ -99,9 +97,8 @@ public class ModelMultiplexorWithSkipParam extends ModelMultiplexor{
       if ( FSkipFirstParam.GetVariable().GetType() == Operand.OPERAND_TYPE_INTEGER ){
         return;
       }
-      ModelException e = new ModelException("Ошибка в мультиплексоре \"" + GetFullName() +  "\": параметр \"" +
-         FSkipFirstParam + "\" должен быть типа integer, чтобы использоваться как skipfirst");
-      throw e;
+      throw new ModelException("Ошибка в мультиплексоре \"" + GetFullName() +  "\": параметр \"" +
+         FSkipFirstParam + "\" должен быть типа integer, чтобы использоваться как skipfirst");     
     }
     FSkipFirstParam = new ModelBlockParam( this, GetName() + "_skipFirst", ServiceLocator.GetNextId() ) {
       protected void UpdateParam() throws ScriptException, ModelException {}

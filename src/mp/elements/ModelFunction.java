@@ -1,5 +1,6 @@
 package mp.elements;
 
+import java.util.List;
 import java.util.Vector;
 
 
@@ -43,30 +44,30 @@ public class ModelFunction extends ModelCalculatedElement {
 
 	public void ApplyNodeInformation() throws ModelException{
 		ModelElementDataSource functionSource = GetDataSource();
-		NodeList nodes = functionNode.getChildNodes();
-    if (nodes == null || nodes.getLength() == 0) {
+		List<ModelElementDataSource> elementSources = functionSource.GetChildElements();
+    if (elementSources == null || elementSources.isEmpty()) {
       throw new ModelException("В функции " + Function.GetName() + " отсутствует исполняемый код");
     }
     String sourceCode = null;
     int i = 0;
-    Node curNode;
-    while (i < nodes.getLength()) {
-    	curNode = nodes.item(i);
-    	if ( NODE_NAME_FORMULA.equalsIgnoreCase(curNode.getNodeName()) ) {
-    		sourceCode = GetFormulaSourceCode(curNode);
+    
+    for (ModelElementDataSource curElement : elementSources) {
+    	
+    	if ( NODE_NAME_FORMULA.equalsIgnoreCase(curElement.GetElementName()  ) ) {
+    		sourceCode = curElement.GetexecutionCode();
     	}
-    	if (NODE_NAME_PARAM.equalsIgnoreCase(curNode.getNodeName() )) {
-    		FAttrReader.SetNode(curNode);
-        String paramName = FAttrReader.GetAttrName();
-        String typeName = FAttrReader.GetAttrParamType();
+    	if (NODE_NAME_PARAM.equalsIgnoreCase(curElement.GetElementName() )) {
+    		
+        String paramName = curElement.GetAttrName();
+        String typeName = curElement.GetAttrParamType();
         int orderNum;
         try {
-          orderNum = FAttrReader.GetNumberAttr();
+          orderNum = curElement.GetNumberAttr();
         } catch (Exception e) {
         	throw new ModelException("Ошибка при обработке порядкового номера переменной в функции " + Function.GetName() + ": " + e.getMessage());
         }
         try {
-        	if ( IsVarParam(FAttrReader)  ) {
+        	if ( IsVarParam(curElement)  ) {
         		Variable var = null;
             if ("array".equals(typeName)) {
             	var = new ScriptArray();

@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
+import mp.elements.ModelElementDataSource;
 import mp.elements.ModelException;
 
 public class ElementHistoryTable extends ModelGUIAbstrTable {
@@ -79,5 +80,7 @@ public class ElementHistoryTable extends ModelGUIAbstrTable {
 
 
 	}
+
+
 
 }

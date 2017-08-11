@@ -20,8 +20,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   private boolean FStopFlag = true;
   private String FErrorString = null;
   private ModelTime FCurrentModelTime = null;
-  private ModelTime FTimeIncrement = null;
-  private ModelAttributeReader FAttrReader = null;
+  private ModelTime FTimeIncrement = null;  
   private Vector<ModelBlock> FDynamicBlockList = null;
   private ModelTimeManager FTimeManager = null;
   
@@ -207,7 +206,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 
   public void ApplyNodeInformation() throws ModelException{
     PrepareDynamicBlock();
-    FAttrReader = ServiceLocator.GetAttributeReader();
+    
     //передаем во все объекты расширитель языка
     ModelLanguageBuilder builder = new ModelLanguageBuilder( this );
     try{
@@ -240,11 +239,11 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     }
     AddLinkerToDynamicBlock();
     ReadTimeIncrement();
-    FStepDelay = FAttrReader.GetStepDelay();
+    FStepDelay = elementSource.GetStepDelay();
     if ( FStepDelay == -1 ){
       FStepDelay = 100;
     }
-    FPrintDurationInterval = FAttrReader.GetDurationPrintInterval();
+    FPrintDurationInterval = elementSource.GetDurationPrintInterval();
     // RegisterModelInContext();
     //InitAllBlockStatecharts();
   }

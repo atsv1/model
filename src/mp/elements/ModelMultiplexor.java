@@ -4,6 +4,7 @@ import mp.parser.*;
 import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
 
+import java.util.List;
 import java.util.Vector;
 
 
@@ -1042,32 +1043,19 @@ public class ModelMultiplexor extends ModelDynamicBlock{
     return result;
   }
 
-  private void ReadCode( Node aCodeNode ) throws ModelException {
-    NodeList nodes = aCodeNode.getChildNodes();
-    if ( nodes == null ){
-      return;
-    }
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    attrReader.SetNode( aCodeNode );
-    String s = attrReader.GetAutomatCodeType();
+  private void ReadCode( ModelElementDataSource codeElement ) throws ModelException {
+   
+    String s = codeElement.GetAutomatCodeType();
     if ( s == null || "".equalsIgnoreCase( s ) ){
       ModelException e = new ModelException("Незаполнено значение типа скрипта в элементе \"" + this.GetFullName() + "\"");
       throw e;
     }
-    Node currentNode;
-    int i = 0;
-    String code = null;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item(i);
-      if ( currentNode.getNodeType() == Node.CDATA_SECTION_NODE ){
-        code = currentNode.getNodeValue();
-        break;
-      }
-      i++;
-    }
+    
+    String code = codeElement.GetexecutionCode();
+    
     if ( SCRIPT_TYPE_ENABLE.equalsIgnoreCase( s ) ){
       this.AddEnableScript( code );
-      int maxEnableCount = attrReader.GetMaxEnableBlockCount();
+      int maxEnableCount = codeElement.GetMaxEnableBlockCount();
       if ( maxEnableCount != -1 ) {
         FEnabledElementsArray = new LinkedBlockRecord[ maxEnableCount ];
       }
@@ -1086,17 +1074,13 @@ public class ModelMultiplexor extends ModelDynamicBlock{
   }
 
   private void ReadScripts() throws ModelException{
-    Node node = this.GetNode();
-    NodeList nodes = node.getChildNodes();
-    int i = 0;
-    Node currentNode;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item(i);
-      if ( currentNode.getNodeType() == Node.ELEMENT_NODE && currentNode.getNodeName().equalsIgnoreCase("Code") ){
-        ReadCode( currentNode );
-      }
-      i++;
-    }
+  	List<ModelElementDataSource> codeElements = elementSource.GetChildElements("Code");
+  	if (codeElements == null) {
+  		return;
+  	}
+  	for (ModelElementDataSource element : codeElements) {
+  		ReadCode( element );
+  	}  	
   }
 
   public void SetDynamicLinker( ) throws ModelException {
@@ -1117,30 +1101,23 @@ public class ModelMultiplexor extends ModelDynamicBlock{
     return -1;
   }
 
-  private void ReadEventList(Node listNode) throws ModelException{
-    NodeList nodes = listNode.getChildNodes();
-    int i = 0;
-    Node node;
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    String eventType = null;
+  private void ReadEventList(ModelElementDataSource listSource) throws ModelException{
+  	List<ModelElementDataSource> eventElements = listSource.GetChildElements("Event");
+  	if ( eventElements == null || eventElements.isEmpty() ) {
+  		return;
+  	}
+  	String eventType = null;
     String procName = null;
     int eventTypeIndex = -1;
-    while ( i < nodes.getLength() ){
-      node = nodes.item( i );
-      if ( node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equalsIgnoreCase("Event") ){
-        attrReader.SetNode( node );
-        eventType = attrReader.GetAttrParamType();
-        eventTypeIndex = GetEventTypeIndex( eventType );
-        if ( eventTypeIndex == -1 ){
-          ModelException e = new ModelException( "Ошибка в мультиплексоре \"" + GetFullName() +
-                  "\": неизвестный тип события " + eventType );
-          throw e;
-        }
-        procName = attrReader.GetAttrName();
-        FExistsEvents[ eventTypeIndex ] = procName;
+  	for (ModelElementDataSource element : eventElements) {
+  		eventType = element.GetAttrParamType();
+  		eventTypeIndex = GetEventTypeIndex( eventType );
+  		if ( eventTypeIndex == -1 ){
+        throw  new ModelException( "Ошибка в мультиплексоре \"" + GetFullName() + "\": неизвестный тип события " + eventType );        
       }
-      i++;
-    }
+  		procName = element.GetAttrName();
+      FExistsEvents[ eventTypeIndex ] = procName;  		
+  	}  	
   }
 
   /** Читается информация о том, какие события нужно генерировать
@@ -1148,24 +1125,15 @@ public class ModelMultiplexor extends ModelDynamicBlock{
    * @throws ModelException
    */
   private void ReadEventInfo() throws ModelException{
-    Node rootNode = GetNode();
-    if ( rootNode == null ){
-      return;
-    }
-    NodeList nodes = rootNode.getChildNodes();
-    if ( nodes == null ){
-      return;
-    }
-    int i = 0;
-    Node node;
-    while ( i < nodes.getLength() ){
-      node = nodes.item( i );
-      if ( node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equalsIgnoreCase("EventList") ){
-        ReadEventList( node );
-        return;
-      }
-      i++;
-    }
+  	
+  	
+  	List<ModelElementDataSource> eventListSources = elementSource.GetChildElements("EventList");
+  	if ( eventListSources == null ) {
+  		return;
+  	}
+  	for (ModelElementDataSource curElement : eventListSources) {
+  		ReadEventList( curElement );
+  	}
   }
 
   private void SetTransferFlagToMaterialParams( boolean aFlagValue ){

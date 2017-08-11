@@ -6,6 +6,7 @@ import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
@@ -234,79 +235,17 @@ public class ModelCalculatedElement extends ModelBlockParam {
     }
   }
 
-  private Vector GetChildNodesByName(String aNodeName) throws ModelException{
-    Node paramNode = GetNode();
-    NodeList nodes = paramNode.getChildNodes();
-    if ( nodes == null ){
-      ModelException e = new ModelException("нет дочерних нод у параметра " + GetName());
-      throw e;
-    }
-    int i = 0;
-    Node result = null;
-    Vector resultList = new Vector(10);
-    while ( i < nodes.getLength() ){
-      result = nodes.item(i);
-      if ( aNodeName.equalsIgnoreCase( result.getNodeName() ) ){
-        resultList.add( result );
-      }
-      i++;
-    }
-    return resultList;
-  }
-
-  protected Node GetChildNodeByName(String aNodeName) throws ModelException{
-    Node result = null;
-    Vector nodes = GetChildNodesByName( aNodeName );
-    if ( nodes != null && nodes.size() >= 1 ) {
-      result = (Node) nodes.get( 0 );
-    }
-    return result;
-  }
-
-
-  private Node GetChildNodeByType(Node aNode, int aNodeType) throws ModelException{
-    NodeList nodes = aNode.getChildNodes();
-    if ( nodes == null ){
-      ModelException e = new ModelException("нет дочерних нод у параметра " + GetName());
-      throw e;
-    }
-    int i = 0;
-    Node result = null;
-    while ( i < nodes.getLength() ){
-      result = nodes.item(i);
-      if (  result.getNodeType() == aNodeType  ){
-        return result;
-      } else result = null;
-      i++;
-    }
-    return result;
-  }
-
-  protected String GetFormulaSourceCode( Node aFormulaNode ) throws ModelException {
-    Node sourceCodeNode = GetChildNodeByType(aFormulaNode, Node.CDATA_SECTION_NODE);
-    if ( sourceCodeNode == null ){
-      ModelException e = new ModelException("У параметра \"" + GetName() + "\" в ноде  Formula отсутствует секция с исходным кодом. Необходимо добавить дочерний элемент CDATA" );
-      throw e;
-    }
-    if ( sourceCodeNode.getNodeType() != Node.CDATA_SECTION_NODE ) {
-      ModelException e = new ModelException("У параметра \"" + GetName() + "\" дочерняя нода не является нодой CData" );
-      throw e;
-    }
-    CDATASection sourceCode = (CDATASection)sourceCodeNode;
-    return sourceCode.getData();
-  }
-
-  private void ReadSourceCodeInformation(  ) throws ModelException {
-    Node formulaNode = GetChildNodeByName("Formula");
-    if ( formulaNode == null ){
-      //ModelException e = new ModelException("У параметра " + GetName() + " отсутствует нода Formula");
-      //throw e;
-      FIsCodeExists = false;
+  private void ReadSourceCodeInformation(  ) throws ModelException {    
+  	List<ModelElementDataSource> formulaElements = elementSource.GetChildElements("Formula");
+  	if ( formulaElements == null || formulaElements.isEmpty() ) {
+  		FIsCodeExists = false;
       return;
-    }
+  	}
+  	ModelElementDataSource formulaSource =  formulaElements.get(0);
+    
     String s = "";
     try {
-      s = GetFormulaSourceCode( formulaNode );
+      s = formulaSource.GetexecutionCode();      		
       SetSourceCode( s );
     } catch (ScriptException e) {
       ModelException e1 = new ModelException("Ошибка при чтении скрипта в элементе \"" + GetFullName() + " \": " +  e.getMessage() );
@@ -352,18 +291,18 @@ public class ModelCalculatedElement extends ModelBlockParam {
     return result;
   }
 
-  private void PrepareExecutionRecords( Vector aNodeList ) throws ModelException, ScriptException {
-    int i = 0;
-    Node functionNode;
-    ModelAttributeReader reader = ServiceLocator.GetAttributeReader();
+  private void PrepareExecutionRecords( List<ModelElementDataSource> functionElementList ) throws ModelException, ScriptException {
+    int i = 0;    
+    if (functionElementList == null) {
+    	return;
+    }
     String sourceCode;
     String switchValue;
     FExecutionRecordsList = new Vector();
-    while ( i < aNodeList.size() ){
-      functionNode = (Node) aNodeList.get( i );
-      sourceCode = ModelAttributeReader.GetSourceCode( functionNode );
-      reader.SetNode( functionNode );
-      switchValue = reader.GetSwitchValue();
+    while ( i < functionElementList.size() ){
+    	ModelElementDataSource functionElement = functionElementList.get( i );
+      sourceCode = functionElement.GetexecutionCode();      
+      switchValue = functionElement.GetSwitchValue();
       if ( switchValue == null || "".equalsIgnoreCase( switchValue ) ){
         //этот код должен быть кодом по умолчанию
         if ( FDefaultExecutionStructure != null ){
@@ -399,12 +338,10 @@ public class ModelCalculatedElement extends ModelBlockParam {
   }
 
   public void ApplyNodeInformation() throws ModelException{
-    Node paramNode = GetNode();
-    ModelAttributeReader reader = ServiceLocator.GetAttributeReader();
-    reader.SetNode( paramNode );
+    
     // проверяем, не должен ли параметр сохранять свою историю
     super.ApplyNodeInformation();
-    String switchParamName = reader.GetSwitchParamName();
+    String switchParamName = elementSource.GetSwitchParamName();
     if ( switchParamName == null || "".equalsIgnoreCase( switchParamName ) ){
       ReadSourceCodeInformation();
       return;
@@ -422,7 +359,7 @@ public class ModelCalculatedElement extends ModelBlockParam {
     FKeyParam = (ModelBlockParam) element;
     CheckSwitchParamType();
     try {
-      PrepareExecutionRecords( GetChildNodesByName("Formula") );
+      PrepareExecutionRecords( elementSource.GetChildElements("Formula") );
       SetSwitchChangeListener();
     } catch (ScriptException e) {
       ModelException e1 = new ModelException(" Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());

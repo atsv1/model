@@ -5,6 +5,7 @@ import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
@@ -23,7 +24,7 @@ public class ModelEventProcessorContainer implements ModelForReadInterface{
   private ModelElement FOwner = null;
   private Hashtable FEventList = null;
   private String FOwnerName = null;
-  private Node FNode = null;
+  private ModelElementDataSource dataSource = null;
 
   public ModelEventProcessorContainer( ModelElement aOwner ){
     FOwner = aOwner;
@@ -99,52 +100,29 @@ public class ModelEventProcessorContainer implements ModelForReadInterface{
       throw e;
     }
     proc.SetExecFlag( true );
-  }
+  } 
 
-  public Node GetNode() {
-    return FNode;
-  }
-
-  public void SetNode(Node aNode) {
-    FNode = aNode;
-  }
-
-  private void ReadEventInfo(Node aNode) throws ModelException {
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    attrReader.SetNode( aNode );
-    String eventName = attrReader.GetAttrName();
+  private void ReadEventInfo(ModelElementDataSource elementSource) throws ModelException {    
+    String eventName = elementSource.GetAttrName();
     if ( eventName == null || "".equalsIgnoreCase( eventName ) ){
       ModelException e = new ModelException("Ошибка в элементе " + FOwnerName + ": пустое имя события");
       throw e;
     }
-    NodeList nodes = aNode.getChildNodes();
-    int i = 0;
-    Node node;
-    String eventSource = null;
-    while ( i < nodes.getLength() ){
-      node = nodes.item( i );
-      if ( node.getNodeType() == Node.CDATA_SECTION_NODE ){
-        eventSource = node.getNodeValue();
-        break;
-      }
-      i++;
-    }
+    
+    String eventSource = elementSource.GetexecutionCode();    
     AddEventProcessor( eventName, eventSource );
   }
 
   public void ApplyNodeInfo() throws ModelException{
-    if ( FNode == null ){
+    if ( dataSource == null ){
       return;
     }
-    NodeList nodes = FNode.getChildNodes();
-    int i = 0;
-    Node currentNode = null;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item( i );
-      if ( currentNode.getNodeType() == Node.ELEMENT_NODE && currentNode.getNodeName().equalsIgnoreCase("Event")){
-        ReadEventInfo( currentNode );
-      }
-      i++;
+    List<ModelElementDataSource> eventSources =   dataSource.GetChildElements("Event");
+    if ( eventSources == null ) {
+    	return;
+    }
+    for (ModelElementDataSource eventSource : eventSources) {
+      ReadEventInfo( eventSource );
     }
   }
 
@@ -183,5 +161,16 @@ public class ModelEventProcessorContainer implements ModelForReadInterface{
     }
 
   }
+
+	@Override
+	public ModelElementDataSource GetDataSource() {		
+		return dataSource;
+	}
+
+	@Override
+	public void SetDataSource(ModelElementDataSource dataSource) {
+		this.dataSource = dataSource;
+		
+	}
 
 }

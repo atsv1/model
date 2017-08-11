@@ -1,5 +1,6 @@
 package mp.gui;
 
+import mp.elements.ModelElementDataSource;
 import mp.elements.ModelException;
 import mp.parser.Variable;
 import mp.parser.ScriptException;
@@ -225,5 +226,7 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
       throw e1;
     }
     FIsFilterExist = true;
-  }
+  } 
+  
+  
 }

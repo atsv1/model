@@ -31,7 +31,7 @@ public abstract class ModelGUIAbstrElement implements ModelForReadInterface, Mod
   private String FIdentityName = null;
 
   public ModelGUIAbstrElement(){
-      FAttrReader = new ModelAttributeReader( null );
+      
   }
 
   public Node GetNode() {
@@ -224,6 +224,18 @@ public abstract class ModelGUIAbstrElement implements ModelForReadInterface, Mod
     }
     return null;
   }
+  
+private ModelElementDataSource elementSource = null; 
+  
+	@Override
+	public ModelElementDataSource GetDataSource() {		
+		return elementSource;
+	}
+
+	@Override
+	public void SetDataSource(ModelElementDataSource dataSource) {
+		elementSource = dataSource;
+	}
 
 
 

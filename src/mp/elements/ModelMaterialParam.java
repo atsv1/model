@@ -5,6 +5,7 @@ import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
 import org.w3c.dom.NodeList;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -20,8 +21,7 @@ import java.util.UUID;
  * Обмен данными между исчерпаемыми параметрами происходит по-другому. При передаче значений между
  * параметром-источником и параметром-приемником, значение в параметре-источнике уменьшается на переданное количество.
  */
-public class ModelMaterialParam extends ModelInputBlockParam {
-  private ModelAttributeReader FAttrReader = ServiceLocator.GetAttributeReader();
+public class ModelMaterialParam extends ModelInputBlockParam {  
   private ModelMaterialParam FSourceElement = null;
   /**Переменная хранит разрешение на начало обмена. Используется только в приемнике
    */
@@ -69,24 +69,10 @@ public class ModelMaterialParam extends ModelInputBlockParam {
     double result = aOrderValue;
     return result;
   }
+  
 
-  private static String GetOutgoingScript(Node aNode){
-    NodeList nodes = aNode.getChildNodes();
-    Node currentNode = null;
-    int i = 0;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item( i );
-      if ( currentNode.getNodeType() == Node.CDATA_SECTION_NODE ){
-        return currentNode.getNodeValue();
-      }
-      i++;
-    }
-    return null;
-  }
-
-  private void ReadOutgoingSection( Node aNode ) throws ModelException {
-    FAttrReader.SetNode( aNode );
-    String outgoingVarName = FAttrReader.GetValueAttr();
+  private void ReadOutgoingSection( ModelElementDataSource element ) throws ModelException {    
+    String outgoingVarName = element.GetValueAttr();
     String orderVarName = GetName() + "_orderQuantity";
     ModelBlock owner = (ModelBlock) GetRealOwner();
     ScriptLanguageExt ext = owner.GetLanguageExt();
@@ -117,7 +103,7 @@ public class ModelMaterialParam extends ModelInputBlockParam {
     FOutgoingQuantityParam.SetLanguageExt( ext );
     owner.AddInnerParam( FOutgoingQuantityParam );
     try {
-      FOutgoingQuantityParam.SetSourceCode( GetOutgoingScript(aNode) );
+      FOutgoingQuantityParam.SetSourceCode( element.GetexecutionCode() );
       param.SetSourceCode( "[" + orderVarName + "]" + " := " + "[" + orderVarName + "]" + ";" );
     } catch (ScriptException e) {
       ModelException e1 = new ModelException("Ошибка в элементе \"" + GetFullName() +
@@ -284,11 +270,11 @@ public class ModelMaterialParam extends ModelInputBlockParam {
       ModelException e = new ModelException("Отсутствует элемент-владелец в элементе \"" + this.GetFullName() + "\"");
       throw e;
     }
-    String paramName = FAttrReader.GetLinkedParamName();
+    String paramName = elementSource.GetLinkedParamName();
     if ( paramName == null ){
       return;// параметра-источника может и не быть
     }
-    String blockName = FAttrReader.GetLinkedBlockName();
+    String blockName = elementSource.GetLinkedBlockName();
     if ( blockName == null ){
       //присоединяемся к элементу этого же блока
       ModelBlockParam element = (ModelBlockParam) owner.Get( paramName );
@@ -306,7 +292,7 @@ public class ModelMaterialParam extends ModelInputBlockParam {
       return;
     }
     // определено название блока.
-    ModelBlock linkedBlock = (ModelBlock) GetLinkedBlock( FAttrReader );
+    ModelBlock linkedBlock = (ModelBlock) GetLinkedBlock( elementSource );
     if ( linkedBlock == null ){
       ModelException e = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": отсутствует блок " + blockName);
       throw e;
@@ -339,7 +325,7 @@ public class ModelMaterialParam extends ModelInputBlockParam {
     SetVarInfo( typeName, initValue );
   }
 
-  private void ReadIncomingScript( Node aNode ) throws ModelException {
+  private void ReadIncomingScript( ModelElementDataSource element ) throws ModelException {
     ModelBlock owner = (ModelBlock) this.GetRealOwner();
     FIncomingValueParam = new ModelServiceParam(owner, "incomingValue_" + GetName(), ServiceLocator.GetNextId());
     FIncomingValueParam.SetVarInfo("real", "0");
@@ -352,7 +338,7 @@ public class ModelMaterialParam extends ModelInputBlockParam {
       ModelException e1 = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());
       throw e1;
     }
-    String sourceCode = GetOutgoingScript( aNode );
+    String sourceCode = element.GetexecutionCode();
     FIncomingValueParam.SetLanguageExt( ext );
     try {
       FIncomingValueParam.SetSourceCode( sourceCode );
@@ -362,17 +348,15 @@ public class ModelMaterialParam extends ModelInputBlockParam {
     }
   }
 
-  private void ReadSection(Node aNode) throws ModelException {
-    if ( aNode == null ){
+  private void ReadSection(ModelElementDataSource element) throws ModelException {
+    if ( element == null ){
       return;
     }
     ModelBlock owner = (ModelBlock) GetRealOwner();
-    if ( aNode.getNodeName().equalsIgnoreCase("RecieveDataFlag") ){
-      FAttrReader.SetNode( aNode );
-      ModelBlockParam enableParam = (ModelBlockParam) owner.Get( FAttrReader.GetValueAttr() );
+    if ( element.GetElementName().equalsIgnoreCase("RecieveDataFlag") ){      
+      ModelBlockParam enableParam = (ModelBlockParam) owner.Get( element.GetValueAttr() );
       if ( enableParam == null ){
-        ModelException e = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": отсутствует параметр " +
-                FAttrReader.GetValueAttr());
+        ModelException e = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": отсутствует параметр " + element.GetValueAttr());
         throw e;
       }
       FEnableFlag = enableParam.GetVariable();
@@ -392,10 +376,9 @@ public class ModelMaterialParam extends ModelInputBlockParam {
       }
       return;
     }
-    if ( aNode.getNodeName().equalsIgnoreCase("RecieveQuantity") ){
-      FIsResieveQuantitySectionExist = true;
-      FAttrReader.SetNode( aNode );
-      String s = FAttrReader.GetValueAttr();
+    if ( element.GetElementName().equalsIgnoreCase("RecieveQuantity") ){
+      FIsResieveQuantitySectionExist = true;      
+      String s = element.GetValueAttr();
       try {
         FRecieveQuantity = Double.parseDouble( s );
         return;
@@ -409,65 +392,47 @@ public class ModelMaterialParam extends ModelInputBlockParam {
       FRecieveQuantityVar = quantityParam.GetVariable();
       return;
     }
-    if ( aNode.getNodeName().equalsIgnoreCase("OutgoingQuantity") ){
-      ReadOutgoingSection( aNode );
+    if (element.GetElementName().equalsIgnoreCase("OutgoingQuantity") ){
+      ReadOutgoingSection( element );
       FIsOutgoingSectionExist = true;
     }
-    if ( aNode.getNodeName().equalsIgnoreCase("Formula") ){
-      ReadInnerFormula( aNode );
+    if ( element.GetElementName().equalsIgnoreCase("Formula") ){
+      ReadInnerFormula( element );
     }
-    if ( aNode.getNodeName().equalsIgnoreCase("IncomingCode") ){
+    if (element.GetElementName().equalsIgnoreCase("IncomingCode") ){
       if ( this.GetParamPlacementType() != ModelBlockParam.PLACEMENT_TYPE_INPUT ){
         ModelException e = new ModelException("Ошибка в параметре \"" + GetFullName() +
            "\": секция incomingValue может быть только во входных параметрах");
         throw e;
       }
-      ReadIncomingScript( aNode );
+      ReadIncomingScript( element );
     }
   }
 
-  private void ReadInnerFormula(Node aNode) throws ModelException {
+  private void ReadInnerFormula(ModelElementDataSource element) throws ModelException {
     ModelBlock owner = (ModelBlock) this.GetRealOwner();
     FInnerFormula = new ModelCalculatedElement( owner, this.GetName(), ServiceLocator.GetNextId() );
     FInnerFormula.SetVariable( GetVariable() );
-    FInnerFormula.SetNode( aNode.getParentNode() );
+    FInnerFormula.SetDataSource(  element.getParent());
     FInnerFormula.SetLanguageExt( owner.GetLanguageExt() );
     FInnerFormula.ApplyNodeInformation();
   }
 
   private void ReadAdditionalSections() throws ModelException {
-    NodeList nodes = GetNode().getChildNodes();
-    if ( nodes == null ){
-      return;
-    }
-    int i = 0;
-    Node currentNode;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item( i );
-      if ( currentNode.getNodeType() == Node.ELEMENT_NODE ) {
-        ReadSection( currentNode );
-      }
-      i++;
+    List<ModelElementDataSource> childElements = elementSource.GetChildElements();
+    for (ModelElementDataSource curElement : childElements) {
+      ReadSection( curElement );      
     }
   }
 
   public void ApplyNodeInformation() throws ModelException{
   	super.ApplyNodeInformation();
-    FEnableTransfer = false;
-    FAttrReader.SetNode( this.GetNode() );
+    FEnableTransfer = false;    
     ReadLinkInfo( );
     ReadAdditionalSections();
     FEnableTransfer = true;
-  } //cornForSet
+  } 
   
-  /*public void fixState(UUID stateLabel) throws ModelException{
-  	String s = this.GetName();
-  	if ("cornForSet".equalsIgnoreCase(s)) {
-  		Object o = this.GetVariable().GetObject();
-  		System.out.println(o);  				
-  	}
-  	super.fixState(stateLabel);
-  }*/
   
   
 }

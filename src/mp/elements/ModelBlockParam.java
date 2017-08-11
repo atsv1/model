@@ -294,12 +294,10 @@ public abstract class ModelBlockParam extends ModelElement{
   public abstract boolean IsNeedRuntimeUpdate();
 
   public void ApplyNodeInformation() throws ModelException{
-    Node paramNode = GetNode();
-		if (paramNode != null) {
-			ModelAttributeReader reader = ServiceLocator.GetAttributeReader();
-			reader.SetNode(paramNode);
+    
+		if (elementSource != null) {			
 			// проверяем, не должен ли параметр сохранять свою историю
-			if (reader.GetSaveHistoryFlag()) {
+			if (elementSource.GetSaveHistoryFlag()) {
 				AddHistoryChangeListener();
 			}
 		}

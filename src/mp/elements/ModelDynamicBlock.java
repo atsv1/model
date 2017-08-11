@@ -28,9 +28,8 @@ public abstract class ModelDynamicBlock extends ModelBlock{
   public void BuildParams() throws ModelException{
     if ( FIsParamsBuild ){
       return;
-    }
-    Node node = this.GetNode();
-    if ( node == null ){
+    }    
+    if ( elementSource == null ){
       ModelException e = new ModelException("Пустая нода в элементе \"" + this.GetFullName() + "\"");
       throw e;
     }
@@ -98,10 +97,8 @@ public abstract class ModelDynamicBlock extends ModelBlock{
     }
   }
 
-  private void ReadEtalon() throws ModelException {
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    attrReader.SetNode( GetNode() );
-    String etalonName = attrReader.GetDynamicEtalonName();
+  private void ReadEtalon() throws ModelException {    
+    String etalonName = elementSource.GetDynamicEtalonName();
     if ( etalonName == null || "".equalsIgnoreCase( etalonName ) ){
       return;
     }
@@ -138,10 +135,8 @@ public abstract class ModelDynamicBlock extends ModelBlock{
     ReCreateAllInputParams();
   }
 
-  private void ReadOwner() throws ModelException {
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    attrReader.SetNode( GetNode() );
-    String ownerName = attrReader.GetDynamicOwnerName();
+  private void ReadOwner() throws ModelException {    
+    String ownerName = elementSource.GetDynamicOwnerName();
     if ( ownerName == null || "".equalsIgnoreCase( ownerName ) ){
       return;
     }

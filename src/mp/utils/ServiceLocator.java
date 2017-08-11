@@ -7,8 +7,7 @@ package mp.utils;
  * @noinspection UtilityClass
  */
 public  class ServiceLocator {
-  private static UniqueIdGenerator FUniqueGeneratorGenerator = new UniqueIdGenerator();
-  private static ModelAttributeReader FAttrReader = new ModelAttributeReader(null);
+  private static UniqueIdGenerator FUniqueGeneratorGenerator = new UniqueIdGenerator();  
   public static int COMPARE_FIDELITY = 1000;
   private static NameService names = new NameService();
 
@@ -17,7 +16,7 @@ public  class ServiceLocator {
   }
 
   public static ModelAttributeReader GetAttributeReader(){
-    return FAttrReader; 
+    return null; 
   }
 
   /**Функция сравнивает два дробных значения. Сравнение производится с учетом установленного в системе коэффициента
