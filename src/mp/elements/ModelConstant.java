@@ -14,8 +14,7 @@ import mp.parser.Variable;
 public class ModelConstant extends ModelBlockParam implements ModelForReadInterface {
 
   public void SetConstantDescr( String aConstName, String aConstType, String aConstValue ) throws ModelException{
-    try {
-      //FVariable = Variable.CreateNewInstance( aConstName, aConstType, aConstValue );
+    try {      
       this.SetVarInfo( aConstType, aConstValue );
     } catch (Exception e) {
       e.printStackTrace();

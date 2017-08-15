@@ -92,8 +92,6 @@ public interface ModelElementDataSource {
 
 	String GetLinkedParamName() throws ModelException;
 	
-	void AddConstant(String aConstName, String aConstValue) throws ModelException;
-	
 	public List<ModelElementDataSource> GetCodeElements();
 	
 	public List<ModelElementDataSource> GetChildElements();
