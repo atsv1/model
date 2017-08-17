@@ -1,6 +1,6 @@
 package mp.gui;
 
-import org.w3c.dom.Node;
+
 import mp.elements.*;
 import mp.utils.ModelAttributeReader;
 
@@ -10,7 +10,7 @@ import mp.utils.ModelAttributeReader;
  */
 public class ModelGUIElementFactory extends ModelElementAbstractFactory {
 
-  private ModelAttributeReader FAttrReader = null;
+  
   private ModelConnector FConnector = null;
 
   private static String[][] FormDef = {
@@ -29,7 +29,7 @@ public class ModelGUIElementFactory extends ModelElementAbstractFactory {
   };
 
   public ModelGUIElementFactory() throws ModelException{
-    FAttrReader = new ModelAttributeReader(null);
+    
   }
 
   /**Создание базового класса для апплета. Название класса содержится в файле формы
@@ -38,10 +38,10 @@ public class ModelGUIElementFactory extends ModelElementAbstractFactory {
    * @return
    * @throws ModelException
    */
-  private ModelForReadInterface GetNewBasicElement( Node aNewNode ) throws ModelException {
+  private ModelForReadInterface GetNewBasicElement( ModelElementDataSource aNewNode ) throws ModelException {
     ModelForReadInterface result = null;
-    FAttrReader.SetNode( aNewNode );
-    String className = FAttrReader.GetClassName();
+    
+    String className = aNewNode.GetClassName();
     try {
       Class cl = Class.forName( className );
       Object o = cl.newInstance();
@@ -56,7 +56,7 @@ public class ModelGUIElementFactory extends ModelElementAbstractFactory {
       ModelException e = new ModelException("При создании экземпляра класса  " + className + " произошла ошибка " + e3.getMessage());
       throw e;
     }
-    result.SetNode( aNewNode );
+    result.SetDataSource( aNewNode );
     return result;
   }
 
@@ -72,80 +72,80 @@ public class ModelGUIElementFactory extends ModelElementAbstractFactory {
     return result;
   }
 
-  private static ModelForReadInterface GetNewlabel( Node aNode ) throws ModelException{
+  private static ModelForReadInterface GetNewlabel( ModelElementDataSource aNode ) throws ModelException{
     ModelGUILabel label = new ModelGUILabel();
-    label.SetNode( aNode );
+    label.SetDataSource( aNode );
     label.ReadDataFromNode();
     return label;
   }
 
-  private static ModelForReadInterface GetNewEdit( Node aNode, ModelConnector connector ) throws ModelException{
+  private static ModelForReadInterface GetNewEdit( ModelElementDataSource aNode, ModelConnector connector ) throws ModelException{
     ModelGUIEditBox editBox = new ModelGUIEditBox();
-    editBox.SetNode( aNode );
+    editBox.SetDataSource( aNode );
     editBox.SetConnector( connector );
     editBox.ReadDataFromNode();
     return editBox;
   }
 
-  private ModelForReadInterface GetNewGraphic( Node aNode ) throws ModelException{
+  private ModelForReadInterface GetNewGraphic( ModelElementDataSource aNode ) throws ModelException{
     //ModelGUIJCCKitGraph graphic = new ModelGUIJCCKitGraph();
     ModelGUIJFreeGraph graphic = new ModelGUIJFreeGraph();
-    graphic.SetNode( aNode );
+    graphic.SetDataSource( aNode );
     graphic.SetConnector( FConnector );
     graphic.ReadDataFromNode();
     graphic.SetBoundsManager( new BoundsManager_LeftShift() );
     return graphic;
   }
 
-  private ModelForReadInterface GetNewTable( Node aNode ) throws ModelException{
+  private ModelForReadInterface GetNewTable( ModelElementDataSource aNode ) throws ModelException{
     ModelGUITable table = new ModelGUITable();
-    table.SetNode( aNode );
+    table.SetDataSource( aNode );
     table.SetConnector( FConnector );
     table.ReadDataFromNode();
     return table;
   }
 
-  private ModelForReadInterface GetNewListTable( Node aNode ) throws ModelException{
+  private ModelForReadInterface GetNewListTable( ModelElementDataSource aNode ) throws ModelException{
     ModelGUIListTable table = new ModelGUIListTable();
-    table.SetNode( aNode );
+    table.SetDataSource( aNode );
     table.SetConnector( FConnector );
     table.ReadDataFromNode();
     return table;
   }
 
-  private ModelForReadInterface GetNewAnimation( Node aNode ) throws ModelException{
+  private ModelForReadInterface GetNewAnimation( ModelElementDataSource aNode ) throws ModelException{
     ModelGUIAnimation animation = new ModelGUIAnimation();
-    animation.SetNode( aNode );
+    animation.SetDataSource( aNode );
     animation.SetConnector( FConnector );
     animation.ReadDataFromNode();
     return animation;
   }
 
-  private ModelForReadInterface GetNewCheckBox( Node aNode ) throws ModelException{
+  private ModelForReadInterface GetNewCheckBox( ModelElementDataSource aNode ) throws ModelException{
     ModelGUICheckBox cb = new ModelGUICheckBox();
-    cb.SetNode( aNode );
+    cb.SetDataSource( aNode );
     cb.SetConnector( FConnector );
     cb.ReadDataFromNode();
     return cb;
   }
 
-  private ModelForReadInterface GetNewButton( Node aNode ) throws ModelException{
+  private ModelForReadInterface GetNewButton( ModelElementDataSource aNode ) throws ModelException{
     ModelGUIButton button = new ModelGUIButton();
-    button.SetNode( aNode );
+    button.SetDataSource( aNode );
     button.SetConnector( FConnector );
     button.ReadDataFromNode();
     return button;
   }
 
-  private ModelForReadInterface GetNewVarTable( Node aNode ) throws ModelException{
+  private ModelForReadInterface GetNewVarTable( ModelElementDataSource aNode ) throws ModelException{
   	ElementHistoryTable ht = new ElementHistoryTable();
-  	ht.SetNode(aNode);
+  	ht.SetDataSource(aNode);
   	ht.SetConnector(FConnector);
   	ht.ReadDataFromNode();
   	return ht;
   }
 
-  public ModelForReadInterface GetNewElement(Node aCurrentNode, ModelForReadInterface aCurrentElement, Node aNewNode,
+  public ModelForReadInterface GetNewElement(ModelElementDataSource aCurrentNode, ModelForReadInterface aCurrentElement, ModelElementDataSource aNewNode,
                                              int aNewId) throws ModelException {
     String functionCode = GetFunctionCode( aCurrentNode, aNewNode );
     int i = Integer.parseInt( functionCode );
@@ -215,7 +215,7 @@ public class ModelGUIElementFactory extends ModelElementAbstractFactory {
       ModelException e = new ModelException("Не удалось создать элемент формы");
       throw e;
     }
-    result.SetNode( aNewNode );
+    result.SetDataSource( aNewNode );
     ((ModelGUIAbstrElement)result).SetConnector( FConnector );
     return result;
   }
@@ -224,7 +224,7 @@ public class ModelGUIElementFactory extends ModelElementAbstractFactory {
     return FormDef;
   }
 
-  public boolean IsLastNode(Node aNode) {
+  public boolean IsLastNode(ModelElementDataSource aNode) {
     return false;
   }
 
@@ -253,7 +253,7 @@ public class ModelGUIElementFactory extends ModelElementAbstractFactory {
     newElement.SetOwnerElementList(  owner.GetElementList() );
   }
 
-  public void ExecuteDoSomethingFunction(Node aParentNode, Node aCurrentNode, ModelForReadInterface aCurrentElement,
+  public void ExecuteDoSomethingFunction(ModelElementDataSource aParentNode, ModelElementDataSource aCurrentNode, ModelForReadInterface aCurrentElement,
                                          ModelForReadInterface aNewElement) throws ModelException {
     String functionCode = GetFunctionCode( aParentNode, aCurrentNode );
     int i = Integer.parseInt( functionCode );
@@ -313,5 +313,6 @@ public class ModelGUIElementFactory extends ModelElementAbstractFactory {
   public void SetConnector(ModelConnector aConnector){
     FConnector = aConnector;
   }
+
 
 }

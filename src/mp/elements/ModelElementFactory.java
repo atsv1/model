@@ -176,18 +176,20 @@ public class ModelElementFactory extends ModelElementAbstractFactory {
     String name = aSourceNode.GetAttrName();
     ModelConstant result;
     String s = aSourceNode.GetAttrParamType();
-    if ( "array".equalsIgnoreCase( s ) ){
+    
+      if ( "array".equalsIgnoreCase( s ) ){
       result = new ModelConstant( aNewElementOwner, name, aNewId );;
       ModelArrayElement el = new ModelArrayElement( aNewElementOwner, aSourceNode.GetAttrName() , aNewId );
       el.SetDataSource(aSourceNode);
       el.ReadVariableInfo(aSourceNode);
-      result.SetVariable( el.GetArray() );
-      aSourceNode.AddConstant( name, aSourceNode.GetAttrInitValue() );
+      result.SetVariable( el.GetArray() );      
+      //aSourceNode.AddConstant( name, aSourceNode.GetAttrInitValue() );
       return result;
     }
+    
     result = new ModelConstant( aNewElementOwner, name, aNewId );
-    ((ModelConstant)result).SetConstantDescr( name, aSourceNode.GetAttrParamType(), aSourceNode.GetAttrInitValue() );
-    aSourceNode.AddConstant( name, aSourceNode.GetAttrInitValue() );
+    ((ModelConstant)result).SetConstantDescr( name, aSourceNode.GetAttrParamType(), aSourceNode.GetAttrInitValue() );    
+    BuildContext.getBuildContext().addConstant(result);
     return result;
   }
 

@@ -472,8 +472,7 @@ public class ModelArrayParamTest extends TestCase {
   }
 
   public void testReadInitValueFromConstant(){
-    mp.parser.ModelExecutionContext.ClearExecutionContext();
-    ServiceLocator.GetAttributeReader().ClearConstantList();
+    mp.parser.ModelExecutionContext.ClearExecutionContext();    
     ScriptArray array = null;
     ModelArrayElement arrayParam = null;
     Model model = null;
@@ -500,8 +499,7 @@ public class ModelArrayParamTest extends TestCase {
   }
 
   public void testReadInitValueFromConstant_Real(){
-    mp.parser.ModelExecutionContext.ClearExecutionContext();
-    ServiceLocator.GetAttributeReader().ClearConstantList();
+    mp.parser.ModelExecutionContext.ClearExecutionContext();    
     ScriptArray array = null;
     ModelArrayElement arrayParam = null;
     Model model = null;
@@ -528,8 +526,7 @@ public class ModelArrayParamTest extends TestCase {
   }
 
   public void testReadInitValuefromConstant_NotEqualTypes(){
-    mp.parser.ModelExecutionContext.ClearExecutionContext();
-    ServiceLocator.GetAttributeReader().ClearConstantList();
+    mp.parser.ModelExecutionContext.ClearExecutionContext();    
     ScriptArray array = null;
     ModelArrayElement arrayParam = null;
     Model model = null;
@@ -559,8 +556,7 @@ public class ModelArrayParamTest extends TestCase {
    *
    */
   public void testForEachNoSingleBlocks(){
-    mp.parser.ModelExecutionContext.ClearExecutionContext();
-    ServiceLocator.GetAttributeReader().ClearConstantList();
+    mp.parser.ModelExecutionContext.ClearExecutionContext();    
     ScriptArray array = null;
     ModelArrayElement arrayParam = null;
     Model model = null;
@@ -605,8 +601,7 @@ public class ModelArrayParamTest extends TestCase {
    *
    */
   public void testArryaInParamScript(){
-    mp.parser.ModelExecutionContext.ClearExecutionContext();
-    ServiceLocator.GetAttributeReader().ClearConstantList();
+    mp.parser.ModelExecutionContext.ClearExecutionContext();    
     boolean f = false;
     Model model = null;
     try {
@@ -657,9 +652,7 @@ public class ModelArrayParamTest extends TestCase {
 	}
 
   public void testArrayAsConst() {
-
-  	mp.parser.ModelExecutionContext.ClearExecutionContext();
-    ServiceLocator.GetAttributeReader().ClearConstantList();
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();    
     boolean f = false;
     Model model = null;
     try {

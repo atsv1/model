@@ -23,10 +23,7 @@ public class ModelGUICheckBox extends ModelGUIAbstrElement implements ModelGUIEl
   }
 
   public void ReadDataFromNode() throws ModelException {
-    if ( FNode == null ){
-      return;
-    }
-    FAttrReader.SetNode( FNode );
+    
     this.ReadCoordFromNode( FPanel );
     ReadCaption( FCaptionLabel );
     this.ReadConnectedParamInfo();

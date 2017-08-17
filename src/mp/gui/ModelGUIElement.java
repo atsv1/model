@@ -1,7 +1,5 @@
 package mp.gui;
 
-import org.w3c.dom.Node;
-
 import java.awt.*;
 import java.util.Vector;
 
@@ -20,8 +18,6 @@ public interface ModelGUIElement {
   void Update() throws ModelException;
 
   void SetConnector( ModelConnector connector );
-
-  Node GetNode();
 
   void Send() throws ModelException;
 

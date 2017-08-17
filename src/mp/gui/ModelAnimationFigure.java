@@ -1,12 +1,12 @@
 package mp.gui;
 
-import org.w3c.dom.Node;
 
 import mp.elements.ModelAddress;
 import mp.elements.ModelException;
 import mp.utils.ModelAttributeReader;
 import mp.utils.ServiceLocator;
 import mp.elements.ModelConnector;
+import mp.elements.ModelElementDataSource;
 
 import java.awt.*;
 
@@ -15,8 +15,7 @@ import java.awt.*;
  * User: atsv
  * Date: 23.06.2007
  */
-public class ModelAnimationFigure {
-  private Node FNode = null;
+public class ModelAnimationFigure {  
   private String FAnimationName = null;
   private ModelConnector FConnector = null;
   private ModelAddress FAddress = null;
@@ -44,14 +43,15 @@ public class ModelAnimationFigure {
   private double FPreviousYCoord = 0;
   private double FCurrentXCoord = 0;
   private double FCurrentYCoord = 0;
+  private ModelElementDataSource elementSource;
 
-  public ModelAnimationFigure( Node aNode, String aAnimationName, ModelConnector aConnector){
-    FNode = aNode;
+  public ModelAnimationFigure( ModelElementDataSource aNode, String aAnimationName, ModelConnector aConnector){
+  	elementSource = aNode;
     FAnimationName = aAnimationName;
     FConnector = aConnector;
   }
 
-  protected ModelAddress GetAddress(ModelAttributeReader aAttrReader){
+  protected ModelAddress GetAddress(ModelElementDataSource aAttrReader){
     String blockname = aAttrReader.GetBlockName();
     String paramName = aAttrReader.GetParamName();
     String blockIndex = aAttrReader.GetBlockIndex();
@@ -60,50 +60,48 @@ public class ModelAnimationFigure {
   }
 
   private void ReadNodeInfo() throws ModelException {
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    attrReader.SetNode( FNode );
-    CoordX = attrReader.GetAnimationXCoord();
+    
+    CoordX = elementSource.GetAnimationXCoord();
     if ( CoordX == null || "".equalsIgnoreCase( CoordX ) ){
       ModelException e = new ModelException("Ошибка элементе \"" + FAnimationName + "\": пустая X-координата");
       throw e;
     }
-    CoordY = attrReader.GetAnimationYCoord();
+    CoordY = elementSource.GetAnimationYCoord();
     if ( CoordY == null || "".equalsIgnoreCase( CoordY ) ){
       ModelException e = new ModelException("Ошибка элементе \"" + FAnimationName + "\": пустая Y-координата");
       throw e;
     }
-    FigureSize = attrReader.GetAnimationFigureSizeParamName();
+    FigureSize = elementSource.GetAnimationFigureSizeParamName();
     if ( FigureSize == null ){
       //в определении фигуры нет параметра size. Значит, размер определяется двумя параметрами - высотой и шириной
       // пробуем прочитать их
-      FigureHeight = attrReader.GetAnimationFigureHeightParamName();
-      FigureWidth = attrReader.GetAnimationFigureWidthParamName();
+      FigureHeight = elementSource.GetAnimationFigureHeightParamName();
+      FigureWidth = elementSource.GetAnimationFigureWidthParamName();
       if ( FigureHeight == null || FigureWidth == null ){
         ModelException e = new ModelException("Отсутствуют размеры для элемента \"" + FAnimationName + "\"");
         throw e;
       }
       FIsDoubleSizeFigure = true;
     }
-    FigureColour = attrReader.GetAnimationColour();
-    FBlockName = attrReader.GetBlockName();
+    FigureColour = elementSource.GetAnimationColour();
+    FBlockName = elementSource.GetBlockName();
     if ( FBlockName == null || "".equalsIgnoreCase( FBlockName ) ){
       ModelException e = new ModelException("Ошибка элементе \"" + FAnimationName + "\": отсутствует название блока");
       throw e;
     }
-     FigureType = attrReader.GetAnimationFigureType();
+     FigureType = elementSource.GetAnimationFigureType();
     if ( FigureType == null || FigureType.equalsIgnoreCase("") ){
       ModelException e = new ModelException("Ошибка элементе \"" + FAnimationName + "\": отсутствует тип рисуемой фигуры");
       throw e;
     }
-    FAddress = GetAddress(attrReader);
+    FAddress = GetAddress(elementSource);
   }
 
   public int ApplyNodeInformation() throws ModelException {
     ReadNodeInfo();
     int result = 0;
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    attrReader.SetNode( FNode );
-    String temp = attrReader.GetBlockIndex();
+    
+    String temp = elementSource.GetBlockIndex();
     if ( "all".equalsIgnoreCase(temp) ){
       FBlockIndex = 0;
       int blockCount = FConnector.GetBlockCount(FAddress.GetModelName(), FBlockName );

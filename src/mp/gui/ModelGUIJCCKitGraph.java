@@ -14,8 +14,6 @@ import java.awt.*;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import mp.elements.*;
 import mp.utils.ModelAttributeReader;
 
@@ -79,11 +77,7 @@ public class ModelGUIJCCKitGraph extends ModelGUIGraph implements ModelGUIElemen
     FCurvesList = new Vector();
   }
 
-  public void ReadDataFromNode() throws ModelException {
-    if ( FNode == null ){
-      return;
-    }
-    FAttrReader.SetNode( FNode );
+  public void ReadDataFromNode() throws ModelException {    
     this.ReadCoordFromNode( FMainPanel );
     //this.ReadCaption( FCaptionLabel );
     FCaptionLabel.setText( this.GetName() );

@@ -1,7 +1,5 @@
 package mp.gui;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,8 +15,7 @@ import mp.parser.Operand;
  */
 public abstract class ModelGUIAbstrElement implements ModelForReadInterface, ModelGUIElement{
   protected ModelConnector FConnector = null;
-  protected Node FNode = null;
-  protected ModelAttributeReader FAttrReader;
+    
   protected String FModelName = null;
   protected String FBlockName = null;
   protected String FParamName = null;
@@ -29,51 +26,46 @@ public abstract class ModelGUIAbstrElement implements ModelForReadInterface, Mod
   protected ModelAddress FAddress = null;
   protected int FValueType = -1;
   private String FIdentityName = null;
+  private ModelElementDataSource elementSource = null;
 
   public ModelGUIAbstrElement(){
       
   }
 
-  public Node GetNode() {
-    return FNode;
-  }
-
-  public void SetNode(Node aNode) {
-     FNode = aNode;
-  }
+  
 
   public void SetConnector(ModelConnector connector) {
     FConnector = connector;
   }
 
   protected void ReadCoordFromNode( Component aComponent ) throws ModelException{
-    Rectangle r = FAttrReader.GetRectangle();
+    Rectangle r = elementSource.GetRectangle();
     if ( r == null ){
-      ModelException e = new ModelException("Неверно указаны координаты для элемента " + FAttrReader.GetAttrName());
+      ModelException e = new ModelException("Неверно указаны координаты для элемента " + elementSource.GetAttrName());
       throw e;
     }
     aComponent.setBounds( r );
   }
 
   protected void ReadCaption(JLabel aLabel){
-    String s = FAttrReader.GetCaption();
+    String s = elementSource.GetCaption();
     aLabel.setText( s + "   ");
   }
 
   protected String GetCaption() throws ModelException {
-    FAttrReader.SetNode( FNode );
-    return FAttrReader.GetCaption();
+    
+    return elementSource.GetCaption();
   }
 
   protected String GetName() throws ModelException {
-    return FAttrReader.GetAttrName();
+    return elementSource.GetAttrName();
   }
 
   protected ModelAddress GetAddress(){
-    String blockname = FAttrReader.GetBlockName();
-    String paramName = FAttrReader.GetParamName();
-    String blockIndex = FAttrReader.GetBlockIndex();
-    String modelName = FAttrReader.GetModelAttrValue();
+    String blockname = elementSource.GetBlockName();
+    String paramName = elementSource.GetParamName();
+    String blockIndex = elementSource.GetBlockIndex();
+    String modelName = elementSource.GetModelAttrValue();
     return new ModelAddress( modelName, blockname, FConnector.GetBlockIndex( blockIndex ), paramName  );
   }
 
@@ -84,7 +76,7 @@ public abstract class ModelGUIAbstrElement implements ModelForReadInterface, Mod
     FAddress = GetAddress();
     FBlockName = FAddress.GetBlockName();
     FParamName = FAddress.GetParamName();
-    FBlockIndexValue = FAttrReader.GetBlockIndex();
+    FBlockIndexValue = elementSource.GetBlockIndex();
     FBlockIndex = FAddress.GetBlockIndex();
     FModelName = FAddress.GetModelName();
     if (!FConnector.IsConnectionEnabled( FModelName, FBlockName, FBlockIndex, FParamName ) ){
@@ -149,24 +141,7 @@ public abstract class ModelGUIAbstrElement implements ModelForReadInterface, Mod
   public Vector GetElementList(){
     return FElementVector;
   }
-
-  protected static Node GetChildNode( Node aRootNode, String aNodeName ){
-    if ( aRootNode == null ){
-      return null;
-    }
-    int i = 0;
-    NodeList nodes = aRootNode.getChildNodes();
-    Node currentNode;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item( i );
-      if ( currentNode.getNodeType() == Node.ELEMENT_NODE && aNodeName.equalsIgnoreCase( currentNode.getNodeName() )) {
-        return currentNode;
-      }
-      i++;
-    }
-    return null;
-  }
-
+ 
   public String GetStringValue() throws ModelException {
     String result = null;
     switch ( FValueType ){
@@ -223,9 +198,8 @@ public abstract class ModelGUIAbstrElement implements ModelForReadInterface, Mod
       i++;
     }
     return null;
-  }
-  
-private ModelElementDataSource elementSource = null; 
+  } 
+ 
   
 	@Override
 	public ModelElementDataSource GetDataSource() {		

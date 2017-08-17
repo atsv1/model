@@ -2,7 +2,6 @@ package mp.elements;
 
 import mp.parser.*;
 import mp.elements.AutomatTransitionTimeout;
-import mp.utils.ModelAttributeReader;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +33,7 @@ public class AutomatState extends ModelEventGenerator{
   private boolean FInitCodeExecuted = false;
 
   private AutomatState FActiveState = null;
-  private ModelAttributeReader FAttrReader = null;
+  private ModelElementDataSource FAttrReader = null;
 
   private ModelTime FActivateTime = new ModelTime(0);
   Vector transitions = new Vector();

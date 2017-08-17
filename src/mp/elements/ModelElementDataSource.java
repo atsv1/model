@@ -1,5 +1,6 @@
 package mp.elements;
 
+import java.awt.Rectangle;
 import java.util.List;
 
 public interface ModelElementDataSource {
@@ -98,7 +99,75 @@ public interface ModelElementDataSource {
 	
 	public List<ModelElementDataSource> GetChildElements(String elementName);
 	
+	public ModelElementDataSource GetChildElement(String elementName);
+	
 	public String GetexecutionCode();
+
+	String GetClassName() throws ModelException;
+
+	String GetCaption();
+
+	Rectangle GetRectangle();
+
+	String GetTitle();
+
+	String GetBlockIndex();
+
+	String GetParamName();
+
+	String GetBlockName();
+
+	String GetFilterValue();
+
+	String GetFilterValueType();
+
+	double GetAxisMinValue();
+
+	double GetAxisMaxValue();
+
+	double GetAxisIncrement();
+
+	double GetYAxisIncrement();
+
+	double GetXAxisIncrement();
+
+	double GetYAxisMaxValue();
+
+	double GetYAxisMinValue();
+
+	String GetParamNameForYAxis();
+
+	String GetParamNameForXAxis();
+
+	double GetXAxisMaxValue();
+
+	double GetXAxisMinValue();
+
+	String GetEventName();
+
+	String GetAnimationYCoord();
+
+	String GetAnimationXCoord();
+
+	String GetAnimationFigureHeightParamName();
+
+	String GetAnimationFigureWidthParamName();
+
+	String GetAnimationFigureSizeParamName();
+
+	boolean GetAnimationResizeFlag() throws ModelException;
+
+	double GetAnimationInitHeight() throws ModelException;
+
+	double GetAnimationInitWidth() throws ModelException;
+
+	double GetAnimationInitYCoord() throws ModelException;
+
+	double GetAnimationInitXCoord() throws ModelException;
+
+	String GetAnimationFigureType();
+
+	String GetAnimationColour();
 	
 	 
 

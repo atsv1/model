@@ -1,5 +1,6 @@
 package mp.gui;
 
+import mp.elements.ModelElementDataSource;
 import mp.elements.ModelException;
 import mp.utils.ModelAttributeReader;
 
@@ -8,7 +9,6 @@ import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.util.Vector;
 
-import org.w3c.dom.Node;
 
 /**
  * User: atsv
@@ -40,17 +40,19 @@ public class ModelGUIAnimation extends ModelGUIAbstrElement {
 
   private void ReadFigures() throws ModelException{
     int figureCounter = 1;
-    Node figureNode = ModelAttributeReader.GetChildNodeByName( FNode, "Figure", figureCounter );
+    java.util.List<ModelElementDataSource> figures = this.GetDataSource().GetChildElements("Figure");
+    if ( figures == null || figures.isEmpty() ) {
+    	throw new ModelException("Ошибка в анимации \"" + FCaptionLabel.getText() + "\": отсутствуют фигуры");
+    }
     ModelAnimationFigure currentFigure = null;
-    FFiguresList.clear();
     int blockCount = 0;
-    while ( figureNode != null ){
-      currentFigure = new ModelAnimationFigure( figureNode, FCaptionLabel.getText(), FConnector );
-      blockCount = currentFigure.ApplyNodeInformation();
-      if ( blockCount > 0 ){
+    for (ModelElementDataSource figureSource : figures) {
+    	currentFigure = new ModelAnimationFigure( figureSource, FCaptionLabel.getText(), FConnector );
+    	blockCount = currentFigure.ApplyNodeInformation();
+    	if ( blockCount > 0 ){
         int currentBlockIndex = 1;
         while ( currentBlockIndex <= blockCount ){
-          currentFigure = new ModelAnimationFigure( figureNode, FCaptionLabel.getText(), FConnector );
+          currentFigure = new ModelAnimationFigure( figureSource, FCaptionLabel.getText(), FConnector );
           currentFigure.ApplyNodeInformation( currentBlockIndex );
           FFiguresList.add( currentFigure );
           currentBlockIndex++;
@@ -58,26 +60,22 @@ public class ModelGUIAnimation extends ModelGUIAbstrElement {
       }
       FFiguresList.add( currentFigure );
       figureCounter++;
-      figureNode = ModelAttributeReader.GetChildNodeByName( FNode, "Figure", figureCounter );
     }
+  
     if ( FFiguresList.size() == 0 ){
       ModelException e = new ModelException("Ошибка в анимации \"" + FCaptionLabel.getText() + "\": отсутствуют фигуры");
       throw e;
     }
   }
 
-  public void ReadDataFromNode() throws ModelException {
-    if ( FNode == null ){
-      return;
-    }
-    FAttrReader.SetNode( FNode );
+  public void ReadDataFromNode() throws ModelException {   
     this.ReadCoordFromNode(FMainPanel);
     FCaptionLabel.setText( this.GetName() );
-    FInitXCoord = FAttrReader.GetAnimationInitXCoord();
-    FInitYCoord = FAttrReader.GetAnimationInitYCoord();
-    FInitWidth =  FAttrReader.GetAnimationInitWidth();
-    FInitHeight =  FAttrReader.GetAnimationInitHeight();
-    FResizeFlag = FAttrReader.GetAnimationResizeFlag();
+    FInitXCoord = this.GetDataSource().GetAnimationInitXCoord();
+    FInitYCoord = this.GetDataSource().GetAnimationInitYCoord();
+    FInitWidth =  this.GetDataSource().GetAnimationInitWidth();
+    FInitHeight =  this.GetDataSource().GetAnimationInitHeight();
+    FResizeFlag = this.GetDataSource().GetAnimationResizeFlag();
     ReadFigures();
   }
 

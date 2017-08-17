@@ -47,11 +47,7 @@ public class ModelGUILabel extends ModelGUIAbstrElement implements ModelGUIEleme
     } catch (NumberFormatException e){}
   }
 
-  public void ReadDataFromNode() throws ModelException{
-    if ( FNode == null ){
-      return;
-    }
-    FAttrReader.SetNode( FNode );
+  public void ReadDataFromNode() throws ModelException{    
     ReadCoordFromNode( FPanel );
     ReadCaption( FCaptionLabel );
     if ( !FIsConnected ){

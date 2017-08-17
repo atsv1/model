@@ -79,13 +79,14 @@ public class ModelTreeBuilder {
     int i = 0;
     Node childNode;
     String modelFileName = null;
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
+    
     Model subModel;
     String nodeName;
     while ( i < childNodes.getLength() ){
       childNode = childNodes.item(i);
       nodeName = childNode.getNodeName();
       if ( childNode.getNodeType() == Node.ELEMENT_NODE &&  ( SubModelNodeName.equalsIgnoreCase( nodeName ) || ParallelModelNodeName.equalsIgnoreCase(nodeName)) ){
+      	ModelAttributeReader attrReader = new ModelAttributeReader(childNode, null);
         attrReader.SetNode( childNode );
         modelFileName = attrReader.GetSubModelFileName();
         ModelXMLReader modelReader = new ModelXMLReader( FElementFactory );

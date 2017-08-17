@@ -224,8 +224,7 @@ public class ModelAggregator extends ModelDynamicBlock {
    */
   private void ProcessValueNodes() throws ModelException {
     int i = 0;
-    ModelElementDataSource valueNode;
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
+    ModelElementDataSource valueNode;    
     String valueName;
     String valueType;
     String initValue;

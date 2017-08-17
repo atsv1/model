@@ -24,7 +24,7 @@ public  class ModelXMLReader {
   private boolean FValidating = false;
   private Document FDocument = null;
   private ModelForReadInterface FRootElement = null;
-  private ModelAttributeReader FAttrReader = null;
+  private ModelElementDataSource FAttrReader = null;
   private ModelElementAbstractFactory FElementFactory = null;
 
 
@@ -54,14 +54,17 @@ public  class ModelXMLReader {
     if ( FElementFactory.IsLastElement( aElementsOwner) ){
       return;
     }    
-    ModelAttributeReader previousSource = new  ModelAttributeReader(aPreviousNode, null);
-    ModelAttributeReader attrReader = new  ModelAttributeReader(aCurrentNode, aElementsOwner.GetDataSource());    
+    ModelElementDataSource previousSource = new  ModelAttributeReader(aPreviousNode, null);
+    ModelElementDataSource attrReader = new  ModelAttributeReader(aCurrentNode, aElementsOwner.GetDataSource());    
     int instancesCount = attrReader.GetAttrCount();
     ModelForReadInterface element;     
     while (instancesCount > 0){
     	int newId = GetNewId();
-      element = FElementFactory.GetNewElement( previousSource, aElementsOwner, attrReader, newId );     
-      if ( element != aElementsOwner ) {
+      element = FElementFactory.GetNewElement( previousSource, aElementsOwner, attrReader, newId );
+      if (element == null){
+      	return;
+      }
+      if ( element != aElementsOwner && element != null) {
         element.SetDataSource(attrReader);
       }
       FElementFactory.ExecuteDoSomethingFunction( previousSource, attrReader, aElementsOwner, element);
@@ -87,7 +90,7 @@ public  class ModelXMLReader {
     Node childNode;
     while ( i < childNodes.getLength() ){
       childNode = childNodes.item(i);
-      ModelAttributeReader curDS = new  ModelAttributeReader(childNode, aCurrentElement.GetDataSource());
+      ModelElementDataSource curDS = new  ModelAttributeReader(childNode, aCurrentElement.GetDataSource());
       if ( childNode.getNodeType() == Node.ELEMENT_NODE && !FElementFactory.IsLastNode( curDS ) ){
         CreateElementInstances(aCurrentNode, childNode, aCurrentElement);
       }
@@ -97,7 +100,7 @@ public  class ModelXMLReader {
 
   private void Read() throws ModelException, SAXException, IOException{
   	Element rootNode = FDocument.getDocumentElement();
-  	ModelAttributeReader attrReader = new ModelAttributeReader(rootNode, null);
+  	ModelElementDataSource attrReader = new ModelAttributeReader(rootNode, null);
     FRootElement = FElementFactory.GetNewElement(null, null, attrReader, GetNewId());
     FRootElement.SetDataSource(attrReader);
     WalkOnDocument( rootNode, FRootElement, null );

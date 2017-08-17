@@ -175,13 +175,12 @@ public abstract class ModelBlockParam extends ModelElement{
       throw e1;
     }
 
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    try {
-      FVariable = Variable.CreateNewInstance( this.GetName(), aVarType,
-              attrReader.GetConstantValue( aInitValue ) );
+    
+    try {    	
+      FVariable = Variable.CreateNewInstance( this.GetName(), aVarType,BuildContext.getBuildContext().getConstantValue(aInitValue) );
     } catch (ScriptException e) {
-      ModelException e1 = new ModelException( e.getMessage() );
-      throw e1;
+      throw  new ModelException( e.getMessage() );
+      
     }
 
   }

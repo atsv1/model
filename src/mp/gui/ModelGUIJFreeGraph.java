@@ -1,6 +1,6 @@
 package mp.gui;
 
-import org.w3c.dom.Node;
+
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -47,11 +47,7 @@ public class ModelGUIJFreeGraph extends ModelGUIGraph {
   }
 
 
-  public void ReadDataFromNode() throws ModelException {
-    if ( FNode == null ){
-      return;
-    }
-    FAttrReader.SetNode( FNode );
+  public void ReadDataFromNode() throws ModelException {    
     this.ReadCoordFromNode( FMainPanel );
     ReadCurvesInfo();
   }

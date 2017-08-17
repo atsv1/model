@@ -43,11 +43,7 @@ public class ModelGUIEditBox extends ModelGUIAbstrElement implements ModelGUIEle
     FIsInitValue = true;
   }
 
-  public void ReadDataFromNode() throws ModelException{
-    if ( FNode == null ){
-      return;
-    }
-    FAttrReader.SetNode( FNode );
+  public void ReadDataFromNode() throws ModelException{    
     this.ReadCoordFromNode( FPanel );
     ReadCaption( FCaptionLabel );
     try{

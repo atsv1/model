@@ -2,6 +2,7 @@ package mp.gui;
 
 import mp.elements.ModelException;
 import mp.elements.ModelAddress;
+import mp.elements.ModelElementDataSource;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
 
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 
 /**
  * User: Администратор
@@ -39,10 +38,10 @@ public class ModelGUIButton extends ModelGUIAbstrElement implements ModelGUIElem
     } );
   }
 
-  private void ReadEventNode( Node aEventNode ) throws ModelException{
-    FAttrReader.SetNode( aEventNode );
+  private void ReadEventNode( ModelElementDataSource aEventNode ) throws ModelException{
+    
     ModelAddress addr = GetAddress();
-    String eventName = FAttrReader.GetEventName();
+    String eventName = aEventNode.GetEventName();
     if ( eventName == null || "".equalsIgnoreCase( eventName ) ){
       ModelException e = new ModelException("Пустое название обработчика соьытий в кнопке \"" + FButton.getText() + "\"");
       throw e;
@@ -64,32 +63,19 @@ public class ModelGUIButton extends ModelGUIAbstrElement implements ModelGUIElem
    * @throws ModelException
    */
   private void ReadSendedValues() throws ModelException{
-    FAttrReader.SetNode( FNode );
-    NodeList nodes = FNode.getChildNodes();
-    if ( (nodes == null) || (nodes.getLength() == 0) ) {
-      return;
-    }
-    Node childNode;
-    int i = 0;
-    String s;
-    while ( i < nodes.getLength() ) {
-      childNode = nodes.item( i );
-      if ( childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getNodeName().equalsIgnoreCase("Send") ) {
-        FAttrReader.SetNode( childNode );
-        s = FAttrReader.GetCaption();
-        if ( s == null || "".equalsIgnoreCase( s )){
-          ModelException e = new ModelException("Пустое название передаваемого элемента в кнопке \"" +
-                  FButton.getText() + "\"");
-          throw e;
-        }
-        FCaptionList.add( s );
-        //System.out.println( s );
-      }
-      if ( childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getNodeName().equalsIgnoreCase("Event") ) {
-        ReadEventNode( childNode );  
-      }
-      i++;
-    }
+  	
+  	java.util.List<ModelElementDataSource> list = this.GetDataSource().GetChildElements("Send");
+  	if ( list != null ) {
+  		for (ModelElementDataSource el : list) {
+  			FCaptionList.add( el.GetCaption() );
+  		}
+  	}
+  	list = this.GetDataSource().GetChildElements("Event");
+  	if ( list != null ) {
+  		for (ModelElementDataSource el : list) {
+  			ReadEventNode( el );
+  		}
+  	}
   }
 
   private void FillElementList() throws ModelException {
@@ -156,11 +142,7 @@ public class ModelGUIButton extends ModelGUIAbstrElement implements ModelGUIElem
     FireEvents();
   }
 
-  public void ReadDataFromNode() throws ModelException {
-    if ( FNode == null ){
-      return;
-    }
-    FAttrReader.SetNode( FNode );
+  public void ReadDataFromNode() throws ModelException {    
     this.ReadCoordFromNode( FButton );
     FButton.setText( GetCaption() );
     ReadSendedValues();

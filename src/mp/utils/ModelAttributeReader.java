@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import mp.elements.BuildContext;
 import mp.elements.ModelElementDataSource;
 import mp.elements.ModelException;
 
@@ -90,7 +91,7 @@ public class ModelAttributeReader implements ModelElementDataSource{
       return 1;
     }
     int i = 0;
-    String constValue = GetConstantValue( s );
+    String constValue = BuildContext.getBuildContext().getConstantValue(s);//GetConstantValue( s );
     if ( constValue != null ) {
       s = constValue;
     }
@@ -384,15 +385,18 @@ public class ModelAttributeReader implements ModelElementDataSource{
   public static String BLOCK_INDEX_SELF = "self";
   public static String BLOCK_INDEX_ALL = "all";
 
-  public String GetClassName() throws ModelException{
+  @Override
+	public String GetClassName() throws ModelException{
     return GetAttrValue("classname");
   }
 
-  public String GetTitle(){
+  @Override
+	public String GetTitle(){
     return GetAttrValue("title");
   }
 
-  public Rectangle GetRectangle(){
+  @Override
+	public Rectangle GetRectangle(){
     int x = 0;
     int y = 0;
     int width = 0;
@@ -413,43 +417,53 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return result;
   }
 
-  public String GetCaption(){
+  @Override
+	public String GetCaption(){
     return GetAttrValue("caption");
   }
 
-  public String GetBlockName(){
+  @Override
+	public String GetBlockName(){
     return GetAttrValue("block");
   }
 
-  public String GetParamName(){
+  @Override
+	public String GetParamName(){
     return GetAttrValue("param");
   }
 
-  public String GetBlockIndex(){
+  @Override
+	public String GetBlockIndex(){
     return GetAttrValue("blockindex");
   }
 
-  public String GetEventName(){
+  @Override
+	public String GetEventName(){
     return GetAttrValue("eventname");
   }
 
-  public String GetFilterValueType(){
+  @Override
+	public String GetFilterValueType(){
     return GetAttrValue("filtervaluetype");
   }
 
-  public String GetFilterValue(){
+  @Override
+	public String GetFilterValue(){
     return GetAttrValue("filtervalue");
   }
 
-  public String GetParamNameForXAxis(){
+  @Override
+	public String GetParamNameForXAxis(){
     return GetAttrValue("axisx");
   }
 
-  public String GetParamNameForYAxis(){
+  @Override
+	public String GetParamNameForYAxis(){
     return GetAttrValue("axisy");
   }
 
-  public double GetXAxisMinValue(){
+  @Override
+	public double GetXAxisMinValue(){
     double i = 0;
     String s = GetAttrValue("minx");
     try{
@@ -458,7 +472,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return i;
   }
 
-  public double GetXAxisMaxValue(){
+  @Override
+	public double GetXAxisMaxValue(){
     double i = 0;
     String s = GetAttrValue("maxx");
     try{
@@ -467,7 +482,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return i;
   }
 
-  public double GetYAxisMinValue(){
+  @Override
+	public double GetYAxisMinValue(){
     double i = 0;
     String s = GetAttrValue("miny");
     try{
@@ -476,7 +492,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return i;
   }
 
-  public double GetYAxisMaxValue(){
+  @Override
+	public double GetYAxisMaxValue(){
     double i = 0;
     String s = GetAttrValue("maxy");
     try{
@@ -485,7 +502,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return i;
   }
 
-  public double GetXAxisIncrement(){
+  @Override
+	public double GetXAxisIncrement(){
     double i = 0;
     String s = GetAttrValue("incrementx");
     try{
@@ -494,7 +512,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return i;
   }
 
-  public double GetYAxisIncrement(){
+  @Override
+	public double GetYAxisIncrement(){
     double i = 0;
     String s = GetAttrValue("incrementy");
     try{
@@ -503,7 +522,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return i;
   }
 
-  public double GetAxisIncrement(){
+  @Override
+	public double GetAxisIncrement(){
     double i = 0;
     String s = GetAttrValue("increment");
     try{
@@ -512,7 +532,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return i;
   }
 
-  public double GetAxisMaxValue(){
+  @Override
+	public double GetAxisMaxValue(){
     double i = 0;
     String s = GetAttrValue("max");
     try{
@@ -521,7 +542,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return i;
   }
 
-  public double GetAxisMinValue(){
+  @Override
+	public double GetAxisMinValue(){
     double i = 0;
     String s = GetAttrValue("min");
     try{
@@ -530,35 +552,43 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return i;
   }
 
-  public String GetAnimationXCoord(){
+  @Override
+	public String GetAnimationXCoord(){
     return GetAttrValue("x");
   }
 
-  public String GetAnimationYCoord(){
+  @Override
+	public String GetAnimationYCoord(){
     return GetAttrValue("y");
   }
 
-  public String GetAnimationFigureSizeParamName(){
+  @Override
+	public String GetAnimationFigureSizeParamName(){
     return GetAttrValue("size");
   }
 
-  public String GetAnimationFigureWidthParamName(){
+  @Override
+	public String GetAnimationFigureWidthParamName(){
     return GetAttrValue("width");
   }
 
-  public String GetAnimationFigureHeightParamName(){
+  @Override
+	public String GetAnimationFigureHeightParamName(){
     return GetAttrValue("height");
   }
 
-  public String GetAnimationColour(){
+  @Override
+	public String GetAnimationColour(){
     return GetAttrValue("colour");
   }
 
-  public String GetAnimationFigureType(){
+  @Override
+	public String GetAnimationFigureType(){
     return GetAttrValue("type");
   }
 
-  public double GetAnimationInitXCoord() throws ModelException{
+  @Override
+	public double GetAnimationInitXCoord() throws ModelException{
     String s = GetAttrValue("initXCoord");
     if ( s == null || "".equalsIgnoreCase( s ) ){
       return 0;
@@ -571,7 +601,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     }
   }
 
-  public double GetAnimationInitYCoord() throws ModelException{
+  @Override
+	public double GetAnimationInitYCoord() throws ModelException{
     String s = GetAttrValue("initYCoord");
     if ( s == null || "".equalsIgnoreCase( s ) ){
       return 0;
@@ -584,7 +615,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     }
   }
 
-  public double GetAnimationInitWidth() throws ModelException{
+  @Override
+	public double GetAnimationInitWidth() throws ModelException{
     String s = GetAttrValue("initWidth");
     if ( s == null || "".equalsIgnoreCase( s ) ){
       return 100;
@@ -597,7 +629,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     }
   }
 
-  public double GetAnimationInitHeight() throws ModelException{
+  @Override
+	public double GetAnimationInitHeight() throws ModelException{
     String s = GetAttrValue("initHeight");
     if ( s == null || "".equalsIgnoreCase( s ) ){
       return 100;
@@ -610,7 +643,8 @@ public class ModelAttributeReader implements ModelElementDataSource{
     }
   }
 
-  public boolean GetAnimationResizeFlag() throws ModelException{
+  @Override
+	public boolean GetAnimationResizeFlag() throws ModelException{
     String s = GetAttrValue("resizeFlag");
     return "true".equalsIgnoreCase(s);
   }
@@ -788,12 +822,22 @@ public class ModelAttributeReader implements ModelElementDataSource{
 	  Node currentNode;
 	  while ( i < nodes.getLength() ){
 	    currentNode = nodes.item(i);
-	    if ( currentNode.getNodeType() == Node.ELEMENT_NODE ){	      	
-	      result.add(  new ModelAttributeReader(currentNode, this) );
+	    ModelElementDataSource curReader = new ModelAttributeReader(currentNode, this);
+	    if ( currentNode.getNodeType() == Node.ELEMENT_NODE &&  elementName.equalsIgnoreCase(curReader.GetElementName())  ){	      	
+	      result.add(  curReader );
 	    }
 	    i++;
 	  }
 		return result;
+	}
+
+	@Override
+	public ModelElementDataSource GetChildElement(String elementName) {
+		List<ModelElementDataSource> childs = GetChildElements(elementName);
+		if (childs == null || childs.isEmpty()) {
+			return null;
+		}
+		return childs.get(0);
 	}
 
 }

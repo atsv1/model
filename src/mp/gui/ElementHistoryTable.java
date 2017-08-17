@@ -41,7 +41,7 @@ public class ElementHistoryTable extends ModelGUIAbstrTable {
     }
 		// проверяем, что указанный параметр действительно хранит историю
 		if ( !FConnector.IsHistoryExists(FAddress) ) {
-			throw new ModelException("Отсутствует история в параметре для элемента \"" + FAttrReader.GetCaption() + "\"");
+			throw new ModelException("Отсутствует история в параметре для элемента \"" + this.GetDataSource().GetCaption() + "\"");
 		}
 		String s = FConnector.GetHistoryStringValue(FAddress,currentMaxCounter );
 		while (s != null) {
@@ -59,11 +59,9 @@ public class ElementHistoryTable extends ModelGUIAbstrTable {
 	public void ReadDataFromNode() throws ModelException {
 		if ( FPanel == null ) {
 			FPanel = new JPanel( null );
-		}
-
-		FAttrReader.SetNode( GetNode() );
+		}		
     FCaption = new JLabel("");
-    FCaption.setText( FAttrReader.GetCaption() );
+    FCaption.setText( this.GetDataSource().GetCaption() );
 
     FNamesList = new Vector();
     FRows = new Vector();

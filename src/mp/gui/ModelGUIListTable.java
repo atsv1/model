@@ -1,13 +1,12 @@
 package mp.gui;
 
+import mp.elements.ModelElementDataSource;
 import mp.elements.ModelException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Vector;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * User: atsv
@@ -30,10 +29,9 @@ public class ModelGUIListTable extends ModelGUIAbstrTable implements ModelGUIEle
     FPanel = new JPanel( null );
   }
 
-  public void ReadDataFromNode() throws ModelException {
-    FAttrReader.SetNode( GetNode() );
+  public void ReadDataFromNode() throws ModelException {    
     FCaption = new JLabel("");
-    FCaption.setText( FAttrReader.GetCaption() );
+    FCaption.setText( this.GetDataSource().GetCaption() );
 
     // читаем информацию о строках
     FCaptionList = new Vector();
@@ -81,25 +79,15 @@ public class ModelGUIListTable extends ModelGUIAbstrTable implements ModelGUIEle
   }
 
   protected void ReadParamNames(Vector aCaptionVector, Vector aParamsVector) throws ModelException {
-     Node columnNamesNode = GetChildNode( GetNode(), "RowsList" );
+    ModelElementDataSource columnNamesNode = this.GetDataSource().GetChildElement("RowsList");  
     if ( columnNamesNode == null ){
-      ModelException e = new ModelException("Ошибка  при чтении таблицы \"" + FCaption.getText() +
-              "\" отсутствует описание строк таблицы");
-      throw e;
+    	throw new ModelException("Ошибка  при чтении таблицы \"" + FCaption.getText() +  "\" отсутствует описание строк таблицы");      
     }
-    NodeList nodes = columnNamesNode.getChildNodes();
-    int i = 0;
-    Node currentNode = null;
-    while ( i < nodes.getLength() ) {
-      currentNode = nodes.item( i );
-      if ( currentNode.getNodeType() == Node.ELEMENT_NODE &&
-              "Row".equalsIgnoreCase( currentNode.getNodeName() )  ) {
-        FAttrReader.SetNode( currentNode );
-        aCaptionVector.add( FAttrReader.GetCaption() );
-        aParamsVector.add( FAttrReader.GetParamName() );
-      }
-      i++;
-    }
+    java.util.List<ModelElementDataSource> rows = columnNamesNode.GetChildElements("Row");
+    for (ModelElementDataSource row : rows) {
+    	aCaptionVector.add( row.GetCaption() );
+      aParamsVector.add( row.GetParamName() );
+    }    
   }
 
   /**Создание строк в таблице. Строками в таблице являются названия параметров

@@ -145,10 +145,10 @@ public class ModelInputBlockParam extends ModelBlockParam{
       error = e.getMessage();
       /*ModelException e1 = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());
       throw e1;*/
-      s = elementSource.GetConstantValue( blockIndex );
+      //s = elementSource.GetConstantValue( blockIndex );
+      s= BuildContext.getBuildContext().getConstantValue(blockIndex);
       if ( s == null ){
-        ModelException e1 = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());
-        throw e1;
+        throw new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());        
       }
       intBlockIndex = Integer.parseInt( s );
     }

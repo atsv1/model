@@ -1,9 +1,9 @@
 package mp.gui;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
 import mp.elements.ModelException;
 import mp.elements.ModelAddress;
+import mp.elements.ModelElementDataSource;
 import mp.utils.ModelAttributeReader;
 
 import java.util.Vector;
@@ -22,10 +22,10 @@ public abstract class ModelGUIGraph extends ModelGUIAbstrElement {
   protected Vector FCurvesList;
 
 
-  protected void CreateNewCurves(Node aFunctionNode) throws ModelException {
+  protected void CreateNewCurves(ModelElementDataSource aFunctionNode) throws ModelException {
     ModelGUICurve curve;
-    FAttrReader.SetNode( aFunctionNode );
-    String blockIndex = FAttrReader.GetBlockIndex();
+    
+    String blockIndex = this.GetDataSource().GetBlockIndex();
     if ( blockIndex == null || "all".equalsIgnoreCase( blockIndex ) ){
       //создаем одну функцию
       //curve = GetNewCurve( aFunctionNode );
@@ -34,35 +34,23 @@ public abstract class ModelGUIGraph extends ModelGUIAbstrElement {
     }
   }
 
-  private void ReadCurvesInfoFromChildNodes( Node aCurrentNode ) throws ModelException{
-    NodeList nodes = aCurrentNode.getChildNodes();
-    if ( nodes == null ){
-      return;
-    }
-    int i = 0;
-    Node currentNode;
-    ///ModelJCCKitCurve curve;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item( i );
-      if ( currentNode.getNodeType() == Node.ELEMENT_NODE && currentNode.getNodeName().equalsIgnoreCase("Func") ){
-        CreateNewCurves(currentNode);
-      }
-      i++;
-    }
-
+  private void ReadCurvesInfoFromChildNodes( ModelElementDataSource aCurrentNode ) throws ModelException{
+  	java.util.List<ModelElementDataSource> funcs = aCurrentNode.GetChildElements("Func");
+  	if ( funcs == null ) {
+  		return;
+  	}
+  	for (ModelElementDataSource func : funcs) {
+  		CreateNewCurves(func);
+  	}
   }
 
-  protected ModelGUICurveDescr GetCurvesDescrFromNode( Node aNode ) throws ModelException{
+  protected ModelGUICurveDescr GetCurvesDescrFromNode( ModelElementDataSource aNode ) throws ModelException{
     ModelGUICurveDescr result = new ModelGUICurveDescr();
-    FAttrReader.SetNode( aNode );
-    result.Caption = FAttrReader.GetCaption();
-    NodeList nodes = aNode.getChildNodes();
-    if (nodes == null){
-      ModelException e = new ModelException("Отсутствует описание осей в функции " + result.Caption);
-      throw e;
-    }
+    
+    result.Caption = this.GetDataSource().GetCaption();
+    
     //сначала выясняем - не массив ли это.
-    Node arrayNode = ModelAttributeReader.GetChildNodeByName(aNode,"ArrayAxis",1);
+    ModelElementDataSource arrayNode = aNode.GetChildElement("ArrayAxis");
     if ( arrayNode != null ){
       result.ArrayAddress = GetNewAddressFromNode( arrayNode );
       result.ISArray = FConnector.IsArray( result.ArrayAddress );
@@ -71,20 +59,20 @@ public abstract class ModelGUIGraph extends ModelGUIAbstrElement {
         throw e;
       }
       result.Connector = FConnector;
-      result.XAxisMaxValue = FAttrReader.GetXAxisMaxValue();
-      result.XAxisMinValue =FAttrReader.GetXAxisMinValue();
-      result.YAxisMaxValue = FAttrReader.GetYAxisMaxValue();
-      result.XIncrement = FAttrReader.GetXAxisIncrement();
-      result.YIncrement = FAttrReader.GetYAxisIncrement();
+      result.XAxisMaxValue = arrayNode.GetXAxisMaxValue();
+      result.XAxisMinValue =arrayNode.GetXAxisMinValue();
+      result.YAxisMaxValue = arrayNode.GetYAxisMaxValue();
+      result.XIncrement = arrayNode.GetXAxisIncrement();
+      result.YIncrement = arrayNode.GetYAxisIncrement();
       return result;
     }
 
-    Node xAxisNode = ModelAttributeReader.GetChildNodeByName(aNode,"AxisX",1);
+    ModelElementDataSource xAxisNode =  aNode.GetChildElement("AxisX"); 
     if ( xAxisNode == null ){
       ModelException e = new ModelException( "В функции " + result.Caption + " отсутствует нода с описание оси Х");
       throw e;
     }
-    Node yAxisNode = ModelAttributeReader.GetChildNodeByName(aNode,"AxisY",1);
+    ModelElementDataSource yAxisNode = aNode.GetChildElement("AxisY");
     if ( yAxisNode == null ){
       ModelException e = new ModelException( "В функции " + result.Caption + " отсутствует нода с описание оси Y");
       throw e;
@@ -92,26 +80,24 @@ public abstract class ModelGUIGraph extends ModelGUIAbstrElement {
     result.XAddress = GetNewAddressFromNode( xAxisNode );
     result.YAddress = GetNewAddressFromNode( yAxisNode );
     result.Connector = FConnector;
-    
-    FAttrReader.SetNode( xAxisNode );
-    result.XAxisMaxValue = FAttrReader.GetAxisMaxValue();
-    result.XAxisMinValue =FAttrReader.GetAxisMinValue();
-    result.XIncrement = FAttrReader.GetAxisIncrement();
+        
+    result.XAxisMaxValue = xAxisNode.GetAxisMaxValue();
+    result.XAxisMinValue =xAxisNode.GetAxisMinValue();
+    result.XIncrement = xAxisNode.GetAxisIncrement();
 
-    FAttrReader.SetNode( yAxisNode );
-    result.YAxisMaxValue = FAttrReader.GetAxisMaxValue();
-    result.YAxisMinValue = FAttrReader.GetAxisMinValue();
-    result.YIncrement = FAttrReader.GetAxisIncrement();
+    result.YAxisMaxValue = yAxisNode.GetAxisMaxValue();
+    result.YAxisMinValue = yAxisNode.GetAxisMinValue();
+    result.YIncrement = yAxisNode.GetAxisIncrement();
     return result;
   }
 
-  protected ModelGUICurveDescr GetCurvesDescrFromRootNode( String aBlockName, Node aNode) throws ModelException {
+  protected ModelGUICurveDescr GetCurvesDescrFromRootNode( String aBlockName, ModelElementDataSource aNode) throws ModelException {
     ModelGUICurveDescr result = new ModelGUICurveDescr();
-    FAttrReader.SetNode( aNode );
+    
     int blockIndex = -1;
-    String blockIndexValue = FAttrReader.GetBlockIndex();
-    String xName = FAttrReader.GetParamNameForXAxis();
-    String yName = FAttrReader.GetParamNameForYAxis();
+    String blockIndexValue = aNode.GetBlockIndex();
+    String xName = aNode.GetParamNameForXAxis();
+    String yName = aNode.GetParamNameForYAxis();
     if ( ModelAttributeReader.BLOCK_INDEX_SELF.equalsIgnoreCase( blockIndexValue ) ){
       blockIndex = FConnector.GetBlockIndex( blockIndexValue );
     }
@@ -123,12 +109,12 @@ public abstract class ModelGUIGraph extends ModelGUIAbstrElement {
     }
     result.XAddress = new ModelAddress(aBlockName,blockIndex, xName);
     result.YAddress = new ModelAddress(aBlockName,blockIndex, yName);
-    result.XAxisMaxValue = FAttrReader.GetXAxisMaxValue();
-    result.XAxisMinValue =FAttrReader.GetXAxisMinValue();
-    result.YAxisMaxValue = FAttrReader.GetYAxisMaxValue();
-    result.XIncrement = FAttrReader.GetXAxisIncrement();
-    result.YIncrement = FAttrReader.GetYAxisIncrement();
-    result.Caption = FAttrReader.GetCaption();
+    result.XAxisMaxValue = aNode.GetXAxisMaxValue();
+    result.XAxisMinValue =aNode.GetXAxisMinValue();
+    result.YAxisMaxValue = aNode.GetYAxisMaxValue();
+    result.XIncrement = aNode.GetXAxisIncrement();
+    result.YIncrement = aNode.GetYAxisIncrement();
+    result.Caption = aNode.GetCaption();
     result.Connector = FConnector;
     return result;
   }
@@ -142,13 +128,13 @@ public abstract class ModelGUIGraph extends ModelGUIAbstrElement {
    * Предполагается, что текущее значение FNode установлено на корневую ноду элемента.
    */
   protected void ReadCurvesInfo()  throws ModelException{
-    String blockName = FAttrReader.GetBlockName();
+    String blockName = this.GetDataSource().GetBlockName();
     if ( blockName != null && !blockName.equalsIgnoreCase("") ){
       //вся информация о графиках сосредоточена в корневой ноде элемента.
       //CreateCurvesFromRootNode(blockName);
-      CreateNewCurve( GetCurvesDescrFromRootNode( blockName, FNode ) );
+      CreateNewCurve( GetCurvesDescrFromRootNode( blockName, this.GetDataSource() ) );
     }
-    ReadCurvesInfoFromChildNodes( FNode );
+    ReadCurvesInfoFromChildNodes( this.GetDataSource() );
   }
 
   public double GetMinX() {
@@ -319,10 +305,9 @@ public abstract class ModelGUIGraph extends ModelGUIAbstrElement {
     this.FYIncrement = aYIncrement;
   }
 
-  protected ModelAddress GetNewAddressFromNode( Node aAddressNode ) throws ModelException{
-    FAttrReader.SetNode( aAddressNode );
-    return new ModelAddress( FAttrReader.GetBlockName(), FConnector.GetBlockIndex( FAttrReader.GetBlockIndex() ),
-            FAttrReader.GetParamName() );
+  protected ModelAddress GetNewAddressFromNode( ModelElementDataSource aAddressNode ) throws ModelException{    
+    return new ModelAddress( aAddressNode.GetBlockName(), FConnector.GetBlockIndex( aAddressNode.GetBlockIndex() ),
+    		aAddressNode.GetParamName() );
   }
 
   

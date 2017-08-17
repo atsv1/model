@@ -1,5 +1,6 @@
 package mp.gui;
 
+import mp.elements.ModelElementDataSource;
 import mp.elements.ModelException;
 import mp.parser.Variable;
 import mp.parser.ScriptException;
@@ -34,25 +35,17 @@ public class ModelGUITable extends ModelGUIAbstrTable implements ModelGUIElement
     FPanel = new JPanel( null );
   }
 
-  protected void ReadParamNames( Vector aColumnsVector, Vector aParamsVector ) throws ModelException{
-    Node columnNamesNode = GetChildNode( GetNode(), "ColumnsList" );
-    if ( columnNamesNode == null ){
+  protected void ReadParamNames( Vector aColumnsVector, Vector aParamsVector ) throws ModelException{    
+    ModelElementDataSource columnNamesNode = this.GetDataSource().GetChildElement("ColumnsList");
+    if ( columnNamesNode == null ){;
       ModelException e = new ModelException("ќшибка при чтении таблицы \"" + FCaption.getText() +
               "\" отсутствует описание колонок таблицы");
       throw e;
     }
-    NodeList nodes = columnNamesNode.getChildNodes();
-    int i = 0;
-    Node currentNode = null;
-    while ( i < nodes.getLength() ) {
-      currentNode = nodes.item( i );
-      if ( currentNode.getNodeType() == Node.ELEMENT_NODE &&
-              "Column".equalsIgnoreCase( currentNode.getNodeName() )  ) {
-        FAttrReader.SetNode( currentNode );
-        aColumnsVector.add( FAttrReader.GetCaption() );
-        aParamsVector.add( FAttrReader.GetParamName() );
-      }
-      i++;
+    java.util.List<ModelElementDataSource> columnElements = columnNamesNode.GetChildElements("Column");
+    for (ModelElementDataSource column : columnElements) {
+    	aColumnsVector.add( column.GetCaption() );
+      aParamsVector.add( column.GetParamName() );
     }
   }
 
@@ -89,9 +82,9 @@ public class ModelGUITable extends ModelGUIAbstrTable implements ModelGUIElement
   }
 
   public void ReadDataFromNode() throws ModelException {
-    FAttrReader.SetNode( GetNode() );
+    
     FCaption = new JLabel("");
-    FCaption.setText( FAttrReader.GetCaption() );
+    FCaption.setText( this.GetDataSource().GetCaption() );
 
     // читаем названи€ колонок
     ReadParamNames( FNamesList, FParamNamesList );

@@ -8,9 +8,6 @@ import mp.parser.ScriptException;
 import java.awt.*;
 import java.util.Vector;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import javax.swing.*;
 
 /**
@@ -37,9 +34,9 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
     //устанавливаем координаты
-    FAttrReader.SetNode( GetNode() );
+    
     ReadCoordFromNode( FPanel );
-    Rectangle r = FAttrReader.GetRectangle();
+    Rectangle r = this.GetDataSource().GetRectangle();
     FCaption.setBounds( new Rectangle( 0,  5, r.width-6, 20) );
     scrollPanel.setBounds( new Rectangle( 5,  25, r.width-6, r.height-25) );
     FTable.setPreferredScrollableViewportSize( new Dimension( r.width-6, r.height-25 ) );
@@ -86,47 +83,46 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
    */
   protected  void ReadBlockList(Object[] aContainer) throws ModelException{
     if ( aContainer == null || aContainer.length != 2 ){
-      ModelException e = new ModelException( "Ошибка таблице \"" + FCaption.getText() +
-              "\" пустой контейнер для хранения списка блоков" );
+      ModelException e = new ModelException( "Ошибка таблице \"" + FCaption.getText() + "\" пустой контейнер для хранения списка блоков" );
       throw e;
     }
     Vector indexList = new Vector();
     Vector namesList = new Vector();
-    Node blockNode = GetChildNode( GetNode(), "BlockList" );
+    ModelElementDataSource blockNode = null;
+    java.util.List<ModelElementDataSource> childList = this.GetDataSource().GetChildElements("BlockList");
+    if ( childList == null || childList.isEmpty()) {
+    	throw new ModelException("В таблице \"" + FCaption.getText() + "\" отсутствует перечень блоков" );
+    }
+    blockNode = childList.get(0);
     if ( blockNode == null ){
       ModelException e = new ModelException("В таблице \"" + FCaption.getText() + "\" отсутствует перечень блоков" );
       throw e;
     }
-    NodeList nodes = blockNode.getChildNodes();
-    int i = 0;
-    Node currentNode;
+    childList = blockNode.GetChildElements("Block");
+    if ( childList == null ) {
+    	return;
+    }
     int blockIndex = 0;
     String blockIndexStr = null;
-    while ( i < nodes.getLength() ){
-      currentNode = nodes.item( i );
-      if ( currentNode.getNodeType() == Node.ELEMENT_NODE  &&  "Block".equalsIgnoreCase( currentNode.getNodeName() ) ){
-        FAttrReader.SetNode( currentNode );
-        FAddress = GetAddress();
-        try {
-          blockIndexStr = FAttrReader.GetBlockLinkIndex();
-          if ( blockIndexStr == null ){
-            blockIndex = -1;
-          } else {
-            if ( "all".equalsIgnoreCase( blockIndexStr ) ){
-              AddAllBlockTotable( FAttrReader.GetAttrName(), namesList, indexList );
-            } else {
-              blockIndex = Integer.parseInt( blockIndexStr );
-              indexList.add( new Integer( blockIndex ) );
-              namesList.add( FAttrReader.GetAttrName() );
-            }
-          }
-        } catch (Exception e){
-          ModelException e1 = new ModelException("Ошибка в блоке \"" + FCaption.getText() +
-                  "\": неверный индекс блока- " + blockIndexStr);
-          throw e1;
+    for (ModelElementDataSource currentNode : childList) {
+    	FAddress = GetAddress();
+    	blockIndexStr = currentNode.GetBlockLinkIndex();
+    	if ( blockIndexStr == null ){
+        blockIndex = -1;
+      } else {
+      	if ( "all".equalsIgnoreCase( blockIndexStr ) ){
+          AddAllBlockTotable( currentNode.GetAttrName(), namesList, indexList );
+        } else {
+        	try {
+          blockIndex = Integer.parseInt( blockIndexStr );
+        	} catch (Exception e) {
+        		 throw new ModelException("Ошибка в блоке \"" + FCaption.getText() +   "\": неверный индекс блока- " + blockIndexStr);
+        	}
+          indexList.add( new Integer( blockIndex ) );
+          namesList.add( currentNode.GetAttrName() );
         }
+      	
       }
-      i++;
     }
     if ( indexList.size() != namesList.size() ){
       ModelException e = new ModelException("Ошибка в блоке \"" + FCaption.getText() +
@@ -193,26 +189,29 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
    *
    */
   protected void ReadFilterParam() throws ModelException {
-    Node blockListNode = GetChildNode( GetNode(), "BlockList" );
-    Node filterNode = GetChildNode(blockListNode, "Filter" );
-    if ( filterNode == null ){
+  	ModelElementDataSource blockListNode = this.GetDataSource().GetChildElement("BlockList");
+  	if (blockListNode == null) {
+  		throw new ModelException("Отсутствует список блоков " + FCaption.getText());
+  	}
+  	ModelElementDataSource filterNode =  blockListNode.GetChildElement("Filter");
+  	if ( filterNode == null ){
       FIsFilterExist = false;
       return;
     }
-    FAttrReader.SetNode( filterNode );
-    FFilteredParamName = FAttrReader.GetParamName();
+    
+    FFilteredParamName = filterNode.GetParamName();
     if ( FFilteredParamName == null || "".equalsIgnoreCase( FFilteredParamName ) ){
       ModelException e = new ModelException("Ошибка в таблице \"" + FCaption.getText() +
          "\": пустое название параметра для фильтрации");
       throw e;
     }
-    String filterType = FAttrReader.GetFilterValueType();
+    String filterType = filterNode.GetFilterValueType();
     if ( filterType == null || "".equalsIgnoreCase( filterType ) ){
       ModelException e = new ModelException("Ошибка в таблице \"" + FCaption.getText() +
          "\": отсутствует тип значения для фильтрации");
       throw e;
     }
-    String filterValue = FAttrReader.GetFilterValue();
+    String filterValue = filterNode.GetFilterValue();
     if ( filterValue == null || "".equalsIgnoreCase( filterValue ) ){
       ModelException e = new ModelException("Ошибка в таблице \"" + FCaption.getText() +
          "\": отсутствует значение для фильтрации");

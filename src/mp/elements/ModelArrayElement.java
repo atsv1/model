@@ -55,19 +55,18 @@ public class ModelArrayElement extends ModelCalculatedElement{
         throw e1;*/
       error = e.getMessage();
     }
-    ModelAttributeReader attrReader = ServiceLocator.GetAttributeReader();
-    String constValue = attrReader.GetConstantValue( aValue );
+    
+    String constValue = BuildContext.getBuildContext().getConstantValue(aValue);;
     if ( constValue == null ){
-      ModelException e1 = new ModelException("Ошибка в массиве \"" + GetFullName() + "\": неверное значение размерности массива: " + aValue);
-      throw e1;
+      throw new ModelException("Ошибка в массиве \"" + GetFullName() + "\": неверное значение размерности массива: " + aValue);
+      
     }
     try{
       result = Integer.parseInt( constValue );
       return result;
     } catch (Exception e){
-        ModelException e1 = new ModelException("Ошибка в массиве \"" + GetFullName() + "\": невозможно использовать константу \"" + aValue +
-           "\" в качестве размерности массива");
-        throw e1;
+        throw  new ModelException("Ошибка в массиве \"" + GetFullName() + "\": невозможно использовать константу \"" + aValue + "\" в качестве размерности массива");
+        
     }
   }
 
@@ -79,7 +78,12 @@ public class ModelArrayElement extends ModelCalculatedElement{
     
     ArrayDefinition arrayDef = new ArrayDefinition();
     arrayDef.SetValueType( GetValueType( aSourceElement ) );
-    arrayDef.SetInitValue( aSourceElement.GetAttrInitValue() );
+    String initValue = BuildContext.getBuildContext().getConstantValue(aSourceElement.GetAttrInitValue());
+    if ( initValue != null ) {
+    	arrayDef.SetInitValue(initValue);
+    } else  {
+      arrayDef.SetInitValue( aSourceElement.GetAttrInitValue() );
+    }
     //читаем информацию о размерностях массива
     String startDimension = aSourceElement.GetArrayDimensionValue();
     if ( startDimension == null || "".equalsIgnoreCase( startDimension ) ){

@@ -630,8 +630,7 @@ public class ExecutionContextTest extends TestCase {
    *
    */
   public void testConstantInInitValueAttr(){
-    mp.parser.ModelExecutionContext.ClearExecutionContext();
-    ServiceLocator.GetAttributeReader().ClearConstantList();
+    mp.parser.ModelExecutionContext.ClearExecutionContext();    
     Model model = null;
     boolean f = false;
     try {
@@ -675,8 +674,7 @@ public class ExecutionContextTest extends TestCase {
   }
 
   public void testConstantInBlockCountAttr(){
-    mp.parser.ModelExecutionContext.ClearExecutionContext();
-    ServiceLocator.GetAttributeReader().ClearConstantList();
+    mp.parser.ModelExecutionContext.ClearExecutionContext();    
     Model model = null;
     boolean f = false;
     try {
@@ -700,8 +698,7 @@ public class ExecutionContextTest extends TestCase {
    *
    */
   public void testConstantInScript(){
-    mp.parser.ModelExecutionContext.ClearExecutionContext();
-    ServiceLocator.GetAttributeReader().ClearConstantList();
+    mp.parser.ModelExecutionContext.ClearExecutionContext();    
     Model model = null;
     boolean f = false;
     try {

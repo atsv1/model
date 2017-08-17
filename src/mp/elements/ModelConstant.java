@@ -12,15 +12,17 @@ import mp.parser.Variable;
  */
 
 public class ModelConstant extends ModelBlockParam implements ModelForReadInterface {
+	
+	private String constVal = null;
 
   public void SetConstantDescr( String aConstName, String aConstType, String aConstValue ) throws ModelException{
     try {      
       this.SetVarInfo( aConstType, aConstValue );
     } catch (Exception e) {
       e.printStackTrace();
-      ModelException e1 = new ModelException( e.getMessage() );
-      throw e1;
+      throw new ModelException( e.getMessage() );      
     }
+    constVal = aConstValue;
   }
 
    public ModelConstant(ModelElement aOwner, String aElementName, int aElementId) {
@@ -37,6 +39,10 @@ public class ModelConstant extends ModelBlockParam implements ModelForReadInterf
 
   public void SetVariable (Variable aVariable){
   	FVariable = aVariable;
+  }
+  
+  public String GetConstantStringValue(){
+  	return constVal;
   }
   
   public void fixState(UUID stateLabel) throws ModelException{

@@ -1,7 +1,5 @@
 package mp.gui;
 
-import org.w3c.dom.Node;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -24,13 +22,12 @@ public class ModelGUITabSheets extends ModelGUIAbstrElement implements ModelGUIE
   }
 
   public void AddGUIElement(ModelGUIElement aElement) {
-    Node elementNode = aElement.GetNode();
-    try {
-      FAttrReader.SetNode( elementNode );
-    } catch (ModelException e) {}
-    String elementTitle = FAttrReader.GetTitle();
-    FTabbedPane.addTab(elementTitle, aElement.GetComponent());
-    AddElement( (ModelGUIAbstrElement) aElement );
+  	if (aElement instanceof ModelGUIAbstrElement) {
+      ModelElementDataSource elementNode = ((ModelGUIAbstrElement)aElement).GetDataSource();    
+      String elementTitle = elementNode.GetTitle();
+      FTabbedPane.addTab(elementTitle, aElement.GetComponent());
+      AddElement( (ModelGUIAbstrElement) aElement );
+  	}
   }
 
   public void SetConnector(ModelConnector connector) {
