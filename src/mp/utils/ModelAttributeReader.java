@@ -22,7 +22,7 @@ import mp.elements.ModelException;
 public class ModelAttributeReader implements ModelElementDataSource{
   private Node FNode = null;
   private ModelElementDataSource parentElement = null;
-  private Hashtable FConstantList = new Hashtable();
+  
 
 
   public ModelAttributeReader( Node aNode, ModelElementDataSource parent ) {
@@ -114,10 +114,7 @@ public class ModelAttributeReader implements ModelElementDataSource{
   @Override
   public String GetAttrInitValue() throws ModelException{
     String s = GetAttrValue("initvalue");
-    String constValue = GetConstantValue( s );
-    if ( constValue != null ) {
-      s = constValue;
-    }
+    
     return s;
   }
 
@@ -713,36 +710,7 @@ public class ModelAttributeReader implements ModelElementDataSource{
     return GetAttrValue("file");
   }
 
-  public void AddConstant( String aConstName, String aConstValue ) throws ModelException{
-  	throw new ModelException(" ŒÕ—“¿Õ“€!!!!");
-  	/*
-    if ( aConstName == null || "".equalsIgnoreCase( aConstName ) ){
-      return;
-    }
-    String[]  constRec = (String[])FConstantList.get( aConstName.toUpperCase() );
-    if ( constRec == null ){
-      constRec = new String[2];
-      constRec[0] = aConstName;
-      constRec[1] = aConstValue;
-      FConstantList.put( aConstName.toUpperCase(), constRec );
-    }
-    */
-  }
-
-  public String GetConstantValue( String aConstName ){
-    if ( aConstName == null || "".equalsIgnoreCase( aConstName ) ){
-      return null;
-    }
-    String[]  constRec = (String[])FConstantList.get( aConstName.toUpperCase() );
-    if ( constRec == null ){
-      return null;
-    }
-    return constRec[1];
-  }
-
-  public void ClearConstantList(){
-    FConstantList.clear();
-  }
+    
 
   @Override
 	public String GetModelAttrValue(){

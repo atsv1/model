@@ -27,7 +27,7 @@ public class Demo extends JApplet{
 
   private static void ReadModelFromURL( Container aContentPane, String aModelURL, String aFormURL ){
     ModelXMLReader formReader = null;
-    ModelXMLReader modelReader = null;
+    ModelBuilder modelReader = null;
     Model newModel = null;
     URL modelURL = null;
     URL formURL = null;
