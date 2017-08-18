@@ -201,7 +201,7 @@ public class ModelLanguageBuilder {
   	return result;
   }
 
-  protected void UpdateBlock( ModelBlock aBlock ) throws ScriptException, ModelException {
+  public void UpdateBlock( ModelBlock aBlock ) throws ScriptException, ModelException {
     AddServiceVariables(aBlock);
     aBlock.SetLanguageExt( GetLanguageExt( aBlock, FFunctionList ) );
   }

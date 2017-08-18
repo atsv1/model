@@ -61,7 +61,16 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   }
 
   public ModelBlock Get(String aBlockName, int aBlockIndex){
-    return (ModelBlock) FBlockList.Get( aBlockName, aBlockIndex );
+  	ModelBlock result = (ModelBlock) FBlockList.Get( aBlockName, aBlockIndex );
+  	if ( result == null ) {
+  		for (Model parallelModel : parallelModelList) {
+  			result = parallelModel.Get(aBlockName, aBlockIndex);
+  			if (result != null) {
+  				break;
+  			}  			
+  		}
+  	}
+    return result;
   }
 
   public void AddElement(ModelElement aElement) throws ModelException {
@@ -706,7 +715,26 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		if ( block == null ) {
 			throw new ScriptException("Отсутствует блок \"" + blockName + "\"");
 		}
-		
+		ModelElementDataSource ds = block.GetDataSource();
+		if ( ds == null ) {
+			throw new ScriptException("Отсутствует исходный код для \"" + blockName + "\"");
+		}
+		ModelElement owner = block.GetOwner();
+		if (!( owner instanceof Model )) {
+			throw new ScriptException("Не создать блок \"" + blockName + "\"");
+		}
+		Model blockOwner = (Model) owner;
+		ModelBlock newBlock;
+		try {
+			newBlock = new ModelSimpleBlock( blockOwner, ds.GetAttrName(), ServiceLocator.GetNextId() );
+			newBlock.SetDataSource(ds);
+			newBlock.ApplyNodeInformation();
+			blockOwner.AddElement(newBlock);
+			ModelLanguageBuilder builder = new ModelLanguageBuilder( this );
+			builder.UpdateBlock(newBlock);
+		} catch (ModelException e) {
+			throw new ScriptException(e.getMessage());
+		}
 		
 		return 0;
 	}
