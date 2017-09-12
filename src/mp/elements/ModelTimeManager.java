@@ -311,7 +311,8 @@ public class ModelTimeManager {
     return aTime2;
   }
 
-  /**Добавление элемента в менеджер времени. Метод используется в случае, если элемент не может самостоятельно
+  /**
+   * Добавление элемента в менеджер времени. Метод используется в случае, если элемент не может самостоятельно
    * определить время своего выполнения.
    *
    * @param aElement - добавляемый элемент
@@ -356,6 +357,12 @@ public class ModelTimeManager {
 
     }
     FTimeIndependentBlockGroupIndex = AddElement( aElement, currentExecTime );
+  }
+  
+  public void AddNewElement(ModelBlock aElement) throws ModelException{
+  	FFullList.AddElement(aElement);
+  	AddElement(aElement);
+  	
   }
 
   public ModelTime GetNearestModelTime(){

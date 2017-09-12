@@ -128,9 +128,9 @@ public abstract class ModelDynamicBlock extends ModelBlock{
        * блоков-источников
        */
       ModelException e = new ModelException("В блоке \"" + FDynamicOwner.GetFullName() + "\" нет ни одного выходного параметра. " +
-      "он не может служить входом для мультиплексора \"" + GetFullName() + "\"");
-      FDynamicOwner = null;
-      throw e;
+                             "он не может служить входом для мультиплексора \"" + GetFullName() + "\"");
+      //FDynamicOwner = null;
+      //throw e;      
     }
     ReCreateAllInputParams();
   }

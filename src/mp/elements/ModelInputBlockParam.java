@@ -17,6 +17,8 @@ public class ModelInputBlockParam extends ModelBlockParam{
   /**ѕеременна€ из элемента FLinkedElement. ’ранитс€ в виде отдельной переменной только дл€ экономии времени
    */
   private Variable FSourceVar = null;
+  
+  private boolean selfIndexFlag = false;
 
   public ModelInputBlockParam(ModelElement aOwner, String aElementName, int aElementId) {
     super(aOwner, aElementName, aElementId);
@@ -135,6 +137,7 @@ public class ModelInputBlockParam extends ModelBlockParam{
         ModelException e1 = new ModelException("ќшибка в элементе \"" + GetFullName() + "\": " + e.getMessage());
         throw e1;
       }
+      selfIndexFlag = true;
       return model.Get( blockName, intBlockIndex );
     }
     String error;
@@ -184,6 +187,7 @@ public class ModelInputBlockParam extends ModelBlockParam{
   }
 
   /**ћетод чтени€ информации из файла модели.
+   * 
    * ¬ этом методе (или в методах, которые вызываютс€ из этого метода) об€зательно должен выполн€тьс€
    * метод Link(). Ёто касаетс€ и наследников данного класса. Ёто нужно дл€ того, чтобы правильно работал мультиплексор,
    * точнее - правильно определ€лс€ тип конкуренции в мультиплексоре.
@@ -204,6 +208,29 @@ public class ModelInputBlockParam extends ModelBlockParam{
 
   public ModelElement GetLinkedElementOwner(){
     return FLinkedBlock;
+  }
+  
+  public boolean isLinked(){
+  	return (FLinkedElement != null);
+  }
+  
+  public boolean isConnectedBySelfIndex(){
+  	return selfIndexFlag;  	
+  }
+  
+  /**
+   * возвращает название блока, с которым должен соедин€тьс€ данный параметр.
+   *  ¬озвращает то название, которое было определено в момент написани€ модели, и оно может отличатьс€ от названи€ блока, к которому подсоединен параметр в любой момент выполнени€ модели
+   *   
+   * @return
+   */
+  public String getLinkedBlockName(){
+  	try {
+			return elementSource.GetLinkedBlockName();
+		} catch (ModelException e) {
+			return null;
+		}
+  	
   }
 
 }

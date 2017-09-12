@@ -19,6 +19,21 @@ public abstract class ModelBuilder {
 	public void setElementFactory(ModelElementAbstractFactory fElementFactory) {
 		FElementFactory = fElementFactory;
 	}
+	
+	public ModelForReadInterface CreateElementInstance(ModelElementDataSource previousSource, ModelElementDataSource aCurrentSource,   ModelForReadInterface aElementsOwner) throws ModelException {
+		ModelForReadInterface element = null;
+		ModelElementDataSource attrReader = aCurrentSource;
+		int newId = GetNewId();
+		element = getElementFactory().GetNewElement(previousSource,  aElementsOwner, attrReader, newId);
+		if (element == null) {
+			return null;
+		}
+		if (element != aElementsOwner && element != null) {
+			element.SetDataSource(attrReader);
+			element.setElementBuilder(this);
+		}
+		return element;
+	}
 
 	private void CreateElementInstances(ModelElementDataSource previousSource, ModelElementDataSource aCurrentSource,   ModelForReadInterface aElementsOwner) throws ModelException {
 		if (getElementFactory().IsLastElement(aElementsOwner)) {
@@ -29,14 +44,7 @@ public abstract class ModelBuilder {
 		int instancesCount = attrReader.GetAttrCount();
 		ModelForReadInterface element;
 		while (instancesCount > 0) {
-			int newId = GetNewId();
-			element = getElementFactory().GetNewElement(previousSource,  aElementsOwner, attrReader, newId);
-			if (element == null) {
-				return;
-			}
-			if (element != aElementsOwner && element != null) {
-				element.SetDataSource(attrReader);
-			}
+			element = CreateElementInstance(previousSource, aCurrentSource, aElementsOwner);
 			getElementFactory().ExecuteDoSomethingFunction(previousSource, attrReader, aElementsOwner, element);
 			WalkOnDocument(aCurrentSource, element, attrReader);
 			instancesCount--;
@@ -61,6 +69,10 @@ public abstract class ModelBuilder {
 				CreateElementInstances(aCurrentNode, childElement, aCurrentElement);
 			}
 		}
+	}
+	
+	public void buildElement(ModelElementDataSource elementSource, ModelForReadInterface element, ModelElementDataSource parentElement) throws ModelException{
+		WalkOnDocument(elementSource, element, parentElement);
 	}
 
 }

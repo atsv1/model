@@ -20,9 +20,9 @@
         <Param name = "outParam1" type = "string" initvalue = "2323"/>
       </OutParamList>
       
-      <Statechart name = "fishing">
+      <Statechart name = "st1">
        <State name = "begin">
-          <Transition name = "fishing" type = "Timeout" value = "999999999" nextstate = "begin">
+          <Transition name = "st2trns" type = "Timeout" value = "999999999" nextstate = "begin">
             <![CDATA[
                outParam1 := "12";                
              ]]>

@@ -6,6 +6,7 @@ import mp.utils.ModelAttributeReader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.UUID;
@@ -21,7 +22,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   private String FErrorString = null;
   private ModelTime FCurrentModelTime = null;
   private ModelTime FTimeIncrement = null;  
-  private Vector<ModelBlock> FDynamicBlockList = null;
+  private List<ModelBlock> FDynamicBlockList = null;
   private ModelTimeManager FTimeManager = null;
   
   private int FStepDelay = 0;
@@ -129,7 +130,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
       currentBlock = (ModelBlock) FBlockList.get(i);
       if ( currentBlock.IsDynamicParamCreate() ) {
         if ( FDynamicBlockList == null ){
-          FDynamicBlockList = new  Vector<ModelBlock>();
+          FDynamicBlockList = new  ArrayList<ModelBlock>();
         }
         FDynamicBlockList.add( currentBlock );
       }
@@ -708,6 +709,91 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 	public boolean isForkMode(){
 		return (forkCounter > 0);
 	}
+	
+	
+	/**
+	 * Возвращает список блоков, соединенных с блоком block. 
+	 * Тип соединения - в блоке block есть входной параметр, который соединен с другим блоком, при этом индекс блока - selfIndex  
+	 * 
+	 * @param block	 
+	 * @return
+	 * @throws ModelException 
+	 */
+	private List<ModelBlock> getLinkedBlockBySelfIndex(ModelBlock block, Map<String, ModelBlock> alreadyDefinedBlocks ) throws ModelException{
+		if ( block == null ) {
+			return null;
+		}
+		int i = 0;
+		ModelInputBlockParam param = (ModelInputBlockParam) block.GetInpParam(i);
+		List<ModelBlock> result = new ArrayList<ModelBlock> ();
+		
+		while ( param != null ) {
+			if ( param.isConnectedBySelfIndex() ) {
+				String linkedBlockName = param.getLinkedBlockName();
+				ModelElement linkedBlock = param.GetOwner().GetOwner().Get(linkedBlockName);
+				if ( linkedBlock instanceof ModelBlock  ) {
+					String s = linkedBlock.GetFullName();
+					if ( !alreadyDefinedBlocks.containsKey(s) ) {
+						result.add((ModelBlock) linkedBlock);
+						alreadyDefinedBlocks.put(s, (ModelBlock) linkedBlock);
+						List<ModelBlock> list = getLinkedBlockBySelfIndex((ModelBlock) linkedBlock, alreadyDefinedBlocks);
+						result.addAll(list);
+					}
+				}
+			}
+			i++;
+			param = (ModelInputBlockParam) block.GetInpParam(i);
+		}
+		return result;		
+	}
+	
+	private void createBlocks(List<ModelBlock> blocks, String blockName) throws ScriptException, ModelException{
+		List<ModelBlock> createdBlocks = new ArrayList<ModelBlock>();
+		for (ModelBlock block : blocks) {
+			ModelElementDataSource ds = block.GetDataSource();
+			if ( ds == null ) {
+				throw new ScriptException("Отсутствует исходный код для \"" + blockName + "\"");
+			}
+			ModelElement owner = block.GetOwner();
+			if (!( owner instanceof Model )) {
+				throw new ScriptException("Не создать блок \"" + blockName + "\"");
+			}
+			Model blockOwner = (Model) owner;
+			ModelBuilder mb = block.getElementBuilder();
+			if ( mb == null ) {
+				throw new ScriptException("unknown element builder");
+			}						
+			ModelBlock newBlock = (ModelBlock) mb.CreateElementInstance(blockOwner.GetDataSource(), block.GetDataSource(), blockOwner);
+			newBlock.SetDataSource(ds);			
+			blockOwner.AddElement(newBlock);
+			
+			mb.buildElement(ds, newBlock, blockOwner.GetDataSource());
+			createdBlocks.add(newBlock);
+		}
+		
+		for (ModelBlock newBlock : createdBlocks) {
+			if ( newBlock.IsDynamicParamCreate() ) {
+				this.FDynamicBlockList.add(newBlock);
+				BuldDynamicParams( newBlock );
+			}
+			ModelLanguageBuilder builder = new ModelLanguageBuilder( this );
+			builder.UpdateBlock(newBlock);
+		}
+		
+		for (ModelBlock newBlock : createdBlocks) {
+			newBlock.ApplyNodeInformation();
+			newBlock.InitStatechart();
+			
+			ModelTimeManager.getTimeManager().AddNewElement( newBlock  );
+			newBlock.SetTimeManager(ModelTimeManager.getTimeManager());
+		} 
+		for (ModelBlock newBlock : createdBlocks) {
+			if ( newBlock.IsDynamicParamCreate() ) {
+				((ModelDynamicBlock) newBlock).SetDynamicLinker();				
+			}
+		}
+		
+	}
 
 	@Override
 	public int createNewBlock(String blockName) throws ScriptException{
@@ -715,25 +801,16 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		if ( block == null ) {
 			throw new ScriptException("Отсутствует блок \"" + blockName + "\"");
 		}
-		ModelElementDataSource ds = block.GetDataSource();
-		if ( ds == null ) {
-			throw new ScriptException("Отсутствует исходный код для \"" + blockName + "\"");
-		}
-		ModelElement owner = block.GetOwner();
-		if (!( owner instanceof Model )) {
-			throw new ScriptException("Не создать блок \"" + blockName + "\"");
-		}
-		Model blockOwner = (Model) owner;
-		ModelBlock newBlock;
+		List<ModelBlock> blocksToCreate = new ArrayList<ModelBlock> ();
+		Map<String, ModelBlock> blockMap = new HashMap<String, ModelBlock> ();
+		blocksToCreate .add(block);
+		blockMap.put(block.GetFullName(), block);		
 		try {
-			newBlock = new ModelSimpleBlock( blockOwner, ds.GetAttrName(), ServiceLocator.GetNextId() );
-			newBlock.SetDataSource(ds);
-			newBlock.ApplyNodeInformation();
-			blockOwner.AddElement(newBlock);
-			ModelLanguageBuilder builder = new ModelLanguageBuilder( this );
-			builder.UpdateBlock(newBlock);
+			List<ModelBlock> otherBlocks = getLinkedBlockBySelfIndex(block, blockMap); 
+			blocksToCreate.addAll( otherBlocks );
+			createBlocks(blocksToCreate, blockName);
 		} catch (ModelException e) {
-			throw new ScriptException(e.getMessage());
+			throw new ScriptException(e.getMessage());			
 		}
 		
 		return 0;

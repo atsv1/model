@@ -18,6 +18,7 @@ public class ModelElement implements ModelForReadInterface {
   protected ModelElementDataSource elementSource = null;
   private String FFullName = null;
   private Integer FNameIndexObj = null;
+  private ModelBuilder elementBuilder = null;
 
   private void UpdateFullName(){
     String ownerName;
@@ -150,6 +151,16 @@ public class ModelElement implements ModelForReadInterface {
 	@Override
 	public void SetDataSource(ModelElementDataSource dataSource) {
 		this.elementSource = dataSource;
+	}
+
+	@Override
+	public ModelBuilder getElementBuilder() {
+		return elementBuilder;
+	}
+
+	@Override
+	public void setElementBuilder(ModelBuilder elementBuilder) {
+		this.elementBuilder = elementBuilder;
 	}
 
 }

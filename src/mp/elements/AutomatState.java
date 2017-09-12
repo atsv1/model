@@ -282,6 +282,7 @@ public class AutomatState extends ModelEventGenerator{
     }
     AutomatTransition transition = GetAvailableTransition( aCurrentTime );
     if ( transition != null ){
+    	
       transition.ExecuteTransitionCode( aCurrentTime );
       String s = transition.GetNextStateName();
       if ( GlobalParams.StateNameOutputEnabled() ){

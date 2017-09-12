@@ -27,6 +27,7 @@ public abstract class ModelGUIAbstrElement implements ModelForReadInterface, Mod
   protected int FValueType = -1;
   private String FIdentityName = null;
   private ModelElementDataSource elementSource = null;
+  private ModelBuilder elementBuilder = null;
 
   public ModelGUIAbstrElement(){
       
@@ -209,6 +210,16 @@ public abstract class ModelGUIAbstrElement implements ModelForReadInterface, Mod
 	@Override
 	public void SetDataSource(ModelElementDataSource dataSource) {
 		elementSource = dataSource;
+	}
+	
+	@Override
+	public ModelBuilder getElementBuilder() {
+		return elementBuilder;
+	}
+
+	@Override
+	public void setElementBuilder(ModelBuilder elementBuilder) {
+		this.elementBuilder = elementBuilder;
 	}
 
 

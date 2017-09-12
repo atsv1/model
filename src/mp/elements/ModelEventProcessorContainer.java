@@ -25,6 +25,7 @@ public class ModelEventProcessorContainer implements ModelForReadInterface{
   private Hashtable FEventList = null;
   private String FOwnerName = null;
   private ModelElementDataSource dataSource = null;
+  private ModelBuilder elementBuilder = null;
 
   public ModelEventProcessorContainer( ModelElement aOwner ){
     FOwner = aOwner;
@@ -169,8 +170,18 @@ public class ModelEventProcessorContainer implements ModelForReadInterface{
 
 	@Override
 	public void SetDataSource(ModelElementDataSource dataSource) {
-		this.dataSource = dataSource;
-		
+		this.dataSource = dataSource;	
 	}
+	
+	@Override
+	public ModelBuilder getElementBuilder() {
+		return elementBuilder;
+	}
+
+	@Override
+	public void setElementBuilder(ModelBuilder elementBuilder) {
+		this.elementBuilder = elementBuilder;
+	}
+
 
 }

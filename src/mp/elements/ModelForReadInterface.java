@@ -10,4 +10,9 @@ public interface ModelForReadInterface {
   public ModelElementDataSource GetDataSource();
 
   public void SetDataSource(ModelElementDataSource dataSource);
+  
+  public ModelBuilder getElementBuilder() ;
+
+	public void setElementBuilder(ModelBuilder elementBuilder); 
+  
 }
