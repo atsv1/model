@@ -56,7 +56,7 @@ public class ModelMuxTest extends TestCase {
      */
     public void testEmptyOutParamList(){
       ModelSimpleBlock etalon = new ModelSimpleBlock(null,"block1",1);
-      ModelMultiplexor mux = new ModelMultiplexor(null, "mux1",2);
+      ModelDynamicBlock mux = new ModelMultiplexor(null, "mux1",2);
       ModelCalculatedElement param1 = new ModelCalculatedElement(etalon,"1",2);
       boolean f = false;
       try {
@@ -82,7 +82,7 @@ public class ModelMuxTest extends TestCase {
      */
     public void testCreateInputParams(){
       ModelSimpleBlock etalon = new ModelSimpleBlock(null,"block1",0);
-      ModelMultiplexor mux = new ModelMultiplexor(null, "mux",0);
+      ModelDynamicBlock mux = new ModelMultiplexor(null, "mux",0);
       ModelCalculatedElement param1 = new ModelCalculatedElement(etalon,"1",2);
       ModelCalculatedElement param2 = new ModelCalculatedElement(etalon,"2",3);
       ModelCalculatedElement param3 = new ModelCalculatedElement(etalon,"3",4);
@@ -124,7 +124,7 @@ public class ModelMuxTest extends TestCase {
      */
     public void testAddSource(){
       ModelSimpleBlock etalon = new ModelSimpleBlock(null,"block1",0);
-      ModelMultiplexor mux = new ModelMultiplexor(null, "mux",0);
+      ModelDynamicBlock mux = new ModelMultiplexor(null, "mux",0);
       ModelCalculatedElement param1 = new ModelCalculatedElement(etalon,"1",2);
       ModelCalculatedElement param2 = new ModelCalculatedElement(etalon,"2",3);
       ModelCalculatedElement param3 = new ModelCalculatedElement(etalon,"3",4);
@@ -168,7 +168,7 @@ public class ModelMuxTest extends TestCase {
      */
     public void testAddSource2(){
       ModelSimpleBlock etalon = new ModelSimpleBlock(null,"block1",0);
-      ModelMultiplexor mux = new ModelMultiplexor(null, "mux",0);
+      ModelDynamicBlock mux = new ModelMultiplexor(null, "mux",0);
       ModelCalculatedElement param1 = new ModelCalculatedElement(etalon,"1",2);
       ModelCalculatedElement param2 = new ModelCalculatedElement(etalon,"2",3);
       ModelCalculatedElement param3 = new ModelCalculatedElement(etalon,"3",4);
@@ -207,7 +207,7 @@ public class ModelMuxTest extends TestCase {
      */
     public void testAddSource3(){
       ModelSimpleBlock etalon = new ModelSimpleBlock(null,"block1",0);
-      ModelMultiplexor mux = new ModelMultiplexor(null, "mux",0);
+      ModelDynamicBlock mux = new ModelMultiplexor(null, "mux",0);
       ModelCalculatedElement param1 = new ModelCalculatedElement(etalon,"1",2);
       ModelSimpleBlock block = new ModelSimpleBlock(null, "block2",4);
       ModelCalculatedElement param2 = new ModelCalculatedElement(block,"1",4);
@@ -240,7 +240,7 @@ public class ModelMuxTest extends TestCase {
      *
      */
     public void testCreateMultiplexor(){
-      ModelMultiplexor mux = new ModelMultiplexor(null, "mux1",0);
+      ModelDynamicBlock mux = new ModelMultiplexor(null, "mux1",0);
       ModelBlockParam criteriaParam = null;
       ModelBlockParam enableParam = null;
       boolean f = false;
@@ -259,7 +259,7 @@ public class ModelMuxTest extends TestCase {
 
     }
 
-    private static ScriptLanguageExt GetMuxLanguageExt( ModelMultiplexor mux ) throws ScriptException, ModelException {
+    private static ScriptLanguageExt GetMuxLanguageExt( ModelDynamicBlock mux ) throws ScriptException, ModelException {
       ScriptLanguageExt result = new ScriptLanguageExt();
       ModelLanguageBuilder.SetVariables(mux, null, result);
       return result;
@@ -991,7 +991,7 @@ public class ModelMuxTest extends TestCase {
      * владельца в мультиплексор, будет сгенерирована ошибочная ситуация
      */
     public void testSetMuxOwner(){
-      ModelMultiplexor mux = new ModelMultiplexor(null,"mux", ServiceLocator.GetNextId());
+      ModelDynamicBlock mux = new ModelMultiplexor(null,"mux", ServiceLocator.GetNextId());
       ModelBlock owner = null;
       ModelBlock owner2 = null;
       ModelBlock etalon = null;
@@ -1181,10 +1181,10 @@ public class ModelMuxTest extends TestCase {
       assertTrue( f );
       ModelElement element = model.Get("mux1");
       assertTrue( element != null );
-      ModelMultiplexor mux = null;
+      ModelDynamicBlock mux = null;
       f = false;
       try{
-        mux = (ModelMultiplexor) element;
+        mux = (ModelDynamicBlock) element;
         f = true;
       } catch (Exception e){
         mux = null;
@@ -1804,7 +1804,7 @@ public class ModelMuxTest extends TestCase {
     assertTrue( model != null );
     ModelBlockParam muxCriteria = null;
     f = false;
-    ModelMultiplexor mux = (ModelMultiplexor) model.Get("mux");
+    ModelDynamicBlock mux = (ModelDynamicBlock) model.Get("mux");
     ModelBlock reciever = (ModelBlock) model.Get("Приемник");
     ModelBlockParam recieverCriteria = null;
     try {
@@ -2893,7 +2893,7 @@ public class ModelMuxTest extends TestCase {
     assertTrue( block != null );
     assertEquals( block.GetIntValue("input2"),12 );
 
-    ModelMultiplexor mux = (ModelMultiplexor) model.Get("mux");
+    ModelDynamicBlock mux = (ModelDynamicBlock) model.Get("mux");
     assertTrue( mux != null );
     ModelBlockParam param = null;
     f = false;

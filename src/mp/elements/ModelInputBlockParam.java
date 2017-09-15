@@ -38,7 +38,7 @@ public class ModelInputBlockParam extends ModelBlockParam{
   }
 
   public ModelElement GetOwner(){
-    return FLinkedBlock;
+    return super.GetOwner();//FLinkedBlock;
   }
 
   protected void UpdateLink(ModelBlock aNewBlock,  ModelBlockParam aNewElement) throws ModelException{

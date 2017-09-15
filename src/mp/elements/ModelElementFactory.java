@@ -157,7 +157,7 @@ public class ModelElementFactory extends ModelElementAbstractFactory {
   }
 
   private ModelElement GetNewMux(ModelElement aNewElementOwner, ModelElementDataSource aSourceNode, int aNewId) throws ModelException{    
-    ModelMultiplexor result = null;
+    ModelDynamicBlock result = null;
     String skipValue = aSourceNode.GetSkipFirstValue();
     if ( skipValue == null || "".equalsIgnoreCase( skipValue ) ) {
       result = new ModelMultiplexor(aNewElementOwner, aSourceNode.GetAttrName(),  aNewId);

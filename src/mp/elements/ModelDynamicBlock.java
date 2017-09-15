@@ -96,6 +96,12 @@ public abstract class ModelDynamicBlock extends ModelBlock{
       return -1;
     }
   }
+  
+  public String GetEtalonName(){
+  	return elementSource.GetDynamicEtalonName();
+  }
+  
+   
 
   private void ReadEtalon() throws ModelException {    
     String etalonName = elementSource.GetDynamicEtalonName();
@@ -164,4 +170,9 @@ public abstract class ModelDynamicBlock extends ModelBlock{
   public ScriptLanguageExt GetLanguageExt() {
     return FLanguageExt;
   }
+
+
+	public ModelBlock GetEtalon() {
+	  return FEtalon;
+	}
 }

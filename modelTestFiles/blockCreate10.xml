@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "CreateBlock10Model" delay = "10">
+  
+
+  <BlockList>
+    
+     <Block name = "block2" count = "1">
+       <InputParamList>
+          <Param name = "inp1" type = "integer" initvalue = "0"
+                    blockLink = "mux1"   paramLink = "criteriaParam" blockIndex = "selfIndex"/>       
+       </InputParamList>
+       
+       <OutParamList>
+         <Param name = "changeCounter" type = "integer" initvalue = "0"/>
+         <Param name = "curInpValue" type = "integer" initvalue = "987">
+           <Formula>
+              <![CDATA[
+                   if ( inp1 <> curInpValue ) then
+                    begin
+                      changeCounter := changeCounter + 1;
+                      curInpValue := inp1;
+                    end;                         
+               
+            ]]>
+           </Formula>
+         </Param>
+       </OutParamList>
+     </Block>
+     
+     
+     <Multiplexor name = "mux1" count  = "1" ownername = "block2" etalonname = "blockToCreate" >
+      <Code type = "Enable">
+        <![CDATA[
+           enable := true;
+        ]]>
+      </Code>
+      <Code type = "Criteria">
+        <![CDATA[           
+            criteria := criteriaParam;           
+        ]]>
+      </Code>
+    </Multiplexor>
+     
+  
+  
+    <Block name = "blockToCreate" count = "1">      
+      <OutParamList>
+        <Param name = "criteriaParam" type = "integer" initvalue = "0">
+          <Formula>
+              <![CDATA[
+               criteriaParam := selfIndex;         
+               
+            ]]>
+           </Formula>
+        </Param>
+      </OutParamList>      
+          
+    </Block>
+  
+    <Block name = "block" count = "1">         
+      <OutParamList>
+        <Param name = "var1" type = "integer" initvalue = "0">          
+        </Param>
+      </OutParamList>
+      
+      <Statechart name = "chart1">
+        <State name = "begin">
+        <Transition name = "tr1" type = "timeout" value = "1" nextstate = "begin" >
+            <![CDATA[
+               var1 := var1 + 1;
+               if (var1 = 5) then
+                begin
+                  CreateBlock( "CreateBlock10Model", "blockToCreate" );
+                end;
+                if (var1 = 100) then
+                 begin
+                    StopExecution("CreateBlock10Model");
+                 end;
+            ]]>
+          </Transition>
+        </State>
+      </Statechart>     
+      
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

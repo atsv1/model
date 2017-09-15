@@ -747,7 +747,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		return result;		
 	}
 	
-	private void createBlocks(List<ModelBlock> blocks, String blockName) throws ScriptException, ModelException{
+	private List<ModelBlock> createBlocks(List<ModelBlock> blocks, String blockName) throws ScriptException, ModelException{
 		List<ModelBlock> createdBlocks = new ArrayList<ModelBlock>();
 		for (ModelBlock block : blocks) {
 			ModelElementDataSource ds = block.GetDataSource();
@@ -792,7 +792,40 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 				((ModelDynamicBlock) newBlock).SetDynamicLinker();				
 			}
 		}
-		
+		return createdBlocks;
+	}
+	
+	private ModelBlock getBlock( List<ModelBlock> blockList, ModelBlock blockToCompare ){
+		for (ModelBlock block : blockList) {
+			if ( block.GetName().equals(blockToCompare.GetName()) && block.GetOwner() == blockToCompare.GetOwner()) {
+				return block;				
+			}
+		}
+		return null;
+	}
+	
+	private void addBlocksAsEtalon(List<ModelBlock> newBlocskList) throws ScriptException, ModelException{
+		if ( newBlocskList == null || newBlocskList.isEmpty() ) {
+			return;
+		}
+		ModelElementContainer allElements = ModelTimeManager.getTimeManager().getFullElementsList();
+		int i = 0;
+		ModelElement element = allElements.get(i);
+		while ( i <  allElements.size()) {
+			element = allElements.get(i);
+			if ( element instanceof ModelDynamicBlock) {
+				ModelDynamicBlock block = (ModelDynamicBlock) element;
+				ModelBlock etalonBlock = block.GetEtalon();
+				if (etalonBlock == null) {
+					throw new ScriptException("Нет эталона для блока " + block.GetFullName());
+				}
+				ModelBlock createdBlock = getBlock(newBlocskList, etalonBlock);
+				if (createdBlock != null) {
+					block.AddSource(createdBlock);
+				}
+			}
+			i++;			
+		}
 	}
 
 	@Override
@@ -808,7 +841,8 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		try {
 			List<ModelBlock> otherBlocks = getLinkedBlockBySelfIndex(block, blockMap); 
 			blocksToCreate.addAll( otherBlocks );
-			createBlocks(blocksToCreate, blockName);
+			 List<ModelBlock> newBlocks = createBlocks(blocksToCreate, blockName);
+			addBlocksAsEtalon(newBlocks);
 		} catch (ModelException e) {
 			throw new ScriptException(e.getMessage());			
 		}

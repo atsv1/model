@@ -239,7 +239,99 @@ public class TestCreateNewBlock extends TestCase {
     
     ModelBlock createdBlock = mainModel.Get("blockToCreate", 1);
     assertTrue( createdBlock != null );
-    assertEquals( createdBlock.GetIntValue("inp1"), 9 );
+    assertEquals( createdBlock.GetIntValue("inp1"), 9 );		
+	}
+	
+	/**
+	 * проверяется работа созданного мультиплексора, когда создается блок-владелец мультиплексора, в котором есть выходные параметры, которые влияют на выбор в мультиплексоре
+	 */
+	public void testCreateMultiplexorWithOutOwnerParams(){
+		mp.parser.ModelExecutionContext.ClearExecutionContext();
+		boolean f = false;    
+		Model mainModel = null;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "blockCreate9.xml" );
+      mainModel = builder.GetRootModel();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    assertTrue(mainModel != null);
+    
+    mainModel.run();
+    assertTrue( mainModel.GetErrorString() == null );
+    
+    ModelBlock block = mainModel.Get("blockToCreate", 0);
+    assertTrue( block != null );
+    assertEquals( block.GetIntValue("inp1"), 0 );
+    
+    block = mainModel.Get("blockToCreate", 1);
+    assertTrue( block != null );
+    assertEquals( block.GetIntValue("inp1"), 1 );		
+	}
+	
+	/**
+	 * проверяем создание блока и его регистрацию в мультиплексоре в виде эталонного блока
+	 */
+	public void testCreateBlockAsMultiplexorEtalon(){
+		mp.parser.ModelExecutionContext.ClearExecutionContext();
+		boolean f = false;    
+		Model mainModel = null;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "blockCreate10.xml" );
+      mainModel = builder.GetRootModel();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    assertTrue(mainModel != null);
+    
+    mainModel.run();
+    assertTrue( mainModel.GetErrorString() == null );
+    
+    ModelBlock block = mainModel.Get("block2", 0);
+    assertTrue( block != null );
+    assertEquals( block.GetIntValue("curInpValue"), 1 );
+    assertEquals( block.GetIntValue("changeCounter"), 2 );		
+	}
+	
+	/**
+	 * проверяется создание блока, в цепочке связей которого небходимо создать мультиплексор, а потом создается блок эталон для мультиплексора
+	 */
+	public void testFullBlockChainWithMux(){
+		mp.parser.ModelExecutionContext.ClearExecutionContext();
+		boolean f = false;    
+		Model mainModel = null;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "blockCreate11.xml" );
+      mainModel = builder.GetRootModel();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    assertTrue(mainModel != null);
+    
+    mainModel.run();
+    assertTrue( mainModel.GetErrorString() == null );
+    
+    ModelBlock block = mainModel.Get("blockToCreate", 1);
+    assertTrue( block != null );
+    assertEquals( block.GetIntValue("inp1"), 100 );
+    
+    block = mainModel.Get("etalonBlock", 10);
+    assertTrue( block != null );
+    assertEquals( block.GetIntValue("etalonOutParam"), 100 );
+    
+    
 		
 	}
 	

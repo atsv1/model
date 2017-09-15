@@ -55,7 +55,7 @@ public class ModelMultiplexor extends ModelDynamicBlock{
   private boolean FIsSelfParamsPrepared = false;
 
   private ModelMultiplexorLinker FMuxLinker = null;
-  private ModelMultiplexor FMux = null;
+  private ModelDynamicBlock FMux = null;
 
   private long FExecDuration = 0;
   private long FExecCount = 0;
@@ -390,10 +390,6 @@ public class ModelMultiplexor extends ModelDynamicBlock{
     if ( FDynamicOwner != null ){
       ReCreateInputParams(FDynamicOwner, true );
     }
-  }
-
-  public ModelBlock GetEtalon(){
-    return FEtalon;
   }
 
   public ModelBlock GetMuxOwner(){

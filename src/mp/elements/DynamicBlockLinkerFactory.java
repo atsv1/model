@@ -56,7 +56,7 @@ public class DynamicBlockLinkerFactory {
    * @param aMux - мультиплексор, дл€ которого производитс€ проверка
    * @return - возвращает true, если много приемников присоединены к одному источнику, иначе возвращает false  
    */
-  private static boolean IsSenderCompetition( ModelMultiplexor aMux ){
+  private static boolean IsSenderCompetition( ModelDynamicBlock aMux ){
     /**јлгоритм основан на следующем факте: эталонный блок присоедин€етс€ своими входными параметрами к мультиплексору.
      * ≈сли хот€ бы один из входных параметров эталонного блока ссылаетс€ на   элемент мультиплексора, то метод в
      * возвращает true

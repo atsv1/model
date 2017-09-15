@@ -89,6 +89,11 @@ public class ModelTimeManager {
   public static void clearContext(){
   	tmList.set(null);
   }
+  
+  public ModelElementContainer getFullElementsList(){
+  	return FFullList;
+  	
+  }
 
 
   private int GetExecuteGroup( ModelTime aModelTime, int aStartIndex ){
