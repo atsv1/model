@@ -60,7 +60,7 @@ public class TestNotExecParser extends TestCase {
     Variable var3 = new Variable(true);
     var3.SetName("var1");
     Variable var4 = new Variable(1);
-    var4.SetName("var1");
+    var4.SetName("var2");
     boolean f = false;
     try {
       ext.AddVariable( var1 );
@@ -102,7 +102,8 @@ public class TestNotExecParser extends TestCase {
     } catch (ScriptException e) {
       //e.printStackTrace();
     }
-    assertTrue( !f );
+    // теперь здесь не ошибка, т.к. переменные могут создаваться и внутри самого скрипта
+    assertTrue( f );
 
   }
 

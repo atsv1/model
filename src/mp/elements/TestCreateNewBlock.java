@@ -330,7 +330,37 @@ public class TestCreateNewBlock extends TestCase {
     block = mainModel.Get("etalonBlock", 10);
     assertTrue( block != null );
     assertEquals( block.GetIntValue("etalonOutParam"), 100 );
+	}
+	
+	/**
+	 * проверка создания блока, в котором есть скрипт, содержащий var-секцию
+	 */
+	public void testVarInScript(){
+		mp.parser.ModelExecutionContext.ClearExecutionContext();
+		boolean f = false;    
+		Model mainModel = null;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "blockCreate12.xml" );
+      mainModel = builder.GetRootModel();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    assertTrue(mainModel != null);
     
+    mainModel.run();
+    assertTrue( mainModel.GetErrorString() == null );
+    
+    ModelBlock block = mainModel.Get("blockToCreate", 0);
+    assertTrue( block != null );
+    int v0 = block.GetIntValue("result");
+    block = mainModel.Get("blockToCreate", 1);
+    assertTrue( block != null );
+    int v1 = block.GetIntValue("result");
+    assertEquals(v0-5, v1);
     
 		
 	}

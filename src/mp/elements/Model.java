@@ -841,7 +841,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		try {
 			List<ModelBlock> otherBlocks = getLinkedBlockBySelfIndex(block, blockMap); 
 			blocksToCreate.addAll( otherBlocks );
-			 List<ModelBlock> newBlocks = createBlocks(blocksToCreate, blockName);
+		  List<ModelBlock> newBlocks = createBlocks(blocksToCreate, blockName);
 			addBlocksAsEtalon(newBlocks);
 		} catch (ModelException e) {
 			throw new ScriptException(e.getMessage());			

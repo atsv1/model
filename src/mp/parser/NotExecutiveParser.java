@@ -98,16 +98,14 @@ public class NotExecutiveParser implements ScriptParser {
       if ( !ScriptLanguageDef.IsServiceName(currentParserVar.GetName()) ) {
         selfVar = FLanguageExt.Get(currentParserVar.GetName());
         if ( selfVar == null ){
-          ScriptException e = new ScriptException("¬ собственном списке переменных отсутствует переменна€ \""
-                  + currentParserVar.GetName() + "\"");
-          throw e;
+          //throw new ScriptException("¬ собственном списке переменных отсутствует переменна€ \""  + currentParserVar.GetName() + "\"");
+          
         }
-        if ( !selfVar.GetTypeName().equalsIgnoreCase( currentParserVar.GetTypeName() ) ){
-          ScriptException e = new ScriptException("Ќе совпадают типы у переменных \""
-                  + currentParserVar.GetName() + "\": " + selfVar.GetTypeName() + " и " + currentParserVar.GetTypeName());
-          throw e;
+        if ( selfVar != null && !selfVar.GetTypeName().equalsIgnoreCase( currentParserVar.GetTypeName() ) ){
+          throw new ScriptException("Ќе совпадают типы у переменных \"" + currentParserVar.GetName() + "\": " + selfVar.GetTypeName() + " и " + currentParserVar.GetTypeName());
+          
         }
-        if ( !IsExistInList( usedSelfVarsList, selfVar ) ){
+        if ( selfVar != null && !IsExistInList( usedSelfVarsList, selfVar ) ){
           usedSelfVarsList.add( selfVar );
           usedParsersVarsList.add( currentParserVar );
         }
@@ -116,7 +114,7 @@ public class NotExecutiveParser implements ScriptParser {
     }
     if ( usedSelfVarsList.size() > 0 ) {
       FSelfVarIndexArray = new int[ usedSelfVarsList.size() ];
-      FParserVarIndexArray = new int[ usedParsersVarsList.size() ];
+      FParserVarIndexArray = new int[ usedSelfVarsList.size() ];
       int i = 0;
       while ( i < usedSelfVarsList.size() ){
         FSelfVarIndexArray[i] = FLanguageExt.GetVariables().IndexOf((Variable) usedSelfVarsList.get(i));
