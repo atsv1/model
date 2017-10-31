@@ -55,6 +55,8 @@ public class ModelTimeManager {
 
   private static ThreadLocal<ModelTimeManager> tmList = new  ThreadLocal<ModelTimeManager>();
   
+  private ModelElement currentExecElement = null;
+  
   private ModelTimeManager(){  	
     FTimeStep = new ModelTime(0.05);
   }
@@ -461,12 +463,14 @@ public class ModelTimeManager {
     if ( currentGroup.FillFlag == EXECUTE_GROUP_IS_NOT_FULL  ) {
       while ( i <= currentGroup.FPointerToLastElement ){
         element = currentGroup.FElementList[ i ];
+        currentExecElement = element;
         element.Execute( execTime );
         i++;
       }
     } else {
        while ( i <  FFullList.size() ){
         element = (ModelBlock) FFullList.get( i );
+        currentExecElement = element;
         element.Execute( execTime );
         i++;
       }
@@ -478,6 +482,11 @@ public class ModelTimeManager {
     FGroupList.remove(0);
     FListExecuted = false;
     FTimeIndependentBlockGroupIndex--;
+    currentExecElement = null;
+  }
+  
+  public ModelElement getCurrentExecElement(){
+  	return currentExecElement;
   }
   
   

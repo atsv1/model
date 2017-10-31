@@ -1916,7 +1916,8 @@ public class ModelMuxTest extends TestCase {
     assertEquals( block.GetIntValue("notEnableFlag"),1 );
   }
 
-  /** ѕровер€етс€ правильность генерации событий "MaxCriteria" и "NotMaxCriteria"
+  /** 
+   * ѕровер€етс€ правильность генерации событий "MaxCriteria" и "NotMaxCriteria"
    *
    */
   public void testGenerateCriteriaEvent(){

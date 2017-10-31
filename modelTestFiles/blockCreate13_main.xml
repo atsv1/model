@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "blockCreate13_main" delay = "10">
+  <ModelList>
+    <ParallelModel file = "blockCreate13_sub.xml"/>
+    
+  </ModelList>
+
+  <BlockList>
+    <Block name = "block" count = "1">
+      <OutParamList>
+        <Param name = "val" type = "integer" initvalue = "0"/>
+                
+      </OutParamList>
+      <InnerParamList>
+        <Param name = "forkResult" type = "integer" initvalue = "8"/>
+        <Param name = "counter" type = "integer" initvalue = "0"/>
+      </InnerParamList>
+      
+      <Statechart name = "mainProc">
+        <State name = "begin">
+          <Transition name = "simpleProc" type = "Timeout" value = "1" nextstate = "begin">
+            <![CDATA[
+                 val := val+1;
+                 if ( val=5 ) then
+                  begin
+                    CreateBlock( "blockCreate13_sub", "blockToCreate" );
+                  end;          
+                 if ( val=5 ) then
+                  begin
+                    StopExecution("blockCreate13_main");
+                  end; 
+                        
+              
+             ]]>
+          </Transition>       
+        
+        </State>
+      </Statechart>
+      
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

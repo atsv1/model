@@ -729,8 +729,41 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		
 		while ( param != null ) {
 			if ( param.isConnectedBySelfIndex() ) {
-				String linkedBlockName = param.getLinkedBlockName();
-				ModelElement linkedBlock = param.GetOwner().GetOwner().Get(linkedBlockName);
+				ModelElement linkedBlock = null;
+				/* получение блока, соединенного с этим входным параметром.
+				 * Варианты получения такого блока:
+				 * 1. Получить блок, с которым данный параметр связан именно в данный момент, с помощью функции GetLinkedElementOwner(). Данный метод плох,
+				 *   т.к. если соединение производится через мультиплексор, а функция GetLinkedElementOwner() вернет именно блок, а не сам мультиплексор, а нам здесь
+				 *   нужен именно мультиплексор
+				 * 2. Получить название модели и название блока, с которым должен соединяться данный параметр, и которые определены разработчиком модели, и затем получить саму модель и блок внутри нее
+				 * 
+				 *    Выбран второй вариант 2
+				 * */
+				
+				ModelElementDataSource paramSource =  param.GetDataSource();
+				String modelName = paramSource.GetLinkedModelName();
+				String linkedBlockName = paramSource.GetLinkedBlockName();
+				
+				ModelExecutionManager m = null;
+				if (modelName == null) {
+					m = (ModelExecutionManager) param.GetOwner().GetOwner();
+				} else {
+				  m = ModelExecutionContext.GetManager(modelName);
+				}
+				if ( m == null ){
+					throw new ModelException("Отсутствует модель \"" + modelName + "\""); 
+				}
+				Model linkedModel = null;
+				if ( m instanceof Model ) {
+					linkedModel = (Model) m;
+				}
+				if ( linkedModel == null ) {
+					throw new ModelException("Не определить модель \"" + modelName + "\"");
+				}
+				linkedBlock = linkedModel.Get(linkedBlockName);
+				if ( linkedBlock == null ) {
+					throw new ModelException("Не определить блок \"" + linkedBlockName + "\"");
+				}
 				if ( linkedBlock instanceof ModelBlock  ) {
 					String s = linkedBlock.GetFullName();
 					if ( !alreadyDefinedBlocks.containsKey(s) ) {

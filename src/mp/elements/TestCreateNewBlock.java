@@ -361,9 +361,38 @@ public class TestCreateNewBlock extends TestCase {
     assertTrue( block != null );
     int v1 = block.GetIntValue("result");
     assertEquals(v0-5, v1);
+	}
+	
+	/**
+	 * проверяем цепочку создания блоков, в которых один из блоков находится в другой модели, но к нему есть обращение из созданного блока по selfIndex
+	 */
+	public void testCreateBlocksInDifferentModels(){
+		mp.parser.ModelExecutionContext.ClearExecutionContext();
+		boolean f = false;    
+		Model mainModel = null;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "blockCreate13_main.xml" );
+      mainModel = builder.GetRootModel();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    assertTrue(mainModel != null);
     
+    mainModel.run();
+    assertTrue( mainModel.GetErrorString() == null );
+		
+		ModelBlock block = mainModel.Get("block", 0); // блок, из которого вызывалась процедура создания блока
+		assertTrue(block != null);
+		block = mainModel.Get("block", 1);
+		assertTrue(block != null);
+		
 		
 	}
+	
 	
 
 }

@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "blockCreate13_sub" delay = "10">
+
+  <BlockList>
+     
+      <Block name = "block2" count = "1">
+        <OutParamList>
+           <Param name = "block2_out" type = "integer" initvalue = "8"/>
+        </OutParamList>
+        
+        <InputParamList> 
+         <Param name = "inputFromMain" type = "integer" initvalue = "0"
+                   modelLink = "blockCreate13_main"    blockLink = "block"   paramLink = "val" blockIndex = "selfIndex"/>
+      </InputParamList>
+        
+        
+      </Block>
+     
+  
+     <Block name = "blockToCreate" count = "1">
+       <InputParamList> 
+         <Param name = "inp1" type = "integer" initvalue = "0"
+                    blockLink = "block2"   paramLink = "block2_out" blockIndex = "selfIndex"/>
+      </InputParamList>
+     
+     </Block> 
+  
+  </BlockList>
+
+</Model>
