@@ -132,24 +132,37 @@ public class ModelInputBlockParam extends ModelBlockParam{
       ModelBlockParam selfIndexParam = (ModelBlockParam) FRealOwner.Get("selfindex");
       try {
         intBlockIndex = selfIndexParam.GetVariable().GetIntValue();
-      } catch (ScriptException e) {
-        //e.printStackTrace();
-        ModelException e1 = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());
-        throw e1;
+      } catch (ScriptException e) {        
+      	throw new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());        
       }
       selfIndexFlag = true;
       return model.Get( blockName, intBlockIndex );
     }
+    //теперь пробуем предположить, что в качестве индекса блока была указана переменная
+    ModelBlockParam indexParam = (ModelBlockParam) FRealOwner.Get(blockIndex);
+    if ( indexParam != null ) {    	
+    	int index = 0;
+    	try {
+				index = indexParam.GetVariable().GetIntValue();
+			} catch (ScriptException e) {
+				throw new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());
+			}
+    	IndexParamListener listener = new IndexParamListener();
+    	listener.indexParam = indexParam;
+    	listener.inpParam = this;
+    	listener.elementSource = elementSource;
+    	listener.model = model;
+    	indexParam.AddChangeListener( listener	);
+    	return model.Get( blockName, index );
+    }
+    
     String error;
     String s;
-    try{
+    try {
       intBlockIndex = Integer.parseInt( blockIndex );
     } catch (Exception e) {
-      error = e.getMessage();
-      /*ModelException e1 = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());
-      throw e1;*/
-      //s = elementSource.GetConstantValue( blockIndex );
-      s= BuildContext.getBuildContext().getConstantValue(blockIndex);
+      error = e.getMessage();      
+      s = BuildContext.getBuildContext().getConstantValue(blockIndex);
       if ( s == null ){
         throw new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());        
       }
@@ -178,8 +191,9 @@ public class ModelInputBlockParam extends ModelBlockParam{
     }
     ModelElement block = GetLinkedBlock( elementSource );
     if ( block == null ){
+    	String blockIndex = elementSource.GetBlockLinkIndex();
       ModelException e = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": отсутстствует блок \"" +
-              blockName + "\"");
+              blockName + "\"" + (blockIndex == null ? "" : "[" + blockIndex + "]") );
       throw e;
     }
     ModelElement param = block.Get( paramName );
@@ -229,6 +243,30 @@ public class ModelInputBlockParam extends ModelBlockParam{
 			return elementSource.GetLinkedBlockName();
 		} catch (ModelException e) {
 			return null;
+		}
+  	
+  }
+  
+  
+  private static class IndexParamListener extends ChangeListener {
+  	private ModelBlockParam indexParam = null;
+  	private ModelElementDataSource elementSource = null;
+  	private ModelInputBlockParam inpParam = null;
+  	private Model model = null;
+
+		@Override
+		public void VariableChanged(VariableChangeEvent changeEvent) {
+			//System.out.println("VariableChanged");
+			try {
+				int index = indexParam.GetVariable().GetIntValue();  				
+			  ModelBlock block = model.Get(elementSource.GetLinkedBlockName(), index);
+			  String paramName = elementSource.GetLinkedParamName();
+			  ModelBlockParam param = (ModelBlockParam) block.Get(paramName);
+			  inpParam.Link( block,  param );
+			} catch (Exception e) {				
+				
+			}
+			
 		}
   	
   }

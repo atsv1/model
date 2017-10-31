@@ -1084,6 +1084,33 @@ public class ModelBlockTest extends TestCase {
 
   }
 
+  
+  /**
+   * проверяем соединение блоков, при котором во входном параметре в качестве индекса блока выступает переменная этого блока  
+   */
+  public void testVarAsLinkParam(){
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+  	boolean f = false;    
+		Model mainModel = null;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "file66.xml" );
+      mainModel = builder.GetRootModel();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    assertTrue(mainModel != null);
+    mainModel.run();
+    assertTrue( mainModel.GetErrorString() == null );
+    ModelBlock block = mainModel.Get("block2", 0);
+    int a = block.GetIntValue("accum");
+    assertEquals(a, 3);
+  	
+  }
+  
   /**
    * Проверка возможности динамического соединения  МАТЕРИАЛЬНЫХ параметров.
    *

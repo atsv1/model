@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "model66" delay = "10" >
+  <BlockList>
+
+    <Block name = "block1" count = "50">
+      <InnerParamList>
+      <Param name = "param1" type = "integer" initvalue = "0">
+        <Formula>
+          <![CDATA[
+            param1 := selfIndex;
+          ]]>
+        </Formula>
+      </Param>
+      </InnerParamList>
+    </Block>
+
+    <Block name = "block2" >
+       <InputParamList>
+          <Param name = "inpParam" blockLink = "block1"   paramLink = "param1" 
+                 type = "integer" initvalue = "0"  blockIndex = "linkIndex"/>
+       </InputParamList>
+      <InnerParamList>
+        <Param name = "linkIndex" type = "integer" initvalue = "0"/>        
+        <Param name = "counter" type = "integer" initvalue = "0" />
+        <Param name = "oldInpValue" type = "integer" initvalue = "0"/>
+        <Param name = "accum" type = "integer" initvalue = "0" >
+          <Formula>
+             <![CDATA[
+               
+               if ( oldInpValue <>  inpParam) then
+                begin
+                  oldInpValue := inpParam;
+                  accum := accum + inpParam;                  
+                end;
+             ]]>
+          </Formula>
+        </Param>
+      </InnerParamList>
+      <Statechart name = "reconnect">
+         <State name = "begin">
+           <Transition name = "tr1" type = "timeout" value = "10" nextstate = "begin">
+             <![CDATA[
+                counter := counter +1;
+                if (counter > 10) then
+                 begin
+                   StopExecution("model66");
+                 end;
+                 if ( mod(counter, 5) = 0 ) then 
+                  begin
+                    linkIndex := linkIndex+1;
+                    
+                  end;
+               
+             ]]>
+           </Transition>
+         </State>
+      </Statechart>
+    </Block>
+
+  </BlockList>
+
+</Model>
