@@ -11,6 +11,7 @@ public abstract class ScriptOperation extends ScriptProgramObject{
 
   //public Vector Program;
   private int FLineNumber = 0;
+  private int operandCount = 0;
 
   public ScriptOperation() {
     Program = null;
@@ -65,5 +66,13 @@ public abstract class ScriptOperation extends ScriptProgramObject{
   public abstract String GetResultType() throws ScriptException;
 
   public abstract Variable GetResultVariable(int aProgramPointer) throws ScriptException;
+
+	public int getOperandCount() {
+		return operandCount;
+	}
+
+	public void setOperandCount(int operandCount) {
+		this.operandCount = operandCount;
+	}
 
 }

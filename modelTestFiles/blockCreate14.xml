@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "CreateBlock1Model14" delay = "10">
+  
+
+  <BlockList>
+  
+    <Block name = "block" count = "10">
+      <InputParamList> 
+         <Param name = "inp1" type = "integer" initvalue = "0"
+                    blockLink = "block"   paramLink = "out1" blockIndex = "p1"/>
+      </InputParamList>
+      
+      
+      <InnerParamList>
+        <Param name = "p1" type = "integer" initvalue = "5"/>
+      </InnerParamList>
+    
+      <OutParamList>
+        <Param name = "out1" type = "integer" initvalue = "-1">
+        <Formula>
+            <![CDATA[
+              out1 := selfIndex*10;              
+           ]]>
+          </Formula>
+        
+        </Param>
+        <Param name = "var1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+            if (selfIndex = 1) then
+             begin
+                CreateBlock( "CreateBlock1Model14", "block", "p1" );
+                StopExecution("CreateBlock1Model14");
+             end;               
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>

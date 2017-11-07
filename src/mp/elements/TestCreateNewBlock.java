@@ -389,7 +389,39 @@ public class TestCreateNewBlock extends TestCase {
 		assertTrue(block != null);
 		block = mainModel.Get("block", 1);
 		assertTrue(block != null);
-		
+	}
+	
+	/**
+	 * проверяем создание нового блока и правильность заполнения в нем параметра, в который должен записаться индекс блока-родителя
+	 */
+	public void testCreateBlock_ParentBlockParam(){
+		mp.parser.ModelExecutionContext.ClearExecutionContext();
+		boolean f = false;    
+		Model mainModel = null;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "blockCreate14.xml" );
+      mainModel = builder.GetRootModel();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    assertTrue(mainModel != null);
+    
+    ModelBlock block = mainModel.Get("block", 9);
+    assertTrue(block != null);
+    block = mainModel.Get("block", 10);
+    assertTrue(block == null);
+        
+    mainModel.run();
+    assertTrue( mainModel.GetErrorString() == null );
+    
+    block = mainModel.Get("block", 10);
+    assertTrue(block != null);
+    assertEquals(block.GetIntValue("inp1"), 10);
+    
 		
 	}
 	

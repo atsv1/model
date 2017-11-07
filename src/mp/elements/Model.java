@@ -860,25 +860,54 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 			i++;			
 		}
 	}
+	
+	 
 
 	@Override
-	public int createNewBlock(String blockName) throws ScriptException{
-		ModelBlock block = Get(blockName, 0);
+	public int createNewBlock(String blockName, String parentParamName) throws ScriptException{
+		ModelBlock block = Get(blockName, 0);		
 		if ( block == null ) {
 			throw new ScriptException("Отсутствует блок \"" + blockName + "\"");
 		}
+		
 		List<ModelBlock> blocksToCreate = new ArrayList<ModelBlock> ();
 		Map<String, ModelBlock> blockMap = new HashMap<String, ModelBlock> ();
 		blocksToCreate .add(block);
-		blockMap.put(block.GetFullName(), block);		
+		blockMap.put(block.GetFullName(), block);
+		List<ModelBlock> newBlocks;
 		try {
 			List<ModelBlock> otherBlocks = getLinkedBlockBySelfIndex(block, blockMap); 
 			blocksToCreate.addAll( otherBlocks );
-		  List<ModelBlock> newBlocks = createBlocks(blocksToCreate, blockName);
+		  newBlocks = createBlocks(blocksToCreate, blockName);
 			addBlocksAsEtalon(newBlocks);
 		} catch (ModelException e) {
 			throw new ScriptException(e.getMessage());			
 		}
+		// если в новом блоке есть параметр, куда надо положить индекс блока, из которого было вызвано создание - то здесь делаем это
+		if ( parentParamName != null && !"".equals(parentParamName) ) {
+			ModelBlock parentBlock = (ModelBlock) ModelTimeManager.getTimeManager().getCurrentExecElement();
+			if ( parentBlock != null ) {
+				ModelBlockParam selfIndexParam = parentBlock.GetInnerParam("selfIndex");
+				int selfIndex = selfIndexParam.GetVariable().GetIntValue();
+				ModelBlock createdBlock = null;
+				for (ModelBlock newBlock : newBlocks) {
+					if ( blockName.equalsIgnoreCase( newBlock.GetName() ) ) {
+						createdBlock = newBlock;
+						break;
+					}
+				}
+				ModelBlockParam paramForParentIndex = null;
+				try {
+					paramForParentIndex = (ModelBlockParam) createdBlock.Get(parentParamName);
+				} catch (ModelException e) {
+					throw new ScriptException(e.getMessage());
+				}
+				if ( paramForParentIndex == null ) {
+					throw new ScriptException("Отсутствует параметр \"" + parentParamName + "\"");
+				}
+				paramForParentIndex.GetVariable().SetValue(selfIndex);				
+			}
+		}// установка значение индекса создающего блока
 		
 		return 0;
 	}

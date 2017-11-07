@@ -42,12 +42,7 @@ public class ScriptFunctionLexem extends ScriptLexem {
   }
 
   public boolean IsMyToken(String aTokenName) {
-    int i = 0;
-    /*
-    if ( aTokenName.equalsIgnoreCase( FSearchedToken ) ) {
-      return true;
-    }
-    */
+    int i = 0;    
     while ( i < ScriptLanguageDef.FunctionsList.length) {
       if ( ScriptLanguageDef.FunctionsList[i][0].equalsIgnoreCase( aTokenName ) ) {
         FSearchedToken = aTokenName;

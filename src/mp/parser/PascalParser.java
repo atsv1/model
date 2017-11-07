@@ -815,11 +815,13 @@ public class PascalParser implements ScriptParser {
     ScriptProgramObject operation = null;
 
     boolean isNewOperandNeed = false;
+    int operandCount = 0;
     while ( f ) {
       lexem = (ScriptLexem) FParsedLexemList.get( i );
       if ( ScriptLanguageDef.productionList[aMatrixIndex][matrixIndex].equalsIgnoreCase(
                    ScriptLanguageDef.productionList[aMatrixIndex][1] )
          )  {
+      	operandCount = 0;
         //здесь будет создан объект-операция
       	if ( FMovMode == MOV_MODE_AFTER ) {
           operation = (ScriptProgramObject) lexem.GetExecutableObject();
@@ -839,10 +841,15 @@ public class PascalParser implements ScriptParser {
         }
         AddObjectToProgram( operation, programOperationIndex );
       } else  {
+      	
         //operand = (Operand) lexem.GetExecutableObject();
         Object o =  lexem.GetExecutableObject();
         if ( o != null )    {
-          programOperandIndex = programOperandIndex + AddObjectToProgram( o, programOperandIndex );
+        	operandCount = AddObjectToProgram( o, programOperandIndex );
+          programOperandIndex = programOperandIndex + operandCount;          
+          if ( operation != null && operation instanceof ScriptOperation ) {
+          	((ScriptOperation)operation).setOperandCount(operandCount);
+          }
           //programOperandIndex++;
         }
       }

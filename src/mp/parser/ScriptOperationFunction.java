@@ -1066,17 +1066,26 @@ public class ScriptOperationFunction extends ScriptOperation {
   //////////////////////////////////////
   //////////// Создание нового блока во время выполнения модели
   
-  private int ExecCreateNewBlock(int aProgramPointer) throws ScriptException {
+  private int ExecCreateNewBlock(int aProgramPointer) throws ScriptException {  	
+  	int opCount = this.getOperandCount();
+  	if ( !( opCount == 2 || opCount == 3 ) ) {
+  		throw new ScriptException("Неверное количество операндов функции CreateNewBlock");
+  	}
   	Operand op1 = InitOperand( aProgramPointer + 1 );
   	ModelExecutionManager manager = ModelExecutionContext.GetManager( op1.GetStringValue() );
   	if ( manager == null ){      
       throw new ScriptException("Отсутствует модель с именем \"" + op1.GetStringValue() + "\"");      
     }
   	Operand op2 = InitOperand( aProgramPointer + 2 );
+  	String parentParamName = null;
   	String blockName = op2.GetStringValue();
-  	manager.createNewBlock(blockName);
+  	if ( opCount == 3 ) {
+  		Operand op3 = InitOperand( aProgramPointer + 3 );
+  		parentParamName = op3.GetStringValue();
+  	}
+  	manager.createNewBlock(blockName, parentParamName);
   	
-  	return 3;
+  	return opCount+1;
   	
   }
   
