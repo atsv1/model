@@ -458,12 +458,17 @@ public abstract class ModelBlock extends ModelEventGenerator {
   }
 
   public String toString(){
-    int i = GetIntValue("selfIndex");
+    return GetFullName();
+  }
+  
+  public String GetFullName(){
+  	int i = GetIntValue("selfIndex");
     if ( i == -1 ) {
-      return GetFullName();
+      return super.GetFullName();
     } else {
-      return GetFullName() + "i" + Integer.toString( i );
+      return super.GetFullName() + "i" + Integer.toString( i );
     }
+  	
   }
 
   protected void SetToInitCondition() throws ModelException {

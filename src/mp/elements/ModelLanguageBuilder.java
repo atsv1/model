@@ -104,6 +104,10 @@ public class ModelLanguageBuilder {
   }
 
   protected static void AddElementIdVariable( ModelBlock aBlock ) throws ModelException {
+  	ModelBlockParam existsElementIdParam = aBlock.GetInnerParam("elementId");
+  	if ( existsElementIdParam != null ) {
+  		return;
+  	}
     int i = aBlock.GetElementId();
     ModelBlockParam param = new ModelBlockParam(aBlock, "elementId", ServiceLocator.GetNextId()) {
       protected void UpdateParam() throws ScriptException, ModelException {
@@ -144,6 +148,10 @@ public class ModelLanguageBuilder {
   }
   
   private void addForkVar(ModelBlock aBlock) throws ModelException{
+  	ModelBlockParam existsParam = aBlock.GetInnerParam("isForkMode");
+  	if ( existsParam != null ) {
+  		return;
+  	}
   	ModelBlockParam param = new ModelBlockParam(aBlock, "isForkMode", ServiceLocator.GetNextId()) {
       protected void UpdateParam() throws ScriptException, ModelException {
       }
@@ -165,7 +173,7 @@ public class ModelLanguageBuilder {
   	
   }
 
-  private void AddServiceVariables( ModelBlock aBlock ) throws ModelException{
+  public void AddServiceVariables( ModelBlock aBlock ) throws ModelException{
     AddSelfIndexVariable(aBlock, FModel);
     AddElementIdVariable( aBlock );
     AddConstants( aBlock );

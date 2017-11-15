@@ -802,15 +802,17 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 			
 			mb.buildElement(ds, newBlock, blockOwner.GetDataSource());
 			createdBlocks.add(newBlock);
+			ModelLanguageBuilder builder = new ModelLanguageBuilder( blockOwner );
+			builder.AddServiceVariables(newBlock);
 		}
-		
+				
 		for (ModelBlock newBlock : createdBlocks) {
 			if ( newBlock.IsDynamicParamCreate() ) {
-				this.FDynamicBlockList.add(newBlock);
+				((Model)newBlock.GetOwner()).FDynamicBlockList.add(newBlock);
 				BuldDynamicParams( newBlock );
 			}
 			ModelLanguageBuilder builder = new ModelLanguageBuilder( this );
-			builder.UpdateBlock(newBlock);
+			builder.UpdateBlock(newBlock);			
 		}
 		
 		for (ModelBlock newBlock : createdBlocks) {

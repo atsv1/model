@@ -90,6 +90,9 @@ public class ModelElementContainer {
     	//throw new ModelException( "Ошибка: несовпадение количеств в контейнере при добавлении элемента \"" +  aElement.GetFullName() + "\"");
       
     }
+    if (aElement.GetName().indexOf("skipFirst") >= 0) {
+    	throw new ModelException("skipFirst");
+    }
     AddByName( aElement );
     AddById( aElement );
     AddToVector( aElement );
@@ -161,8 +164,7 @@ public class ModelElementContainer {
       return;
     }
     if ( !CheckEqualsCount() ){
-      ModelException e = new ModelException( "Ошибка: несовпадение количеств в контейнере при удалении элемента \"" +
-              element.GetFullName() + "\"");
+      ModelException e = new ModelException( "Ошибка: несовпадение количеств в контейнере при удалении элемента \"" + element.GetFullName() + "\"");
       throw e;
     }
     FHashById.remove( new Integer(element.GetElementId()) );

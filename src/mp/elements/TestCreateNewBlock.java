@@ -1,6 +1,7 @@
 package mp.elements;
 
 import junit.framework.TestCase;
+import mp.parser.ModelExecutionContext;
 
 public class TestCreateNewBlock extends TestCase {
 	
@@ -381,14 +382,23 @@ public class TestCreateNewBlock extends TestCase {
     } 
     assertTrue( f );
     assertTrue(mainModel != null);
+    Model subModel = (Model) ModelExecutionContext.GetManager( "blockCreate13_sub" );
+    assertTrue(subModel != null);
     
     mainModel.run();
     assertTrue( mainModel.GetErrorString() == null );
 		
 		ModelBlock block = mainModel.Get("block", 0); // блок, из которого вызывалась процедура создания блока
 		assertTrue(block != null);
+		assertEquals(block.GetIntValue("selfIndex"), 0);
 		block = mainModel.Get("block", 1);
 		assertTrue(block != null);
+		assertEquals(block.GetIntValue("selfIndex"), 1);
+		block = subModel.Get("blockToCreate", 1);
+		assertTrue(block != null);
+		assertEquals(block.GetIntValue("selfIndex"), 1);
+		
+		
 	}
 	
 	/**

@@ -25,7 +25,7 @@ public class ModelElement implements ModelForReadInterface {
     if ( FOwner == null ){
       ownerName = "";
     } else{
-      ownerName = FOwner.GetName() + ".";
+      ownerName = FOwner.GetFullName() + ".";
     }
     FFullName = ownerName + FNames.GetName( FNameIndex );
   }
@@ -112,6 +112,7 @@ public class ModelElement implements ModelForReadInterface {
   }
 
   public String GetFullName(){
+  	UpdateFullName();
     return FFullName;
   }
 
