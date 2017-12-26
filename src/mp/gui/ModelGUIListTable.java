@@ -66,7 +66,7 @@ public class ModelGUIListTable extends ModelGUIAbstrTable implements ModelGUIEle
     Integer blockIndex = null;
     FColumnCaptionList.add("");//добавляем одну колонку для названий параметров    
     for (BlockData bd : blocks){      
-      FColumnCaptionList.add( bd.blockName + "[" + bd.blockIndex + "]" );
+      FColumnCaptionList.add( bd.blockName + "[" + (bd.blockIndex) + "]" );
       i++;
     }
   }
@@ -123,11 +123,12 @@ public class ModelGUIListTable extends ModelGUIAbstrTable implements ModelGUIEle
       Vector currentRow = (Vector) FRows.get( rowNum );
       int blockCount = currentRow.size();
       while ( (blockCount-1) < currentBlokCount ) {
-      	currentRow.add("");
-      	if (columnNotAdded) {
+      	currentRow.add("new column");
+      	if (columnNotAdded) {      		
       	  TableColumn tc = new TableColumn();
-      	  tc.setHeaderValue(bd.blockName + "[" + blockCount + "]");
-      	  FTable.getColumnModel().addColumn( tc );
+      	  tc.setModelIndex(blockCount);
+      	  tc.setHeaderValue(bd.blockName + "[" + (blockCount-1) + "]");
+      	  FTable.getColumnModel().addColumn( tc );      	  
       	  columnNotAdded = false;
       	}
       	blockCount++;
@@ -152,13 +153,11 @@ public class ModelGUIListTable extends ModelGUIAbstrTable implements ModelGUIEle
     String strValue;
     boolean result = this.isBlockCountChange();
     if ( result ) {
-    	updateColumns();
-    	//CreateColumnsCaptionList();
-    	//JTable table = new JTable(  FRows, FColumnCaptionList );
-    	//setNewTable( table );
+    	updateColumns();    	
     }
     while ( row < FRows.size() ){
       currentRow = (Vector) FRows.get( row );
+      String rowName = (String) currentRow.get(0);
       column = 1;
       for (BlockData bd : blocks){
         blockIndex = bd.blockIndex;
@@ -168,10 +167,9 @@ public class ModelGUIListTable extends ModelGUIAbstrTable implements ModelGUIEle
         strValue = FConnector.GetStringValue(FAddress.GetModelName(),  blockName, blockIndex, paramName );
         StoreValue( strValue, column, row,  FRows );
         column++;
-      }
+      }      
       row++;
-    }
-    System.out.println(FRows);
+    }    
     return result;
   }
 

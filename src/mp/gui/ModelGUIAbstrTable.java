@@ -169,19 +169,7 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
   protected void StoreValue( String aValue, int column, int row, Vector aDataRows ) throws ModelException{
     if ( aDataRows == null ){
       return;
-    }
-    /*if ( row >= aDataRows.size() ){
-      ModelException e = new ModelException("Ошибка в элементе \"" + FCaption.getText() + "\": неверный номер строки " +
-        Integer.toString( row ) );
-      throw e;
-    }
-    Vector columns = (Vector) aDataRows.get( row );
-    if ( column >= columns.size() ){
-      ModelException e = new ModelException("Ошибка в элементе \"" + FCaption.getText() + "\": неверный номер столбца " +
-         Integer.toString( column ) );
-      throw e;
-    }    
-    */
+    }   
     FTable.setValueAt(aValue, row, column);
   }
 
