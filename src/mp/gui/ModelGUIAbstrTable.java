@@ -2,10 +2,13 @@ package mp.gui;
 
 import mp.elements.ModelElementDataSource;
 import mp.elements.ModelException;
+import mp.gui.ModelGUIAbstrTable.BlockData;
 import mp.parser.Variable;
 import mp.parser.ScriptException;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.*;
@@ -21,6 +24,9 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
   protected boolean FIsFilterExist = false;
   protected String FFilteredParamName = null;
   protected Variable FFilterValue = null;
+  List<BlockData> blocks = null;
+  
+  private boolean isAllBlocks = false;
 
   /** Метод выполняет размещение компонентов таблицы на форме. Для этого методу нужен полностью подготовленный объект
    * FTable.
@@ -42,8 +48,20 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
     FTable.setPreferredScrollableViewportSize( new Dimension( r.width-6, r.height-25 ) );
     //читаем название таблицы
     FPanel.add( FCaption /*, BorderLayout.NORTH */);
-    FPanel.add(scrollPanel /*, BorderLayout.SOUTH*/ );
+    FPanel.add(scrollPanel , BorderLayout.SOUTH );
     FIsConnected = true;
+  }
+  
+  protected void setNewTable(JTable newTable){  	
+  	Rectangle r = this.GetDataSource().GetRectangle();
+  	FTable.setPreferredScrollableViewportSize( new Dimension( r.width-6, r.height-25 ) );
+  	FPanel.remove(FTable);
+  	
+  	//FPanel.add(newTable);  	
+  	FPanel.revalidate();
+  	FPanel.repaint();
+  	FTable = newTable;
+  	
   }
 
    /** Чтение из файла описания формы списка параметров, значения которых необходимо выводить в таблицу.
@@ -58,17 +76,18 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
    */
   protected abstract void ReadParamNames( Vector aCaptionVector, Vector aParamsVector ) throws ModelException;
 
-  private void AddAllBlockTotable(String aBlockName, Vector aBlockNamesList, Vector aBlockIndexList) throws ModelException {
+  private void AddAllBlockTotable(String aBlockName) throws ModelException {
     if ( FConnector == null ){
       ModelException e = new ModelException("Отсутствует объект подключения в модели в таблице \"" + GetName() + "\"");
       throw e;
     }
-
     int blockCount = FConnector.GetBlockCount( FAddress.GetModelName(), aBlockName );
     int i = 0;
     while ( i < blockCount ){
-      aBlockNamesList.add( aBlockName );
-      aBlockIndexList.add( new Integer(i) );
+    	BlockData newBlockInfo = new BlockData();
+    	newBlockInfo.blockIndex =  i ;
+    	newBlockInfo.blockName = aBlockName;      
+    	blocks.add(newBlockInfo);    	
       i++;
     }
   }
@@ -81,13 +100,8 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
    * значения, а не одно, как позволяет синтаксис Java
    * @throws ModelException
    */
-  protected  void ReadBlockList(Object[] aContainer) throws ModelException{
-    if ( aContainer == null || aContainer.length != 2 ){
-      ModelException e = new ModelException( "Ошибка таблице \"" + FCaption.getText() + "\" пустой контейнер для хранения списка блоков" );
-      throw e;
-    }
-    Vector indexList = new Vector();
-    Vector namesList = new Vector();
+  protected  void ReadBlockList() throws ModelException{
+  	blocks = new ArrayList<BlockData> ();    
     ModelElementDataSource blockNode = null;
     java.util.List<ModelElementDataSource> childList = this.GetDataSource().GetChildElements("BlockList");
     if ( childList == null || childList.isEmpty()) {
@@ -111,49 +125,52 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
         blockIndex = -1;
       } else {
       	if ( "all".equalsIgnoreCase( blockIndexStr ) ){
-          AddAllBlockTotable( currentNode.GetAttrName(), namesList, indexList );
+          AddAllBlockTotable( currentNode.GetAttrName() );
+          this.setAllBlocks(true);
         } else {
-        	try {
-          blockIndex = Integer.parseInt( blockIndexStr );
+        	try {        		
+            blockIndex = Integer.parseInt( blockIndexStr );
         	} catch (Exception e) {
         		 throw new ModelException("Ошибка в блоке \"" + FCaption.getText() +   "\": неверный индекс блока- " + blockIndexStr);
         	}
-          indexList.add( new Integer( blockIndex ) );
-          namesList.add( currentNode.GetAttrName() );
+        	this.setAllBlocks(false);
+        	BlockData newBlockInfo = new BlockData();
+        	newBlockInfo.blockIndex =  blockIndex ;
+        	newBlockInfo.blockName = currentNode.GetAttrName();      
+        	blocks.add(newBlockInfo);
         }
       	
       }
-    }
-    if ( indexList.size() != namesList.size() ){
-      ModelException e = new ModelException("Ошибка в блоке \"" + FCaption.getText() +
-              "\": несовпадение количеств. Внутренняя ошибка модели");
-      throw e;
-    }
-    if ( indexList.size() == 0 ){
+    }    
+    if ( blocks.isEmpty() ){
       ModelException e = new ModelException("Ошибка в блоке \"" + FCaption.getText() + "\": пустой список блоков");
       throw e;
     }
-    aContainer[0] = indexList.toArray();
-    aContainer[1] = namesList.toArray();
+    
 
   }
 
-  /**Создание массива с данными, который будет передаваться в таблицу
-   *
-   * @param aDataRows
-   * @param aColumnsContainer
-   * @param aRowsContainer
-   * @throws ModelException
-   */
-  protected abstract void CreateRows( Vector aDataRows, Object aColumnsContainer, Object aRowsContainer ) throws ModelException;
+  protected abstract boolean  StaticUpdate() throws ModelException;
 
-  protected abstract void UpdateCell() throws ModelException;
+  protected void UpdateCell() throws ModelException {
+    if ( FIsFilterExist ) {
+      DynamicUpdate();
+      FTable.updateUI();
+    } else {
+      if (StaticUpdate() ) {
+      	FTable.updateUI();
+      }
+    }
+  }
+  
+  
+  
 
   protected void StoreValue( String aValue, int column, int row, Vector aDataRows ) throws ModelException{
     if ( aDataRows == null ){
       return;
     }
-    if ( row >= aDataRows.size() ){
+    /*if ( row >= aDataRows.size() ){
       ModelException e = new ModelException("Ошибка в элементе \"" + FCaption.getText() + "\": неверный номер строки " +
         Integer.toString( row ) );
       throw e;
@@ -163,8 +180,9 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
       ModelException e = new ModelException("Ошибка в элементе \"" + FCaption.getText() + "\": неверный номер столбца " +
          Integer.toString( column ) );
       throw e;
-    }
-    columns.setElementAt( aValue,column );
+    }    
+    */
+    FTable.setValueAt(aValue, row, column);
   }
 
   public void Update() throws ModelException {
@@ -225,7 +243,47 @@ public abstract class ModelGUIAbstrTable extends ModelGUIAbstrElement {
       throw e1;
     }
     FIsFilterExist = true;
-  } 
+  }
+
+	public boolean isAllBlocks() {
+		return isAllBlocks;
+	}
+
+	public void setAllBlocks(boolean isAllBlocks) {
+		this.isAllBlocks = isAllBlocks;
+	}
+	
+	protected boolean isBlockCountChange() throws ModelException{
+		if ( !this.isAllBlocks() ) {
+  		return false;
+  	}
+		BlockData bd = blocks.get(0);
+		String blockName = bd.blockName;
+		int curBlockCount = FConnector.GetBlockCount(FModelName, blockName);
+		if ( blocks.size() == curBlockCount ) {
+			return false;
+		}
+		int blockIndex = blocks.size();
+		while ( blockIndex < curBlockCount ){
+			BlockData newBd = new BlockData();
+			newBd.blockName = blockName;
+			newBd.blockIndex = blockIndex;
+			blocks.add(newBd);
+			blockIndex++;
+		}
+		return true;
+	}
+	
+	protected  abstract void  DynamicUpdate() throws ModelException;
+	
+	protected static class BlockData{
+  	String blockName;
+  	int blockIndex;
+  	public String toString(){
+  		return blockName + "[" + blockIndex + "]";
+  	}
+  	
+  }
   
   
 }

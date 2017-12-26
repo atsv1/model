@@ -26,9 +26,8 @@ public class ElementHistoryTable extends ModelGUIAbstrTable {
 
 	}
 
-	@Override
-	protected void CreateRows(Vector aDataRows, Object aColumnsContainer,
-	    Object aRowsContainer) throws ModelException {
+	
+	protected void CreateRows(Vector aDataRows, Object aColumnsContainer,	    Object aRowsContainer) throws ModelException {
 		// TODO Auto-generated method stub
 
 	}
@@ -77,6 +76,18 @@ public class ElementHistoryTable extends ModelGUIAbstrTable {
     ComponentPlacing();
 
 
+	}
+
+	@Override
+	protected boolean StaticUpdate() throws ModelException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	protected void DynamicUpdate() throws ModelException {
+		// TODO Auto-generated method stub
+		
 	}
 
 

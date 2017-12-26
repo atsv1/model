@@ -2,10 +2,16 @@ package mp.gui;
 
 import mp.elements.ModelElementDataSource;
 import mp.elements.ModelException;
+import mp.gui.ModelGUIAbstrTable.BlockData;
 import mp.parser.Variable;
 import mp.parser.ScriptException;
 
 import javax.swing.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.w3c.dom.Node;
@@ -22,9 +28,9 @@ public class ModelGUITable extends ModelGUIAbstrTable implements ModelGUIElement
 
   private Vector FNamesList = null; //названия колонок в таблице
   private Vector FParamNamesList = null; //названия параметров блоков, которые будут выводиться в таблицу
-  private Vector FRows = null;
-  private Object[] FBlockIndexes = null;
-  private Object[] FBlockNames = null;
+  private Vector FRows = null;  
+  
+  Map<String, BlockData> blockMetaData = null;
 
   public ModelGUITable(){
     FNamesList = new Vector();
@@ -53,7 +59,7 @@ public class ModelGUITable extends ModelGUIAbstrTable implements ModelGUIElement
    * Заполняется переданный в метод параметр
    *
    */
-  protected void CreateRows( Vector aDataRows, Object aColumnsContainer, Object aRowsContainer ) throws ModelException{
+  protected void CreateRows( Vector aDataRows, Object aColumnsContainer, List<BlockData> aRowsContainer ) throws ModelException{
     int i = 0;
     int j = 0;
     if ( aDataRows == null ){
@@ -63,11 +69,11 @@ public class ModelGUITable extends ModelGUIAbstrTable implements ModelGUIElement
     }
     aDataRows.clear();
     Vector currentRow = null;
-    Object[] blockIndexes = (Object[]) aRowsContainer;
+    //Object[] blockIndexes = (Object[]) aRowsContainer;
     Vector paramNamesList = (Vector) aColumnsContainer;
     String s = null;//строка для каждого конкретного данного
     //организуем цикл по всем блокам, указанным пользователем
-    while ( i < blockIndexes.length ){
+    for (BlockData bd : aRowsContainer){
       currentRow = new Vector();
       j = 0;
       //цикл по всем
@@ -80,44 +86,64 @@ public class ModelGUITable extends ModelGUIAbstrTable implements ModelGUIElement
       i++;
     }
   }
-
-  public void ReadDataFromNode() throws ModelException {
-    
+  
+  
+  public void ReadDataFromNode() throws ModelException {    
     FCaption = new JLabel("");
     FCaption.setText( this.GetDataSource().GetCaption() );
 
     // читаем названия колонок
     ReadParamNames( FNamesList, FParamNamesList );
-    //читаем список блоков, из которых будут браться данные для таблицы
-    Object[] container = new Object[2];
-    ReadBlockList( container );
-    FBlockIndexes = (Object[]) container[0];
-    FBlockNames = (Object[]) container[1];
+    //читаем список блоков, из которых будут браться данные для таблицы    
+    ReadBlockList( );    
     // создаем массив с данными
-    CreateRows( FRows, FParamNamesList, FBlockIndexes );
-
+    CreateRows( FRows, FParamNamesList, blocks );
     FTable = new JTable(  FRows, FNamesList );
-
     ComponentPlacing();
     ReadFilterParam();
   }
 
   public void AddGUIElement(ModelGUIElement aElement) {
   }
-
-  private void StaticUpdate() throws ModelException {
+  
+  
+  
+  protected boolean updateBlockList() throws ModelException{
+  	if ( !isBlockCountChange() ) {
+  		return false;
+  	}
+  	// проверяем, изменилось ли
+  	try {  		
+  		int curBlockCount = FRows.size();
+			int newBlockCount = blocks.size();			
+			while ( newBlockCount > curBlockCount ){
+			  BlockData bd =blocks.get(curBlockCount);
+				Vector newRow = GetRow(bd);
+				FRows.addElement(newRow);
+				curBlockCount++;			  		
+			}					
+		} catch (ModelException e) {
+			e.printStackTrace();
+		}
+  	return true;
+  }
+  
+  @Override
+  protected boolean  StaticUpdate() throws ModelException {
     int row = 0;
     int column = 0;
-    if ( FBlockNames == null ){
-      return;
+    if ( blocks == null ){
+      return false; 
     }
+    boolean result = updateBlockList();
+    
     String currentBlock = null;
     int currentBlockIndex = -1;
     String currentParamName = null;
     String strValue;
-    while ( row < FBlockNames.length ){
-      currentBlock = (String) FBlockNames[row];
-      currentBlockIndex = (Integer) FBlockIndexes[row];
+    for (BlockData bd : blocks){
+      currentBlock = bd.blockName;
+      currentBlockIndex = bd.blockIndex;
       column = 0;
       while ( column < FParamNamesList.size() ){
         currentParamName = (String) FParamNamesList.get( column );
@@ -127,9 +153,10 @@ public class ModelGUITable extends ModelGUIAbstrTable implements ModelGUIElement
       }
       row++;
     }
+    return result;
   }
 
-  private Vector GetRow( String aBlockName, int aBlockIndex ) throws ModelException {
+  private Vector GetRow( BlockData blockData ) throws ModelException {
     int paramsCount = FParamNamesList.size();
     Vector result = new Vector( paramsCount );
     String currentParamName;
@@ -137,7 +164,7 @@ public class ModelGUITable extends ModelGUIAbstrTable implements ModelGUIElement
     String strValue;
     while ( column < paramsCount ){
       currentParamName = (String) FParamNamesList.get( column );
-      strValue = FConnector.GetStringValue( FAddress.GetModelName(), aBlockName,aBlockIndex,currentParamName );
+      strValue = FConnector.GetStringValue( FAddress.GetModelName(), blockData.blockName, blockData.blockIndex,currentParamName );
       result.add( strValue );
       column++;
     }
@@ -149,21 +176,22 @@ public class ModelGUITable extends ModelGUIAbstrTable implements ModelGUIElement
    *
    * @throws ModelException
    */
-  private void DynamicUpdate() throws ModelException{
+  @Override
+  protected void DynamicUpdate() throws ModelException{
     int row = 0;
-    if ( FBlockNames == null ){
+    if ( blocks == null ){
       return;
     }
     String currentBlock = null;
     int currentBlockIndex = -1;
-    Vector tempRows = new Vector( FBlockNames.length );
+    Vector tempRows = new Vector( blocks.size() );
     int compareResult;
-    while ( row < FBlockNames.length ){
-      currentBlock = (String) FBlockNames[row];
-      currentBlockIndex = (Integer) FBlockIndexes[row];
+    for (BlockData bd : blocks) {
+      currentBlock = bd.blockName;
+      currentBlockIndex = bd.blockIndex;
       compareResult = FConnector.Compare( FFilterValue, FAddress.GetModelName(), currentBlock, currentBlockIndex, FFilteredParamName );
       if ( compareResult == 0 ){
-        tempRows.add( GetRow( currentBlock, currentBlockIndex ) );
+        tempRows.add( GetRow( bd ) );
       }
       row++;
     }//while
@@ -175,17 +203,8 @@ public class ModelGUITable extends ModelGUIAbstrTable implements ModelGUIElement
       FRows.add( tempRows.get( i ) );
       i++;
     }
-  }
-
-  protected void UpdateCell() throws ModelException {
-    if ( FIsFilterExist ) {
-      DynamicUpdate();
-      FTable.updateUI();
-    } else {
-      StaticUpdate();
-    }
-
-  }
+  } 
+  
 
 
 }

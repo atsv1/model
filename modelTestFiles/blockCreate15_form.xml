@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<!-- Пример описания файла пользовательской формы-->
+<!-- -->
+<Form classname = "mp.gui.StandartForm"
+  title = ""
+  sizex = "" sizey = ""
+  model = "Название модели">
+ <TabSheets>
+   <TabSheet title = "Закладка 1">
+     <Table caption = "Блоки в строках"
+       x = "20"
+       y = "20"
+       width = "400"
+       height = "150">
+       <ColumnsList>
+         <Column caption = "N" param = "selfindex"/>
+         <Column caption = "var1" param = "var1"/>
+         
+       </ColumnsList>
+       <BlockList>
+         <Block name = "block" blockIndex = "all"/>
+       </BlockList>
+     </Table>
+     
+     
+     
+     <ListTable caption = "communa"
+       x = "20"
+       y = "160"
+       width = "500"
+       height = "150">
+       <RowsList>
+         <Row caption = "N" param = "selfindex"/>
+         <Row caption = "var1" param = "var1"/>          
+       </RowsList>
+       <BlockList>
+         <Block name = "block" blockIndex = "all"/>
+       </BlockList>
+     </ListTable>
+     
+
+   </TabSheet>
+
+ </TabSheets>
+
+</Form>

@@ -1,6 +1,12 @@
 package mp.elements;
 
+import java.io.IOException;
+
+import org.xml.sax.SAXException;
+
 import junit.framework.TestCase;
+import mp.gui.ModelGUIElementFactory;
+import mp.gui.StandartForm;
 import mp.parser.ModelExecutionContext;
 
 public class TestCreateNewBlock extends TestCase {
@@ -431,10 +437,49 @@ public class TestCreateNewBlock extends TestCase {
     block = mainModel.Get("block", 10);
     assertTrue(block != null);
     assertEquals(block.GetIntValue("inp1"), 10);
-    
-		
 	}
 	
+	private static StandartForm ReadForm(String aFileName, Model aModel) throws ModelException, IOException, SAXException {
+    ModelXMLReader formReader = null;
+    StandartForm result = null;
+    ModelDirectConnector connector = new ModelDirectConnector( aModel );
+    ModelGUIElementFactory elementGUIFactory = new ModelGUIElementFactory();
+    elementGUIFactory.SetConnector( connector );
+    formReader = new ModelXMLReader( elementGUIFactory );
+    formReader.ReadModel( aFileName );
+    result = (StandartForm) formReader.GetRootElement();
+    return result;
+  }
 	
+	/**
+	 * проверяем работу таблицы при работе с динамически создающимися блоками
+	 */
+	public void testTable(){
+		mp.parser.ModelExecutionContext.ClearExecutionContext();
+		boolean f = false;    
+		Model mainModel = null;
+    try {
+      ModelTreeBuilder builder = new ModelTreeBuilder();
+      builder.SetElementFactory( new ModelElementFactory() );
+      builder.ReadModelTree( ModelMuxTest.FPathToXMLFiles + "blockCreate15.xml" );
+      mainModel = builder.GetRootModel();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    assertTrue(mainModel != null);
+    StandartForm form = null;
+    f = false;
+    try {
+			form = ReadForm(ModelMuxTest.FPathToXMLFiles + "blockCreate15_Form.xml", mainModel);
+			f = true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+    assertTrue(f);
+		
+	} 
 
 }
