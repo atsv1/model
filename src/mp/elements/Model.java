@@ -760,7 +760,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 				if ( linkedModel == null ) {
 					throw new ModelException("Не определить модель \"" + modelName + "\"");
 				}
-				linkedBlock = linkedModel.Get(linkedBlockName);
+				linkedBlock = linkedModel.Get(linkedBlockName, 0);				
 				if ( linkedBlock == null ) {
 					throw new ModelException("Не определить блок \"" + linkedBlockName + "\"");
 				}
