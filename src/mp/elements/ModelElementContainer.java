@@ -1,25 +1,30 @@
 package mp.elements;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
+ 
 
 /**
  * User: atsv
  * Date: 15.09.2006
  */
-public class ModelElementContainer {
+public class ModelElementContainer<E extends ModelElement> implements Collection{
 
   private Hashtable<String, ModelElement> FHashByName = null;
-  private Hashtable FHashById = null;
-  private Hashtable FHashByNameIndex = null;
+  private Hashtable<Integer, ModelElement> FHashById = null;
+  private Hashtable<Integer, ModelElement> FHashByNameIndex = null;
   private boolean FNameUnique = true;
-  protected Vector<ModelElement> ElementList = null;
+  protected List<ModelElement> ElementList = null;
 
 
-  public ModelElementContainer() {
+  public ModelElementContainer () {
     FHashByName = new  Hashtable();
     FHashById = new Hashtable();
-    ElementList = new Vector<ModelElement> ();
+    ElementList = new ArrayList<ModelElement> ();
     FHashByNameIndex = new Hashtable();
   }
 
@@ -87,7 +92,7 @@ public class ModelElementContainer {
   public void AddElement( ModelElement aElement ) throws ModelException {
     CheckBeforeAdd( aElement );
     if ( !CheckEqualsCount() ){
-    	//throw new ModelException( "Ошибка: несовпадение количеств в контейнере при добавлении элемента \"" +  aElement.GetFullName() + "\"");
+    	throw new ModelException( "Ошибка: несовпадение количеств в контейнере при добавлении элемента \"" +  aElement.GetFullName() + "\"");
       
     }
     if (aElement.GetName().indexOf("skipFirst") >= 0) {
@@ -147,15 +152,15 @@ public class ModelElementContainer {
     ModelElementContainer container = new ModelElementContainer();
     container.FHashById = (Hashtable) this.FHashById.clone();
     container.FHashByName = (Hashtable) this.FHashByName.clone();
-    container.ElementList = (Vector) this.ElementList.clone();
-    container.FHashByNameIndex = (Hashtable) this.FHashByNameIndex.clone();
+    container.ElementList.addAll(this.ElementList);    
+    container.FHashByNameIndex   = (Hashtable) this.FHashByNameIndex.clone();
     return container;
   }
 
   public void Clear(){
     FHashByName.clear();
     FHashById.clear();
-    ElementList.removeAllElements();
+    ElementList.clear();
     FHashByNameIndex.clear();
   }
 
@@ -169,8 +174,83 @@ public class ModelElementContainer {
     }
     FHashById.remove( new Integer(element.GetElementId()) );
     FHashByName.remove( element.GetName().toUpperCase() );
-    ElementList.removeElement( element );
+    ElementList.remove( element );
     FHashByNameIndex.remove( element.GetNameIndexObj() );
   }
+
+	@Override
+	public boolean isEmpty() {
+		return ElementList.isEmpty();		
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Iterator iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object[] toArray() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object[] toArray(Object[] a) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean add(Object e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		try {
+			RemoveElement((ModelElement) o);
+		} catch (ModelException e) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean containsAll(Collection c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addAll(Collection c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeAll(Collection c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean retainAll(Collection c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void clear() {
+		Clear();
+		
+	}
 
 }

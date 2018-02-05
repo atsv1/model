@@ -30,6 +30,7 @@ public class TimeManagerTest extends TestCase {
 
 
   public void testAddSingleElement(){
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
     ModelTimeManager manager =ModelTimeManager.getTimeManager();
     ModelBlock block = new ModelSimpleBlock(null, "block", ServiceLocator.GetNextId());
     ModelElementContainer container = new ModelElementContainer();
