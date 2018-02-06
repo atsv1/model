@@ -92,12 +92,8 @@ public class ModelElementContainer<E extends ModelElement> implements Collection
   public void AddElement( ModelElement aElement ) throws ModelException {
     CheckBeforeAdd( aElement );
     if ( !CheckEqualsCount() ){
-    	throw new ModelException( "Ошибка: несовпадение количеств в контейнере при добавлении элемента \"" +  aElement.GetFullName() + "\"");
-      
-    }
-    if (aElement.GetName().indexOf("skipFirst") >= 0) {
-    	throw new ModelException("skipFirst");
-    }
+    	throw new ModelException( "Ошибка: несовпадение количеств в контейнере при добавлении элемента \"" +  aElement.GetFullName() + "\"");      
+    }    
     AddByName( aElement );
     AddById( aElement );
     AddToVector( aElement );
