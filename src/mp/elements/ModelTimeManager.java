@@ -398,7 +398,7 @@ public class ModelTimeManager {
   	ModelTime execTime;
     ModelTime currentTime = FLastExecTime != null ? FLastExecTime : new ModelTime(0);
     if ( FFullList == null ){
-    	FFullList = new ModelElementContainer();
+    	FFullList = new ModelElementClassesContainer();
     	FFullList.SetUniqueNameFlag(false);
     }
 
