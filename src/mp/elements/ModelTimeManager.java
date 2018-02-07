@@ -354,14 +354,13 @@ public class ModelTimeManager {
 
       } else {
         ModelTime t1 = GetExecTimeForTimeIndependentElement( currentExecTime );
-        ModelTime t2 = GetExecTimeForTimeIndependentElement( new ModelTime( 0 ) );
+        ModelTime t2 = GetExecTimeForTimeIndependentElement( new ModelTime( 1 ) );
         currentExecTime = GetMinimumTimeWithStep( t1, t2 );
 
       }
-      if ( !IsAddEnabled( currentExecTime ) ){
-        return;
+      while (!IsAddEnabled( currentExecTime ) ) {
+      	currentExecTime.Add(1);
       }
-
     }
     FTimeIndependentBlockGroupIndex = AddElement( aElement, currentExecTime );
   }
