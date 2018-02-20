@@ -1,5 +1,6 @@
 package mp.parser;
 
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -241,5 +242,11 @@ public class NotExecutiveParser implements ScriptParser {
   public ExecutionContext GetExecutionContext() {
 	  return FContext;
   }
+
+	@Override
+	public void setExternalFunctions(Map<String, ExternalFunction> functions) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

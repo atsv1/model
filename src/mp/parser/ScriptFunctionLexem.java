@@ -1,6 +1,7 @@
 package mp.parser;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 
 
@@ -16,6 +17,7 @@ public class ScriptFunctionLexem extends ScriptLexem {
   private int FSearchedIndex = -1;
   private Hashtable FFunctionList = null;
   private String FUserFunctionName = null;
+  private Map<String, ExternalFunction> externalFunctions;
 
   public ScriptFunctionLexem(){
     super();
@@ -59,6 +61,12 @@ public class ScriptFunctionLexem extends ScriptLexem {
       	return true;
       }
     }
+    if ( externalFunctions != null && !externalFunctions.isEmpty() ) {
+    	ExternalFunction ef = externalFunctions.get(aTokenName);
+    	if ( ef != null ) {
+    		return true;
+    	}
+    }
     return false;
   }
 
@@ -68,7 +76,7 @@ public class ScriptFunctionLexem extends ScriptLexem {
   	}
     ScriptOperationFunction result = null;
     result = new ScriptOperationFunction();
-    IsMyToken( FCodePart );
+    //IsMyToken( FCodePart );
     result.OperationIndex = FSearchedIndex;
     return result;
   }
@@ -80,6 +88,11 @@ public class ScriptFunctionLexem extends ScriptLexem {
     result.FFunctionList = this.FFunctionList;
     result.FUserFunctionName = this.FUserFunctionName;
     return result;
+  }
+  
+  public void setExternalFunctions(Map<String, ExternalFunction> functions){
+  	this.externalFunctions = functions;
+  	
   }
 
    public boolean IsNewOperandNeed() {

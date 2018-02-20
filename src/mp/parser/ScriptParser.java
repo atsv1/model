@@ -1,5 +1,7 @@
 package mp.parser;
 
+import java.util.Map;
+
 /**
  * User: atsv
  * Date: 04.09.2007
@@ -25,5 +27,7 @@ public interface ScriptParser {
   public void AddExecutionContext(ExecutionContext context);
 
   public ExecutionContext GetExecutionContext();
+  
+  public void setExternalFunctions(Map<String, ExternalFunction> functions);
 
 }

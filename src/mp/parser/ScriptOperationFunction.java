@@ -1,5 +1,6 @@
 package mp.parser;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -9,6 +10,7 @@ import java.util.UUID;
 public class ScriptOperationFunction extends ScriptOperation {
   //в этой переменной хранится индекс функции в массиве ScriptLanguageDef.FunctionsList
   protected int OperationIndex = -1;
+  private Map<String, ExternalFunction> externalFunctions;
 
 
   private int ExecSin(int aProgramPointer) throws ScriptException {
@@ -460,11 +462,10 @@ public class ScriptOperationFunction extends ScriptOperation {
 
 
   public int ExecOperation(int aProgramPointer) throws ScriptException {
-    if ( OperationIndex == -1 )
-    {
+    if ( OperationIndex == -1 )  {
       ScriptException e = new ScriptException("Неизвестная команда для выполнения");
       throw e;
-    }
+    }    
     String s = ScriptLanguageDef.FunctionsList[OperationIndex][1];
     int i = Integer.parseInt( s );
     switch ( i )
@@ -613,6 +614,10 @@ public class ScriptOperationFunction extends ScriptOperation {
          throw e;
       }
     }//switch
+  }
+  
+  public void setExternalFunctions(Map<String, ExternalFunction> functions){
+  	this.externalFunctions = functions;  	
   }
 
   public String GetResultType() throws ScriptException {
