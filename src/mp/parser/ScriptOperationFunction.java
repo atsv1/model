@@ -460,8 +460,7 @@ public class ScriptOperationFunction extends ScriptOperation {
 
 
   public int ExecOperation(int aProgramPointer) throws ScriptException {
-    if ( OperationIndex == -1 )
-    {
+    if ( OperationIndex == -1 ) {
       ScriptException e = new ScriptException("Неизвестная команда для выполнения");
       throw e;
     }
