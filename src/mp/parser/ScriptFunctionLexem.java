@@ -42,7 +42,7 @@ public class ScriptFunctionLexem extends ScriptLexem {
     }
     return f;
   }
-
+  
   public boolean IsMyToken(String aTokenName) {
     int i = 0;    
     while ( i < ScriptLanguageDef.FunctionsList.length) {
@@ -54,6 +54,7 @@ public class ScriptFunctionLexem extends ScriptLexem {
       }
      i++;
     }
+    /*Функции, определяемые непосредственно внутри модели*/
     if ( FFunctionList != null ) {
       if ( FFunctionList.get(aTokenName.toUpperCase()) != null) {
       	FUserFunctionName = aTokenName;
@@ -61,6 +62,7 @@ public class ScriptFunctionLexem extends ScriptLexem {
       	return true;
       }
     }
+    
     if ( externalFunctions != null && !externalFunctions.isEmpty() ) {
     	ExternalFunction ef = externalFunctions.get(aTokenName);
     	if ( ef != null ) {
@@ -74,10 +76,8 @@ public class ScriptFunctionLexem extends ScriptLexem {
   	if (FUserFunctionName != null && FFunctionList != null ) {
   		return FFunctionList.get(FUserFunctionName.toUpperCase());
   	}
-    ScriptOperationFunction result = null;
-    result = new ScriptOperationFunction();
-    //IsMyToken( FCodePart );
-    result.OperationIndex = FSearchedIndex;
+    IsMyToken( FCodePart );
+    ScriptOperationFunction result = new ScriptOperationFunction(FSearchedIndex);    
     return result;
   }
 

@@ -10,8 +10,15 @@ import java.util.UUID;
 public class ScriptOperationFunction extends ScriptOperation {
   //в этой переменной хранится индекс функции в массиве ScriptLanguageDef.FunctionsList
   protected int OperationIndex = -1;
-  private Map<String, ExternalFunction> externalFunctions;
+  private ExternalFunction function = null;
 
+  public ScriptOperationFunction(int functionIndex){
+  	OperationIndex = functionIndex;  	
+  }
+  
+  public ScriptOperationFunction(ExternalFunction function){
+  	this.function = function;
+  }
 
   private int ExecSin(int aProgramPointer) throws ScriptException {
     Operand op1 = InitOperand( aProgramPointer + 1 );
@@ -462,6 +469,9 @@ public class ScriptOperationFunction extends ScriptOperation {
 
 
   public int ExecOperation(int aProgramPointer) throws ScriptException {
+  	if ( function != null ) {
+  		return ExecExternalFunction(function, aProgramPointer);
+  	}
     if ( OperationIndex == -1 )  {
       ScriptException e = new ScriptException("Неизвестная команда для выполнения");
       throw e;
@@ -616,10 +626,7 @@ public class ScriptOperationFunction extends ScriptOperation {
     }//switch
   }
   
-  public void setExternalFunctions(Map<String, ExternalFunction> functions){
-  	this.externalFunctions = functions;  	
-  }
-
+ 
   public String GetResultType() throws ScriptException {
     if ( OperationIndex == -1 ) {
       ScriptException e = new ScriptException("Неизвестная команда для выполнения");
@@ -1094,5 +1101,10 @@ public class ScriptOperationFunction extends ScriptOperation {
   	
   }
   
+  private int ExecExternalFunction(ExternalFunction function, int aProgramPointer) throws ScriptException{
+  	return function.getParamCount();  	
+  }
+  
   
 }
+ 
