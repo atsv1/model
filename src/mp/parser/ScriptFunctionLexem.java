@@ -66,6 +66,7 @@ public class ScriptFunctionLexem extends ScriptLexem {
     if ( externalFunctions != null && !externalFunctions.isEmpty() ) {
     	ExternalFunction ef = externalFunctions.get(aTokenName);
     	if ( ef != null ) {
+    		FUserFunctionName = aTokenName;
     		return true;
     	}
     }
@@ -77,16 +78,24 @@ public class ScriptFunctionLexem extends ScriptLexem {
   		return FFunctionList.get(FUserFunctionName.toUpperCase());
   	}
     IsMyToken( FCodePart );
-    ScriptOperationFunction result = new ScriptOperationFunction(FSearchedIndex);    
-    return result;
+    if ( FSearchedIndex != -1 ) {
+      return new ScriptOperationFunction(FSearchedIndex);
+    }
+    ExternalFunction ef = externalFunctions.get(FUserFunctionName);
+    if ( ef != null ) {
+    	return new ScriptOperationFunction(ef);
+    }
+    return null;
   }
-
+  
+  
   public Object clone() {
     ScriptFunctionLexem result = null;
     result = new ScriptFunctionLexem();
     result.FCodePart = this.FCodePart;
     result.FFunctionList = this.FFunctionList;
     result.FUserFunctionName = this.FUserFunctionName;
+    result.externalFunctions = this.externalFunctions;
     return result;
   }
   

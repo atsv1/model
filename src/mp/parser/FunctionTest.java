@@ -195,8 +195,45 @@ public class FunctionTest extends TestCase {
 	    e.printStackTrace();
     }
     assertEquals(val, 107);
-
-
+	}
+	
+	public void testExternalFunc_Dump(){
+		boolean f = false;
+		try {
+			Class.forName("mp.elements.functions.DumpModel");
+			f = true;
+		} catch (ClassNotFoundException e1) {
+			
+			e1.printStackTrace();
+		}
+		assertTrue(f);
+		f = false;
+		Variable var1 = new Variable(false);
+    var1.SetName("dumpFlag");
+    Variable intVar = new Variable(0);
+    intVar.SetName("intVar");
+    ScriptLanguageExt varExt = new ScriptLanguageExt();
+		try {
+			varExt.AddVariable(var1);
+			varExt.AddVariable(intVar);			
+			ScriptParser parser = ParserFactory.GetParser(varExt, " dumpFlag := dump; intVar := 15;");	    
+	    parser.ExecuteScript();
+	    f = true;
+    } catch (ScriptException e) {
+	    e.printStackTrace();
+    }
+    assertTrue(f);
+    try {
+    	f = false;
+			assertEquals( intVar.GetIntValue(), 15 );
+			assertTrue( var1.GetBooleanValue() );
+			f = true;
+		} catch (ScriptException e) {			
+			e.printStackTrace();
+		}
+    assertTrue(f);
+    
+		
 	}
 
 

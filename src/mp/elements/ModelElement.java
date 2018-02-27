@@ -14,7 +14,7 @@ public class ModelElement implements ModelForReadInterface {
   private int FNameIndex = -1;
   private NameService FNames = ServiceLocator.GetNamesList();
   private ModelElement FOwner = null;
-  private ModelElementContainer FElements = null;
+  private ModelElementContainer<ModelElement> FElements = null;
   protected ModelElementDataSource elementSource = null;
   private String FFullName = null;
   private Integer FNameIndexObj = null;
@@ -68,7 +68,7 @@ public class ModelElement implements ModelForReadInterface {
     UpdateFullName();
   }
 
-  public ModelElementContainer GetElements() {
+  public ModelElementContainer<ModelElement> GetElements() {
     return FElements;
   }
   

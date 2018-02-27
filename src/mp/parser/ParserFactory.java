@@ -44,12 +44,12 @@ public class ParserFactory {
     if ( o == null ){
       PascalParser parser = new PascalParser();
       parser.SetLanguageExt( aLanguageExt );
+      parser.setExternalFunctions(externalFunctions);
       parser.ParseScript( aSourceCode );
       ParserRecord rec = new ParserRecord();
       rec.Parser = parser;
       rec.ParserCount = 0;
-      FParserList.put( aSourceCode, rec );
-      parser.setExternalFunctions(externalFunctions);
+      FParserList.put( aSourceCode, rec );      
       return parser;
     }
     // есть такой парсер в списке

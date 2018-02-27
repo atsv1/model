@@ -24,7 +24,7 @@ public class PascalParser implements ScriptParser {
     порядок следования которых  соответствует порядку следования лексем
     в обрабатываемом скрипте
   */
-  private Vector FParsedLexemList;
+  private Vector<ScriptLexem> FParsedLexemList;
   private String FScriptSource = "";
 
   protected Vector FProgram;
