@@ -4,6 +4,7 @@ import mp.parser.*;
 import mp.utils.ModelAttributeReader;
 import mp.utils.ServiceLocator;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -315,8 +316,12 @@ public abstract class ModelBlockParam extends ModelElement{
   		throw new  ModelException("Отсутствует метка для отката " + this.GetFullName());  		
   	}
   	this.GetVariable().SetValue( fixedStates.get(stateLabel) ); 
-  	fixedStates.remove(stateLabel);
-  	  	
+  	fixedStates.remove(stateLabel);  	  	
   }
+  
+  public void printDump(PrintStream ps) {
+		ps.println( "   " + FVariable.toString());
+		
+	}
 
 }

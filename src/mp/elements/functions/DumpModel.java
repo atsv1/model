@@ -10,10 +10,7 @@ import mp.parser.ParserFactory;
 
 public class DumpModel implements ExternalFunction{
 	
-	static {
-		ParserFactory.addExternalFunction(new DumpModel());		
-	}
-
+	
 	@Override
 	public String getName() {		
 		return "dump";
@@ -44,10 +41,7 @@ public class DumpModel implements ExternalFunction{
 	  }
 	  ModelElement rootElement = element;
 	  PrintStream ps = System.out;
-	  ps.println( "PrintStream " + ps.getClass().getName() );
-	  
-	  
-		
+	  element.printDump(ps);		
 	}
 
 	@Override

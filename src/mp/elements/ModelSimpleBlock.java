@@ -1,8 +1,10 @@
 package mp.elements;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import mp.parser.*;
 
@@ -171,5 +173,21 @@ public class ModelSimpleBlock extends ModelBlock {
   	}
   	
   }
+  
+  private void printParamList(ModelElementContainer<ModelElement> elements, PrintStream ps) {
+  	Consumer<ModelElement> func = (element)-> element.printDump(ps);
+  	elements.stream().forEach(func);
+  	
+  }
+  
+  public void printDump(PrintStream ps) {
+  	ps.println("block " + this.GetFullName());
+		ps.println(" param list");
+		printParamList(FInpParams, ps);
+		printParamList(FInnerParams, ps);
+		printParamList(FOutParams, ps);
+		ps.println(" processes ");
+		
+	}
 
 }

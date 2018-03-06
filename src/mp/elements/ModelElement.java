@@ -1,4 +1,5 @@
 package mp.elements;
+import java.io.PrintStream;
 import java.util.UUID;
 import mp.parser.ScriptException;
 import mp.utils.NameService;
@@ -162,6 +163,11 @@ public class ModelElement implements ModelForReadInterface {
 	@Override
 	public void setElementBuilder(ModelBuilder elementBuilder) {
 		this.elementBuilder = elementBuilder;
+	}
+	
+	public void printDump(PrintStream ps) {
+		ps.println( this.GetFullName() );
+		
 	}
 
 }

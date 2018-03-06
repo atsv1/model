@@ -14,11 +14,11 @@ import mp.utils.ServiceLocator;
  */
 public abstract class ModelBlock extends ModelEventGenerator {
 
-  private ModelElementContainer FInpParams = null;
-  private ModelElementContainer FInnerParams = null;
-  private ModelElementContainer FOutParams = null;
-  protected ModelElementContainer FOrderParamsList = null;//в этом списке хранятся параметры блока в порядке их выполнения
-  protected ModelElementContainer FRootStates = null;
+  protected ModelElementContainer<ModelElement> FInpParams = null;
+  protected ModelElementContainer<ModelElement> FInnerParams = null;
+  protected ModelElementContainer<ModelElement> FOutParams = null;
+  protected ModelElementContainer<ModelElement> FOrderParamsList = null;//в этом списке хранятся параметры блока в порядке их выполнения
+  protected ModelElementContainer<ModelElement> FRootStates = null;
   protected ModelEventProcessorContainer FEventContainer = null;
   /** Список содержит параметры, которые не надо обновлять в обычном режиме. Это могут быть вспомогательные
    * параметры, которые пользователь не описывает явно.
@@ -33,7 +33,7 @@ public abstract class ModelBlock extends ModelEventGenerator {
   private boolean IsTimeIndependentBlock = false; //по умолчанию - блок зависит от времени выполнения
   private boolean IsIndependencyCalculated = false; //по умолчанию, флаг IsTimeIndependentBlock не рассчитан 
 
-  private static void SetLanguageExt( ModelElementContainer aContainer, ScriptLanguageExt aLanguageExt ){
+  private static void SetLanguageExt( ModelElementContainer<ModelElement> aContainer, ScriptLanguageExt aLanguageExt ){
     ModelBlockParam param;
     int i = 0;
     while ( i < aContainer.size() ){
@@ -70,11 +70,11 @@ public abstract class ModelBlock extends ModelEventGenerator {
 
   public ModelBlock(ModelElement aOwner, String aElementName, int aElementId){
     super(aOwner, aElementName, aElementId);
-    FInpParams = new ModelElementContainer();
-    FInnerParams = new ModelElementContainer();
-    FOutParams = new ModelElementContainer();
-    FOrderParamsList = new ModelElementContainer();
-    FRootStates = new ModelElementContainer();
+    FInpParams = new ModelElementContainer<ModelElement>();
+    FInnerParams = new ModelElementContainer<ModelElement>();
+    FOutParams = new ModelElementContainer<ModelElement>();
+    FOrderParamsList = new ModelElementContainer<ModelElement>();
+    FRootStates = new ModelElementContainer<ModelElement>();
     FNotUpdateParams = new ModelElementContainer();
   }
 
@@ -84,7 +84,7 @@ public abstract class ModelBlock extends ModelEventGenerator {
     ( (ModelBlockParam)aInpParam).SetParamPlacementType( ModelBlockParam.PLACEMENT_TYPE_INPUT );
   }
 
-  private void AddBlockParam(ModelElement aParam, ModelElementContainer aContainer) throws ModelException{
+  private void AddBlockParam(ModelElement aParam, ModelElementContainer<ModelElement> aContainer) throws ModelException{
     ModelException e;
     if ( aParam == null ){
       e = new ModelException("Попытка добавить в список  параметров пустой элемент. Блок " + this.GetName());
@@ -157,21 +157,21 @@ public abstract class ModelBlock extends ModelEventGenerator {
     FRootStates.AddElement( aNewState );
   }
 
-  private static ModelBlockParam GetParam(int aParamIndex, ModelElementContainer container ){
+  private static ModelBlockParam GetParam(int aParamIndex, ModelElementContainer<ModelElement> container ){
     if (aParamIndex >= container.size()){
       return null;
     }
     return (ModelBlockParam) container.get( aParamIndex );
   }
 
-  private static ModelBlockParam GetParam(String aParamName, ModelElementContainer container ){
+  private static ModelBlockParam GetParam(String aParamName, ModelElementContainer<ModelElement> container ){
     if (aParamName == null  ){
       return null;
     }
     return (ModelBlockParam) container.Get( aParamName );
   }
 
-  private static ModelBlockParam GetParam( Integer aParamNameIndex, ModelElementContainer container ){
+  private static ModelBlockParam GetParam( Integer aParamNameIndex, ModelElementContainer<ModelElement> container ){
     if ( aParamNameIndex == null ){
       return null;
     }
@@ -308,7 +308,7 @@ public abstract class ModelBlock extends ModelEventGenerator {
    *
    * @param aContainer
    */
-  private void ClearParams( ModelElementContainer aContainer ){
+  private void ClearParams( ModelElementContainer<ModelElement> aContainer ){
     if ( !FIsNeedToClear ){
       return;
     }
@@ -328,7 +328,7 @@ public abstract class ModelBlock extends ModelEventGenerator {
     FIsNeedToClear = false;
   }
 
-  private void InjectExecListToParams( ModelElementContainer aParamContainer ) throws ModelException {
+  private void InjectExecListToParams( ModelElementContainer<ModelElement> aParamContainer ) throws ModelException {
     ModelBlockParam param;
     int i = 0;
     FExecList = new ModelExecuteList( aParamContainer );
@@ -376,7 +376,7 @@ public abstract class ModelBlock extends ModelEventGenerator {
    *
    * @param aParamContainer
    */
-  private static void ClearParamsWithEmptyScript( ModelElementContainer aParamContainer ) throws ModelException {
+  private static void ClearParamsWithEmptyScript( ModelElementContainer<ModelElement> aParamContainer ) throws ModelException {
     ModelBlockParam param;
     int i = 0;
     while ( i < aParamContainer.size() ){
@@ -511,7 +511,7 @@ public abstract class ModelBlock extends ModelEventGenerator {
     }
   }
   
-  private void doFix(ModelElementContainer elements, UUID stateLabel, int operation) throws ModelException {
+  private void doFix(ModelElementContainer<ModelElement> elements, UUID stateLabel, int operation) throws ModelException {
   	if ( elements == null || elements.size() == 0 ) {
   		return;
   	}

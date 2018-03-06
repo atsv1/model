@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "Model11" delay = "10">
+
+  <BlockList>
+    <Block name = "block" count = "1">
+      <InnerParamList>
+        <Param name = "var1" type = "integer" initvalue = "0"/>
+      </InnerParamList>
+      
+      <Statechart name = "1">
+       <State name = "begin">
+        <Transition name = "tr" type = "Timeout" value = "1" nextstate = "begin" priority = "1">
+             <![CDATA[     
+             print("121212");           
+                dump;
+                 StopExecution("Model11");
+             ]]>
+           </Transition>    
+         
+       </State>
+     </Statechart>
+     </Block>
+     
+  </BlockList>
+
+ </Model>

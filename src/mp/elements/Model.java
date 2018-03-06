@@ -4,6 +4,7 @@ import mp.parser.*;
 import mp.utils.ServiceLocator;
 import mp.utils.ModelAttributeReader;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -215,6 +216,14 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   }
 
   public void ApplyNodeInformation() throws ModelException{
+  	
+  	try {
+			Class.forName("mp.elements.functions.FunctionsLoader");			
+		} catch (ClassNotFoundException e1) {
+			
+			e1.printStackTrace();
+		}
+  	
     PrepareDynamicBlock();
     
     //передаем во все объекты расширитель языка
@@ -914,4 +923,17 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		return 0;
 	}
 
+	@Override
+	public void printDump(PrintStream ps) {
+		ps.println("model " + this.GetFullName());
+		ps.println("Block list");
+		int i = 0;
+    while ( i < FBlockList.size() ) {
+    	ModelBlock block = (ModelBlock) FBlockList.get(i);
+    	block.printDump(ps);
+    	i++;
+    }
+		
+	}
+	
 }

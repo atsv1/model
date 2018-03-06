@@ -200,7 +200,7 @@ public class FunctionTest extends TestCase {
 	public void testExternalFunc_Dump(){
 		boolean f = false;
 		try {
-			Class.forName("mp.elements.functions.DumpModel");
+			Class.forName("mp.elements.functions.FunctionsLoader");
 			f = true;
 		} catch (ClassNotFoundException e1) {
 			
