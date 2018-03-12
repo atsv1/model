@@ -187,6 +187,7 @@ public class ModelSimpleBlock extends ModelBlock {
 		printParamList(FInnerParams, ps);
 		printParamList(FOutParams, ps);
 		ps.println(" processes ");
+		printParamList(FRootStates, ps);
 		
 	}
 
