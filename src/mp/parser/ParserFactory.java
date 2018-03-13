@@ -65,6 +65,7 @@ public class ParserFactory {
       FParserList.remove( aSourceCode );
       PascalParser parser = new PascalParser();
       parser.SetLanguageExt( newExt );
+      parser.setExternalFunctions(externalFunctions);
       parser.ParseScript( aSourceCode );
       record = new ParserRecord();
       record.Parser = parser;

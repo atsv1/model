@@ -219,8 +219,7 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
   	
   	try {
 			Class.forName("mp.elements.functions.FunctionsLoader");			
-		} catch (ClassNotFoundException e1) {
-			
+		} catch (ClassNotFoundException e1) {			
 			e1.printStackTrace();
 		}
   	
