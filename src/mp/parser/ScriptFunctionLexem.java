@@ -1,6 +1,7 @@
 package mp.parser;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 
 
@@ -16,6 +17,7 @@ public class ScriptFunctionLexem extends ScriptLexem {
   private int FSearchedIndex = -1;
   private Hashtable FFunctionList = null;
   private String FUserFunctionName = null;
+  private Map<String, ExternalFunction> externalFunctions;
 
   public ScriptFunctionLexem(){
     super();
@@ -40,7 +42,7 @@ public class ScriptFunctionLexem extends ScriptLexem {
     }
     return f;
   }
-
+  
   public boolean IsMyToken(String aTokenName) {
     int i = 0;    
     while ( i < ScriptLanguageDef.FunctionsList.length) {
@@ -52,12 +54,21 @@ public class ScriptFunctionLexem extends ScriptLexem {
       }
      i++;
     }
+    /*Функции, определяемые непосредственно внутри модели*/
     if ( FFunctionList != null ) {
       if ( FFunctionList.get(aTokenName.toUpperCase()) != null) {
       	FUserFunctionName = aTokenName;
       	FSearchedIndex = -1;
       	return true;
       }
+    }
+    
+    if ( externalFunctions != null && !externalFunctions.isEmpty() ) {
+    	ExternalFunction ef = externalFunctions.get(aTokenName);
+    	if ( ef != null ) {
+    		FUserFunctionName = aTokenName;
+    		return true;
+    	}
     }
     return false;
   }
@@ -66,20 +77,31 @@ public class ScriptFunctionLexem extends ScriptLexem {
   	if (FUserFunctionName != null && FFunctionList != null ) {
   		return FFunctionList.get(FUserFunctionName.toUpperCase());
   	}
-    ScriptOperationFunction result = null;
-    result = new ScriptOperationFunction();
     IsMyToken( FCodePart );
-    result.OperationIndex = FSearchedIndex;
-    return result;
+    if ( FSearchedIndex != -1 ) {
+      return new ScriptOperationFunction(FSearchedIndex);
+    }
+    ExternalFunction ef = externalFunctions.get(FUserFunctionName);
+    if ( ef != null ) {
+    	return new ScriptOperationFunction(ef);
+    }
+    return null;
   }
-
+  
+  
   public Object clone() {
     ScriptFunctionLexem result = null;
     result = new ScriptFunctionLexem();
     result.FCodePart = this.FCodePart;
     result.FFunctionList = this.FFunctionList;
     result.FUserFunctionName = this.FUserFunctionName;
+    result.externalFunctions = this.externalFunctions;
     return result;
+  }
+  
+  public void setExternalFunctions(Map<String, ExternalFunction> functions){
+  	this.externalFunctions = functions;
+  	
   }
 
    public boolean IsNewOperandNeed() {

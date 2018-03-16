@@ -438,6 +438,21 @@ public class FunctionTest extends TestCase {
     assertEquals(val, 2);
 
 	}
+	
+	public void testExternalFunction_DumpModel(){
+		ParserFactory.ClearParserList();
+		boolean f = false;
+		Model model = null;
+    try {
+      model = ModelMuxTest.ReadModel( ModelMuxTest.FPathToXMLFiles  + "func11.xml");
+      model.Execute();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+		
+	}
 
 
 }

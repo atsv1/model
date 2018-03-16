@@ -1,4 +1,5 @@
 package mp.elements;
+import java.io.PrintStream;
 import java.util.UUID;
 import mp.parser.ScriptException;
 import mp.utils.NameService;
@@ -14,7 +15,7 @@ public class ModelElement implements ModelForReadInterface {
   private int FNameIndex = -1;
   private NameService FNames = ServiceLocator.GetNamesList();
   private ModelElement FOwner = null;
-  private ModelElementContainer FElements = null;
+  private ModelElementContainer<ModelElement> FElements = null;
   protected ModelElementDataSource elementSource = null;
   private String FFullName = null;
   private Integer FNameIndexObj = null;
@@ -68,7 +69,7 @@ public class ModelElement implements ModelForReadInterface {
     UpdateFullName();
   }
 
-  public ModelElementContainer GetElements() {
+  public ModelElementContainer<ModelElement> GetElements() {
     return FElements;
   }
   
@@ -162,6 +163,11 @@ public class ModelElement implements ModelForReadInterface {
 	@Override
 	public void setElementBuilder(ModelBuilder elementBuilder) {
 		this.elementBuilder = elementBuilder;
+	}
+	
+	public void printDump(PrintStream ps) {
+		ps.println( this.GetFullName() );
+		
 	}
 
 }

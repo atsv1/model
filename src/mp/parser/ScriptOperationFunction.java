@@ -1,5 +1,6 @@
 package mp.parser;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -9,7 +10,15 @@ import java.util.UUID;
 public class ScriptOperationFunction extends ScriptOperation {
   //в этой переменной хранится индекс функции в массиве ScriptLanguageDef.FunctionsList
   protected int OperationIndex = -1;
+  private ExternalFunction function = null;
 
+  public ScriptOperationFunction(int functionIndex){
+  	OperationIndex = functionIndex;  	
+  }
+  
+  public ScriptOperationFunction(ExternalFunction function){
+  	this.function = function;
+  }
 
   private int ExecSin(int aProgramPointer) throws ScriptException {
     Operand op1 = InitOperand( aProgramPointer + 1 );
@@ -461,9 +470,13 @@ public class ScriptOperationFunction extends ScriptOperation {
 
   public int ExecOperation(int aProgramPointer) throws ScriptException {
     if ( OperationIndex == -1 ) {
+  	if ( function != null ) {
+  		return ExecExternalFunction(function, aProgramPointer);
+  	}
+    if ( OperationIndex == -1 )  {
       ScriptException e = new ScriptException("Неизвестная команда для выполнения");
       throw e;
-    }
+    }    
     String s = ScriptLanguageDef.FunctionsList[OperationIndex][1];
     int i = Integer.parseInt( s );
     switch ( i )
@@ -613,16 +626,23 @@ public class ScriptOperationFunction extends ScriptOperation {
       }
     }//switch
   }
-
+  
+ 
   public String GetResultType() throws ScriptException {
-    if ( OperationIndex == -1 ) {
+    if ( OperationIndex == -1 && function == null ) {
       ScriptException e = new ScriptException("Неизвестная команда для выполнения");
       throw e;
     }
-    String s;
-    int i = ScriptLanguageDef.FunctionsList[OperationIndex].length;
-    s = ScriptLanguageDef.FunctionsList[OperationIndex][i-1];
-    return s;
+    if ( OperationIndex != -1 ) {
+      String s;
+      int i = ScriptLanguageDef.FunctionsList[OperationIndex].length;
+      s = ScriptLanguageDef.FunctionsList[OperationIndex][i-1];
+      return s;
+    }
+    if ( function != null ){
+    	return function.getResultTypeName();
+    }
+    throw new ScriptException("Неизвестная команда для выполнения");
   }
 
   public Variable GetResultVariable(int aProgramPointer) throws ScriptException {
@@ -1088,5 +1108,26 @@ public class ScriptOperationFunction extends ScriptOperation {
   	
   }
   
+  private int ExecExternalFunction(ExternalFunction function, int aProgramPointer) throws ScriptException{
+  	int paramNum = 1;
+  	if ( function.getParamCount() == 0 ) {
+  		function.execute();
+  		Operand returnValue = InitOperand( aProgramPointer + 1 );
+  		if (returnValue.GetType() == Operand.OPERAND_TYPE_BOOLEAN) {
+  			returnValue.SetValue(true);
+  		}
+  		return 1;
+  	}
+  	Object[] params = new Object[function.getParamCount()]; 
+  	while ( paramNum <= function.getParamCount() ) {
+  		Operand op = InitOperand( aProgramPointer + paramNum );
+  		params[paramNum-1] = op;
+  		paramNum++;
+  	}
+  	function.execute(params);
+  	return function.getParamCount();  	
+  }
+  
   
 }
+ 

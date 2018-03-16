@@ -3,7 +3,9 @@ package mp.parser;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.Stack;
 
@@ -22,7 +24,7 @@ public class PascalParser implements ScriptParser {
     порядок следования которых  соответствует порядку следования лексем
     в обрабатываемом скрипте
   */
-  private Vector FParsedLexemList;
+  private Vector<ScriptLexem> FParsedLexemList;
   private String FScriptSource = "";
 
   protected Vector FProgram;
@@ -43,6 +45,7 @@ public class PascalParser implements ScriptParser {
   private static final int MOV_MODE_BEFORE = 2;
 
   private ExecutionContext FExecutionContext = null;
+  private Hashtable<String, ExternalFunction> externalFunctions = new Hashtable();
 
   private void PrepareLanguage() {
     FParsedLexemList = new Vector();
@@ -2208,5 +2211,17 @@ public class PascalParser implements ScriptParser {
   public ExecutionContext GetExecutionContext() {
 	  return FExecutionContext;
   }
+
+	@Override
+	public void setExternalFunctions(Map<String, ExternalFunction> functions) {
+		this.externalFunctions.putAll(functions);
+		for (ScriptLexem lexem : FLexemVector) {
+			if ( lexem instanceof ScriptFunctionLexem ) {
+				((ScriptFunctionLexem)lexem).setExternalFunctions(externalFunctions);
+			}
+		}
+		
+		
+	}
 
 }

@@ -29,15 +29,13 @@ public class ScriptLexemArrayStartBracket extends ScriptLexem {
 
 	@Override
 	public Object GetExecutableObject() throws ScriptException {
-		ScriptOperationFunction result = new ScriptOperationFunction();
-		result.OperationIndex = ScriptLanguageDef.GetArrayGetFunction();
+		ScriptOperationFunction result = new ScriptOperationFunction( ScriptLanguageDef.GetArrayGetFunction() );		
 		getModeFlag = true;
   	return result;
 	}
 
 	public Object GetExecutableObject_BeforeMov() throws ScriptException{
-		ScriptOperationFunction result = new ScriptOperationFunction();
-		result.OperationIndex = ScriptLanguageDef.GetArraySetFunction();
+		ScriptOperationFunction result = new ScriptOperationFunction( ScriptLanguageDef.GetArraySetFunction() );		
 		getModeFlag = false;
   	return result;
   }

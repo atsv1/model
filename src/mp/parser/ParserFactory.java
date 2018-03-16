@@ -13,8 +13,14 @@ public class ParserFactory {
    * В этом списке хранятся объекты класса ParserRecord  
    */
   private static Hashtable FParserList = new Hashtable();
+  
+  private static Hashtable<String, ExternalFunction> externalFunctions = new Hashtable();
 
 
+  public static void addExternalFunction(ExternalFunction function){
+  	externalFunctions.put(function.getName(), function);  	
+  }
+  
   /**Создание нового парсера
    *
    * @param aLanguageExt  - расширение языка, с которым будет работать парсер. 
@@ -38,11 +44,12 @@ public class ParserFactory {
     if ( o == null ){
       PascalParser parser = new PascalParser();
       parser.SetLanguageExt( aLanguageExt );
+      parser.setExternalFunctions(externalFunctions);
       parser.ParseScript( aSourceCode );
       ParserRecord rec = new ParserRecord();
       rec.Parser = parser;
       rec.ParserCount = 0;
-      FParserList.put( aSourceCode, rec );
+      FParserList.put( aSourceCode, rec );      
       return parser;
     }
     // есть такой парсер в списке
@@ -58,6 +65,7 @@ public class ParserFactory {
       FParserList.remove( aSourceCode );
       PascalParser parser = new PascalParser();
       parser.SetLanguageExt( newExt );
+      parser.setExternalFunctions(externalFunctions);
       parser.ParseScript( aSourceCode );
       record = new ParserRecord();
       record.Parser = parser;

@@ -180,21 +180,19 @@ public class ModelElementContainer<E extends ModelElement> implements Collection
 	}
 
 	@Override
-	public boolean contains(Object o) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean contains(Object o) {		
+		return ElementList.contains(o);
 	}
 
 	@Override
-	public Iterator iterator() {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterator iterator() {		
+		return ElementList.iterator();
 	}
 
 	@Override
 	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return ElementList.toArray();
 	}
 
 	@Override

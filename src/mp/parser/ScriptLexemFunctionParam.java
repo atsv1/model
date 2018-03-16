@@ -1,5 +1,6 @@
 package mp.parser;
 
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -46,7 +47,7 @@ public class ScriptLexemFunctionParam extends ScriptLexem {
    * @param aStartPos
    * @param aLexemCount
    */
-  public void AddProduction( Vector aParsedLexemList, int aStartPos, int aLexemCount){
+  public void AddProduction( List<ScriptLexem> aParsedLexemList, int aStartPos, int aLexemCount){
     int i = 0;
     ScriptLexem lexem;
     while ( i < aLexemCount ){

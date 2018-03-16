@@ -3,6 +3,7 @@ package mp.elements;
 import mp.parser.*;
 import mp.elements.AutomatTransitionTimeout;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -570,6 +571,14 @@ public class AutomatState extends ModelEventGenerator{
   	doFix(FTransitions, stateLabel, 2);
   	  	
   }
+  
+  public void printDump(PrintStream ps) {
+		ps.println( "  process " + this.GetFullName() );
+		if (FActiveState != null) {
+			ps.println( "  activeState " + FActiveState.GetFullName() );
+		}
+		
+	}
   
   private static class RollbackData{
   	public ModelTime mt = null;
