@@ -468,8 +468,7 @@ public class ScriptOperationFunction extends ScriptOperation {
   }
 
 
-  public int ExecOperation(int aProgramPointer) throws ScriptException {
-    if ( OperationIndex == -1 ) {
+  public int ExecOperation(int aProgramPointer) throws ScriptException {    
   	if ( function != null ) {
   		return ExecExternalFunction(function, aProgramPointer);
   	}
