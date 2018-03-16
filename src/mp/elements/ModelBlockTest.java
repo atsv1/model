@@ -1005,13 +1005,9 @@ public class ModelBlockTest extends TestCase {
     try {
       ReadModel(FPathToXMLFiles + "file19.xml");
       f = true;
-    } catch (ModelException e) {
+    } catch (Exception e) {
       //e.printStackTrace();
-    } catch (IOException e) {
-      //e.printStackTrace();
-    } catch (SAXException e) {
-      //e.printStackTrace();
-    }
+    } 
     assertTrue( !f );
   }
 
@@ -1322,7 +1318,11 @@ public class ModelBlockTest extends TestCase {
     }
     assertTrue( f );
     assertTrue( enableParam != null );
-    enableParam.GetVariable().SetValue( true );
+    try {
+			enableParam.GetVariable().SetValue( true );
+		} catch (ScriptException e1) {			
+			e1.printStackTrace();
+		}
     f = false;
     try {
       model.Execute();
@@ -1382,7 +1382,11 @@ public class ModelBlockTest extends TestCase {
       e.printStackTrace();
     }
     assertTrue( param != null );
-    param.GetVariable().SetValue(20);
+    try {
+			param.GetVariable().SetValue(20);
+		} catch (ScriptException e1) {			
+			e1.printStackTrace();
+		}
     f = false;
     try {
       model.Execute();
@@ -1935,7 +1939,24 @@ public class ModelBlockTest extends TestCase {
     assertTrue( f );
   }
   
-  public void testDynamicBlocCreate_FromBlock(){
+  /**
+   * проверяем работу входного параметра, в котором индекс блока, с которым он соединяется:
+   *  определяется переменной, а не константой
+   *  в начале запуска модели может быть установлен в отрицательное число, что означает что в данный момент этот входной параметр не соединен ни с одним параметром
+   *  в ходе выполнения модели значение параметра может изменено на неотрицательное, и в таком случае входной параметр соединяется с выходным параметром
+   */
+  public void testDelayedInpParamLink(){
+  	 mp.parser.ModelExecutionContext.ClearExecutionContext();
+     boolean f = false;
+     Model model = null;
+     try {
+       model = ReadModel( FPathToXMLFiles + "file67.xml" );
+       f = true;
+     } catch (Exception e) {
+       e.printStackTrace();
+     } 
+     assertTrue( f );
+     assertTrue(model != null);
   	
   }
 
