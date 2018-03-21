@@ -1957,7 +1957,73 @@ public class ModelBlockTest extends TestCase {
      } 
      assertTrue( f );
      assertTrue(model != null);
+     ModelBlock block = model.Get("InpBlock", 0);
+     assertTrue(block != null);
+     assertEquals(-1, block.GetIntValue("inp1"));  	
+  }
+  
+  
+  public void testChangeIndexParamValue() {
+  	 mp.parser.ModelExecutionContext.ClearExecutionContext();
+     boolean f = false;
+     Model model = null;
+     try {
+       model = ReadModel( FPathToXMLFiles + "file68.xml" );
+       f = true;
+     } catch (Exception e) {
+       e.printStackTrace();
+     } 
+     assertTrue( f );
+     assertTrue(model != null);
+     model.run();
+     assertTrue( model.GetErrorString() == null );
+     ModelBlock block = model.Get("InpBlock", 0);
+     assertTrue(block != null);
+     assertEquals(100, block.GetIntValue("inp1"));   	
+  }
+  
+  /**
+   * измен€ем индексную переменную так, чтобы входный параметр сначала подключилс€ к выходному параметру другого блока,
+   * а потом отключилс€
+   */
+  public void testChangeIndexParam_ThereAndBack() {
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    boolean f = false;
+    Model model = null;
+    try {
+      model = ReadModel( FPathToXMLFiles + "file69.xml" );
+      model.run();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    assertTrue(model.GetErrorString() == null);
+    ModelBlock block = model.Get("InpBlock", 0);
+    assertTrue(block != null);
+    assertEquals(1, block.GetIntValue("intermediateValue"));
+    assertEquals(-1, block.GetIntValue("inp1"));
   	
   }
+  
+  /**
+   * провер€ем подключение к несуществующему блоку
+   */
+  public void testLinkToNotExistsBlock() {
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    boolean f = false;
+    Model model = null;
+    try {
+      model = ReadModel( FPathToXMLFiles + "file70.xml" );     
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    assertTrue(model != null);
+    model.run();
+    assertTrue( model.GetErrorString() != null );  	
+  }
+  
 
 }

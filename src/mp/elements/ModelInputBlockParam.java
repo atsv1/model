@@ -267,21 +267,26 @@ public class ModelInputBlockParam extends ModelBlockParam{
   
   private class IndexParamListener extends ChangeListener {
   	private ModelBlockParam indexParam = null;
-  	private ModelElementDataSource elementSource = null;
-  	//private ModelInputBlockParam inpParam = null;
+  	private ModelElementDataSource elementSource = null;  	
   	private Model model = null;
 
 		@Override
-		public void VariableChanged(VariableChangeEvent changeEvent) {
-			//System.out.println("VariableChanged");
+		public void VariableChanged(VariableChangeEvent changeEvent) {			
 			try {
-				int index = indexParam.GetVariable().GetIntValue();  				
+				int index = indexParam.GetVariable().GetIntValue();  		
+				if (index < 0) {
+					ModelInputBlockParam.this.UnLink();
+					return;
+				}
 			  ModelBlock block = model.Get(elementSource.GetLinkedBlockName(), index);
+			  if (block == null) {
+			  	throw new Exception( " отсутствует блок " + elementSource.GetLinkedBlockName() + "[" + index + "]" );
+			  }
 			  String paramName = elementSource.GetLinkedParamName();
 			  ModelBlockParam param = (ModelBlockParam) block.Get(paramName);
 			  ModelInputBlockParam.this.Link( block,  param );			  
 			} catch (Exception e) {				
-				
+				throw new ScriptException(e.getMessage());
 			}
 			
 		}
