@@ -1598,13 +1598,9 @@ public class ModelBlockTest extends TestCase {
     try {
       model = ReadModel( FPathToXMLFiles + "material9.xml" );
       f = true;
-    } catch (ModelException e) {
+    } catch (Exception e) {
       e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (SAXException e) {
-      e.printStackTrace();
-    }
+    } 
     assertTrue( f );
     assertTrue( model != null );
     ModelBlock block = (ModelBlock) model.Get("Приемник");
@@ -1655,13 +1651,9 @@ public class ModelBlockTest extends TestCase {
     try {
       ReadModel( FPathToXMLFiles + "material10.xml" );
       f = true;
-    } catch (ModelException e) {
+    } catch (Exception e) {
       //e.printStackTrace();
-    } catch (IOException e) {
-      //e.printStackTrace();
-    } catch (SAXException e) {
-      //e.printStackTrace();
-    }
+    } 
     assertTrue( !f );
 
   }
@@ -2023,6 +2015,27 @@ public class ModelBlockTest extends TestCase {
     assertTrue(model != null);
     model.run();
     assertTrue( model.GetErrorString() != null );  	
+  }
+  
+  public void testDelayedInpParamLink_MaterialParam() {
+  	mp.parser.ModelExecutionContext.ClearExecutionContext();
+    boolean f = false;
+    Model model = null;
+    try {
+      model = ReadModel( FPathToXMLFiles + "file71.xml" );     
+      model.run();
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    assertTrue( f );
+    ModelBlock block = model.Get("InpBlock", 0);
+    assertTrue(block != null);    
+    assertEquals(1, block.GetIntValue("inp1"));
+    block = model.Get("OutBlock", 0);
+    assertEquals(99, block.GetIntValue("out1"));
+    block = model.Get("OutBlock", 1);
+    assertEquals(100, block.GetIntValue("out1"));
   }
   
 

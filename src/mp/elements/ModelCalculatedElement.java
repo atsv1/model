@@ -100,7 +100,11 @@ public class ModelCalculatedElement extends ModelBlockParam {
               " с пустым расширителем языка");
       throw e;
     }
-    FParser = ParserFactory.GetParser( FLanguageExt, aSourceCode);
+    try {
+      FParser = ParserFactory.GetParser( FLanguageExt, aSourceCode);
+    } catch (Exception e) {
+    	throw new ScriptException (this.GetFullName() + ": " + e.getMessage());
+    }
     //FParser.SetLanguageExt( FLanguageExt );
     //парсим исходный код
     //FParser.ParseScript( aSourceCode );

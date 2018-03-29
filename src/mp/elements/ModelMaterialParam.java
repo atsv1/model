@@ -200,14 +200,18 @@ public class ModelMaterialParam extends ModelInputBlockParam {
   }
 
   private void RecieveDataFromSource() throws ScriptException, ModelException {
-    if (/*FSourceElement == null*/ GetLinkedElement() == null ){
+  	ModelElement el = GetLinkedElement();
+    if (el == null ){
       return;
     }
     //проверяем - разрешен ли обмен?
     if ( !IsTrasferEnabled() ){
       return;
     }
-    FSourceElement = (ModelMaterialParam) GetLinkedElement();
+    if (!( el instanceof  ModelMaterialParam) ) {
+    	throw new ModelException("no material");
+    }
+    FSourceElement = (ModelMaterialParam) el;
     //System.out.println("transfer begin " + GetFullName() );
     double transferValue = FSourceElement.GetTransferValue( GetTransferOrderValue() );
     double currentValue = GetVariable().GetFloatValue();
@@ -263,6 +267,17 @@ public class ModelMaterialParam extends ModelInputBlockParam {
     FSourceElement = null;
     SetLinkedElementToNull();
   }
+  
+  private void checkForMaterial(ModelBlockParam element, String paramName) throws ModelException {
+  	if ( element == null ){
+  		throw new ModelException("Отсутствует элемент \"" + paramName + "\" (источник для элемента \"" + this.GetFullName() + "\")");
+      
+    }
+    if ( element.GetParamType() != ModelBlockParam.PARAM_TYPE_MATERIAL ){
+    	throw new ModelException("Ошибка в элементе \"" + GetFullName() + "\": параметр " + paramName +  " не является материальным параметром");      
+    }
+  	
+  }
 
   private void ReadLinkInfo(  ) throws ModelException{
     ModelElement owner = this.GetRealOwner();
@@ -278,15 +293,7 @@ public class ModelMaterialParam extends ModelInputBlockParam {
     if ( blockName == null ){
       //присоединяемся к элементу этого же блока
       ModelBlockParam element = (ModelBlockParam) owner.Get( paramName );
-      if ( element == null ){
-        ModelException e = new ModelException("Отсутствует элемент \"" + paramName + "\" (источник для элемента \"" + this.GetFullName() + "\")");
-        throw e;
-      }
-      if ( element.GetParamType() != ModelBlockParam.PARAM_TYPE_MATERIAL ){
-        ModelException e = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": параметр " + paramName +
-                " не является материальным параметром");
-        throw e;
-      }
+      checkForMaterial(element, paramName);
       FSourceElement = (ModelMaterialParam) element;
       Link((ModelBlock) this.GetRealOwner(), FSourceElement);
       return;
@@ -294,19 +301,11 @@ public class ModelMaterialParam extends ModelInputBlockParam {
     // определено название блока.
     ModelBlock linkedBlock = (ModelBlock) GetLinkedBlock( elementSource );
     if ( linkedBlock == null ){
-      ModelException e = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": отсутствует блок " + blockName);
-      throw e;
+        // на данный момент блока нет, возможно, индекс блока указан в виде переменной, которая пока не установлена в нормальное значение
+    	return;
     }
-    ModelBlockParam element = (ModelBlockParam) linkedBlock.Get( paramName );
-    if ( element == null ){
-      ModelException e = new ModelException("Отсутствует элемент \"" + paramName + "\" (источник для элемента \"" + this.GetFullName() + "\")");
-      throw e;
-    }
-    if ( element.GetParamType() != ModelBlockParam.PARAM_TYPE_MATERIAL ){
-      ModelException e = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": параметр " + paramName +
-              " не является материальным параметром");
-      throw e;
-    }
+    ModelBlockParam element = (ModelBlockParam) linkedBlock.Get( paramName );    
+    checkForMaterial(element, paramName);
     FSourceElement = (ModelMaterialParam) element;
     Link( linkedBlock , FSourceElement);
   }
