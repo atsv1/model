@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "InpParamTestModel1" delay = "10"> 
+
+  <BlockList>
+    <Block name = "InpBlock" count = "1">
+      <InputParamList>
+        <Param name = "inp1" type = "integer"  initvalue = "-1"
+          blockLink = "OutBlock"   paramLink = "out1" blockIndex = "blockIndex"/>
+      </InputParamList>
+      <InnerParamList>
+        <Param name = "blockIndex" type = "integer" initvalue = "-1" />
+      </InnerParamList>
+    </Block>
+    
+    <Block name = "OutBlock" count = "5">
+      <OutParamList>
+        <Param name = "out1" type = "integer" initvalue = "100"/>
+      </OutParamList>
+    </Block>
+    
+  </BlockList>
+
+ </Model>
+  

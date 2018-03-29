@@ -12,7 +12,7 @@
       
       
       <InnerParamList>
-        <Param name = "p1" type = "integer" initvalue = "5"/>
+        <Param name = "p1" type = "integer" initvalue = "-1"/>
       </InnerParamList>
     
       <OutParamList>

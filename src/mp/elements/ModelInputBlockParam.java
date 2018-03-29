@@ -136,7 +136,11 @@ public class ModelInputBlockParam extends ModelBlockParam{
       	throw new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());        
       }
       selfIndexFlag = true;
-      return model.Get( blockName, intBlockIndex );
+      result = model.Get( blockName, intBlockIndex );
+      if ( result == null ) {
+      	throw new ModelException("Ошибка в элементе \"" + GetFullName() + "\": отсутствует блок \"" + blockName + "\".["+ intBlockIndex + "]");
+      }
+      return result;
     }
     //теперь пробуем предположить, что в качестве индекса блока была указана переменная
     ModelBlockParam indexParam = (ModelBlockParam) FRealOwner.Get(blockIndex);
@@ -148,12 +152,21 @@ public class ModelInputBlockParam extends ModelBlockParam{
 				throw new ModelException("Ошибка в элементе \"" + GetFullName() + "\": " + e.getMessage());
 			}
     	IndexParamListener listener = new IndexParamListener();
-    	listener.indexParam = indexParam;
-    	listener.inpParam = this;
+    	listener.indexParam = indexParam;    	
     	listener.elementSource = elementSource;
     	listener.model = model;
-    	indexParam.AddChangeListener( listener	);
-    	return model.Get( blockName, index );
+    	indexParam.AddChangeListener( listener	);    	
+    	if (index < 0) {
+    		// индекс блока хранится в переменной, но она пока не инициализирована нормально.
+    		// поэтому просто проверяем наличие такого блока
+    		result = model.Get( blockName, 0 );
+    		if ( result == null ) {
+    			throw new ModelException("Ошибка в элементе \"" + GetFullName() + "\": отсутствует блок \"" + blockName + "\"");
+    		}
+    		return null;
+    	}
+    	result = model.Get( blockName, index ); 
+    	return result;
     }
     
     String error;
@@ -190,14 +203,18 @@ public class ModelInputBlockParam extends ModelBlockParam{
       throw e;
     }
     ModelElement block = GetLinkedBlock( elementSource );
+    /*
     if ( block == null ){
     	String blockIndex = elementSource.GetBlockLinkIndex();
       ModelException e = new ModelException("Ошибка в элементе \"" + GetFullName() + "\": отсутстствует блок \"" +
               blockName + "\"" + (blockIndex == null ? "" : "[" + blockIndex + "]") );
       throw e;
     }
-    ModelElement param = block.Get( paramName );
-    Link((ModelBlock)block,(ModelBlockParam)param);
+    */
+    if (block != null) {
+      ModelElement param = block.Get( paramName );
+      Link((ModelBlock)block,(ModelBlockParam)param);
+    }
   }
 
   /**Метод чтения информации из файла модели.
@@ -248,23 +265,28 @@ public class ModelInputBlockParam extends ModelBlockParam{
   }
   
   
-  private static class IndexParamListener extends ChangeListener {
+  private class IndexParamListener extends ChangeListener {
   	private ModelBlockParam indexParam = null;
-  	private ModelElementDataSource elementSource = null;
-  	private ModelInputBlockParam inpParam = null;
+  	private ModelElementDataSource elementSource = null;  	
   	private Model model = null;
 
 		@Override
-		public void VariableChanged(VariableChangeEvent changeEvent) {
-			//System.out.println("VariableChanged");
+		public void VariableChanged(VariableChangeEvent changeEvent) {			
 			try {
-				int index = indexParam.GetVariable().GetIntValue();  				
+				int index = indexParam.GetVariable().GetIntValue();  		
+				if (index < 0) {
+					ModelInputBlockParam.this.UnLink();
+					return;
+				}
 			  ModelBlock block = model.Get(elementSource.GetLinkedBlockName(), index);
+			  if (block == null) {
+			  	throw new Exception( " отсутствует блок " + elementSource.GetLinkedBlockName() + "[" + index + "]" );
+			  }
 			  String paramName = elementSource.GetLinkedParamName();
 			  ModelBlockParam param = (ModelBlockParam) block.Get(paramName);
-			  inpParam.Link( block,  param );
+			  ModelInputBlockParam.this.Link( block,  param );			  
 			} catch (Exception e) {				
-				
+				throw new ScriptException(e.getMessage());
 			}
 			
 		}

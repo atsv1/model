@@ -7,14 +7,12 @@ package mp.parser;
  * Time: 22:46:12
  * To change this template use File | Settings | File Templates.
  */
-public class ScriptException extends Exception {
-  public ScriptException()
-  {
+public class ScriptException extends RuntimeException {
+  public ScriptException()  {
     super();
   }
 
-  public ScriptException(String descr)
-  {
+  public ScriptException(String descr)  {
     super(descr);
   }
 }
