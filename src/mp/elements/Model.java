@@ -934,5 +934,26 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
     }
 		
 	}
+
+	@Override
+	public int deleteBlock(String blockName, int blockIndex)   throws ScriptException {
+		ModelBlock block = (ModelBlock) FBlockList.Get(blockName, blockIndex);
+		if ( block == null ) {
+			throw new ScriptException("Отсутствует блок \"" + blockName + "\"");
+		}
+		Map<String, ModelBlock> blockMap = new HashMap<String, ModelBlock> ();
+		blockMap.put(block.GetFullName(), block);
+		List<ModelBlock> otherBlocks = null;
+		try {
+			otherBlocks = getLinkedBlockBySelfIndex(block, blockMap);
+		} catch (ModelException e) {
+			throw new ScriptException(e.getMessage());
+		}
+		for ( ModelBlock  blockToDel : otherBlocks) {
+			FBlockList.remove(blockToDel);
+		}
+		FBlockList.remove(block);
+		return 0;
+	}
 	
 }

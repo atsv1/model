@@ -567,6 +567,9 @@ public class ScriptOperationFunction extends ScriptOperation {
       case 101:{
         return ExecCreateNewBlock( aProgramPointer );
       }
+      case 102:{
+        return ExecDeleteBlock( aProgramPointer );
+      }
       
       case 200:{
         return ExecArray_GetValue( aProgramPointer );
@@ -1105,6 +1108,24 @@ public class ScriptOperationFunction extends ScriptOperation {
   	
   	return opCount+1;
   	
+  }
+  
+  private int ExecDeleteBlock(int aProgramPointer) throws ScriptException {
+  	int opCount = this.getOperandCount();
+  	if ( opCount != 3)  {
+  		throw new ScriptException("Неверное количество операндов функции DeleteBlock");
+  	}
+  	Operand op1 = InitOperand( aProgramPointer + 1 );
+  	ModelExecutionManager manager = ModelExecutionContext.GetManager( op1.GetStringValue() );
+  	if ( manager == null ){      
+      throw new ScriptException("Отсутствует модель с именем \"" + op1.GetStringValue() + "\"");      
+    }
+  	Operand op2 = InitOperand( aProgramPointer + 2 );
+  	String blockName = op2.GetStringValue();
+  	Operand op3 = InitOperand( aProgramPointer + 3 );
+  	int blockIndex = op3.GetIntValue();
+  	manager.deleteBlock(blockName, blockIndex);
+  	return opCount+1;  	
   }
   
   private int ExecExternalFunction(ExternalFunction function, int aProgramPointer) throws ScriptException{

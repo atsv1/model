@@ -30,5 +30,7 @@ public interface ModelExecutionManager {
   
   public int createNewBlock(String blockName, String parentParamName) throws ScriptException;
   
+  public int deleteBlock(String blockName, int blockIndex) throws ScriptException;
+  
 
 }

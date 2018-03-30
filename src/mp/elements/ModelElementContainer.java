@@ -159,6 +159,25 @@ public class ModelElementContainer<E extends ModelElement> implements Collection
     ElementList.clear();
     FHashByNameIndex.clear();
   }
+  
+  private void RemoveOnly(ModelElement element) {
+  	 FHashById.remove( new Integer(element.GetElementId()) );
+     FHashByName.remove( element.GetName().toUpperCase() );
+     ElementList.remove( element );
+     FHashByNameIndex.remove( element.GetNameIndexObj() );
+  	
+  }
+  
+  public void RemoveElement(ModelElement element, boolean checkFlag) throws ModelException{
+  	 if ( element == null ){
+       return;
+     }
+  	 if ( checkFlag && !CheckEqualsCount() ){
+       ModelException e = new ModelException( "Ошибка: несовпадение количеств в контейнере при удалении элемента \"" + element.GetFullName() + "\"");
+       throw e;
+     }
+  	 RemoveOnly(element);
+  }
 
   public void RemoveElement( ModelElement element ) throws ModelException {
     if ( element == null ){
@@ -168,10 +187,7 @@ public class ModelElementContainer<E extends ModelElement> implements Collection
       ModelException e = new ModelException( "Ошибка: несовпадение количеств в контейнере при удалении элемента \"" + element.GetFullName() + "\"");
       throw e;
     }
-    FHashById.remove( new Integer(element.GetElementId()) );
-    FHashByName.remove( element.GetName().toUpperCase() );
-    ElementList.remove( element );
-    FHashByNameIndex.remove( element.GetNameIndexObj() );
+    RemoveOnly(element);
   }
 
 	@Override

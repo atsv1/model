@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "DeleteBlock1Model1" delay = "10">
+  
+
+  <BlockList>
+    <Block name = "block" count = "3">
+      <InnerParamList>
+      </InnerParamList>
+    
+      <OutParamList>
+        <Param name = "var1" type = "integer" initvalue = "0">
+          <Formula>
+            <![CDATA[
+            if (selfIndex=0) then
+             begin
+              DeleteBlock( "DeleteBlock1Model1", "block",1 );
+              StopExecution("DeleteBlock1Model1");
+             end;               
+           ]]>
+          </Formula>
+        </Param>
+      </OutParamList>
+    </Block>
+
+
+  </BlockList>
+
+ </Model>
