@@ -136,7 +136,7 @@ public class ModelSimpleBlock extends ModelBlock {
   public void PrintExecutionTime() {
     int selfIndex = GetIntValue("selfIndex");
     double ms = FExecDuration / 1000000;
-    System.out.println( "mux " + this.GetFullName() +"[" + Integer.toString(selfIndex) + "]" +  " count = " +
+    System.out.println( "block " + this.GetFullName() +"[" + Integer.toString(selfIndex) + "]" +  " count = " +
        Long.toString( FExecCount ) + " duration = " + Double.toString( ms ) + ".ms");
   }
 
