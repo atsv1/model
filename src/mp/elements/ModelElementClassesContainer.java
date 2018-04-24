@@ -9,7 +9,7 @@ import java.util.Vector;
  */
 public class ModelElementClassesContainer extends ModelElementContainer{
 
-  private Hashtable FElementClasses;
+  private Hashtable<String, Vector> FElementClasses;
 
   public ModelElementClassesContainer(){
     super();
@@ -27,6 +27,7 @@ public class ModelElementClassesContainer extends ModelElementContainer{
     elementVector.add( aElement );
   }
 
+  @Override
   public void AddElement( ModelElement aElement ) throws ModelException{
     CheckBeforeAdd( aElement );
     AddById( aElement );
@@ -60,6 +61,21 @@ public class ModelElementClassesContainer extends ModelElementContainer{
     } else{
       return elementVector.size();
     }
+  }
+  
+  public boolean remove(Object o) {
+  	try {
+			RemoveElement((ModelElement) o, false);
+		} catch (ModelException e) {
+			return false;
+		}
+  	ModelElement el = (ModelElement) o;
+  	String s = el.GetName().toUpperCase();
+  	Vector elementVector = FElementClasses.get(s);
+  	elementVector.remove(o);
+  	
+		return true;
+  	
   }
 
 }
