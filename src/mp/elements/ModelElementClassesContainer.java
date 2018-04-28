@@ -1,5 +1,9 @@
 package mp.elements;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -72,10 +76,14 @@ public class ModelElementClassesContainer extends ModelElementContainer{
   	ModelElement el = (ModelElement) o;
   	String s = el.GetName().toUpperCase();
   	Vector elementVector = FElementClasses.get(s);
-  	elementVector.remove(o);
-  	
-		return true;
-  	
+  	elementVector.remove(o);  	
+		return true;  	
+  }
+  
+  public List<String> getClassNames(){
+  	Enumeration<String> keysEnum = FElementClasses.keys();
+  	List<String> list = Collections.list(keysEnum);  	
+  	return list;  	
   }
 
 }

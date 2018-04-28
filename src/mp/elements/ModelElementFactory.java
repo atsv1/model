@@ -53,6 +53,7 @@ public class ModelElementFactory extends ModelElementAbstractFactory {
     {"Model",          "ModelList",                     "-1"},
     {"ModelList",      "SubModel",                      "-1"},
     {"ModelList",      "ParallelModel",                 "-1"},
+    {"ModelList",      "Include",                      "-1"},
     {"Model",          "ConstantList",                  "-1"},
     {"ConstantList",   "Const",                         "12" },
     {"BlockList",      "Aggregator",                    "13"},
