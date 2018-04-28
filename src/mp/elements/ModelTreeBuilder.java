@@ -87,7 +87,7 @@ public class ModelTreeBuilder {
   		ModelBlock includeBlock = includeModel.Get(blockName, 0);
   		ModelBlock mainBlock = mainModel.Get(blockName, 0);
   		if ( mainBlock == null ) {
-  			mainModel.getElementBuilder().buildElement(includeBlock.GetDataSource(), mainModel, null);
+  			mainModel.getElementBuilder().buildElement(includeModel.GetDataSource(), mainModel, null);
   		} else {
   			mergeBlocks(mainModel, blockName, includeBlock);
   		}  		
@@ -124,7 +124,7 @@ public class ModelTreeBuilder {
       	}
       	ModelXMLReader modelReader = new ModelXMLReader( FElementFactory );
         modelReader.ReadModel( FPath + FFileSeparator + modelFileName );
-        Model inclModel = (Model)modelReader.GetRootElement();
+        Model inclModel = (Model)modelReader.GetRootElement();        
         mergeModels((Model) mainModel, inclModel);
       }
       i++;

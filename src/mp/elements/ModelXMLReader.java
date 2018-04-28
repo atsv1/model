@@ -48,6 +48,7 @@ public  class ModelXMLReader extends ModelBuilder{
   	ModelElementDataSource attrReader = new ModelAttributeReader(rootNode, null);
     FRootElement = getElementFactory().GetNewElement(null, null, attrReader, GetNewId());
     FRootElement.SetDataSource(attrReader);
+    FRootElement.setElementBuilder(this);
     WalkOnDocument( attrReader, FRootElement, null );
   }
 

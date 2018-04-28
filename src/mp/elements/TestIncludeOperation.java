@@ -40,6 +40,30 @@ public class TestIncludeOperation extends TestCase{
     assertEquals( block.GetIntValue("incl_param"), 15 );		
 	}
 	
+	/**
+	 * проверяем добавлене блока в модель
+	 */
+	public void testIncludeBlock() {
+		boolean f = false;
+    Model model = null;
+    try {
+      model = ReadModel( FPathToXMLFiles + "incl_2_conf.xml" );     
+      f = true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    Model mainModel = (Model) ModelExecutionContext.GetManager( "include_MainModel2" );
+    assertTrue(mainModel != null);
+    assertTrue( f );
+    ModelBlock block = mainModel.Get("b3", 0);
+    assertTrue(block != null);
+    assertTrue( block.GetOutParam("incl_param") != null);    
+    assertEquals( block.GetIntValue("incl_param"), 30 );
+    // проверяем, что блок в include- модели имеет в  полном названии имя основной модели
+    assertTrue( block.GetFullName().contains("include_MainModel2") );
+		
+	}
+	
 	 
 
 }
