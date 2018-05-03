@@ -4,7 +4,8 @@
    <Block name = "b3" >
      <OutParamList>
        <Param name = "incl_param" type = "integer" initvalue = "30"/>
-     </OutParamList>
+     </OutParamList>    
+    
    </Block>
 
 
