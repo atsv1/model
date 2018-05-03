@@ -7,12 +7,15 @@ import org.w3c.dom.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 import java.net.URL;
 import java.net.URLConnection;
 
 import mp.parser.ModelExecutionContext;
+import mp.parser.ModelExecutionManager;
 import mp.parser.ScriptException;
 import mp.utils.ModelAttributeReader;
 import mp.utils.ServiceLocator;
@@ -30,7 +33,8 @@ public class ModelTreeBuilder {
   private static final String ModelListNodeName = "ModelList";
   private static final String SubModelNodeName = "SubModel";
   private static final String ParallelModelNodeName = "ParallelModel";
-  private Vector<Model> modelList = new Vector();
+  private static final String IncludeModelNodeName = "Include";
+  private List<Model> modelList = new ArrayList();
 
   public void SetElementFactory( ModelElementAbstractFactory aElementFactory ){
     FElementFactory = aElementFactory;
@@ -53,13 +57,79 @@ public class ModelTreeBuilder {
     Node childNode;
     while ( i < childNodes.getLength() ){
       childNode = childNodes.item(i);
+      String nodeName =  childNode.getNodeName();
       if ( childNode.getNodeType() == Node.ELEMENT_NODE
-      		 &&  ( ModelListNodeName.equalsIgnoreCase( childNode.getNodeName() ) || ParallelModelNodeName.equalsIgnoreCase(childNode.getNodeName() )) ){
+      		 &&  ( ModelListNodeName.equalsIgnoreCase( nodeName ) || ParallelModelNodeName.equalsIgnoreCase(nodeName )) ||  IncludeModelNodeName.equalsIgnoreCase(nodeName)){
         return childNode;
       }
       i++;
     }
     return null;
+  }
+  
+  private void mergeBlocks(Model mainModel, String mainBlockName, ModelBlock blockToMerge) throws ModelException {
+  	int blockIndex = 0;
+  	ModelBlock block = mainModel.Get(mainBlockName, blockIndex);
+  	while ( block != null ) {
+  		ModelBuilder mb = block.getElementBuilder();
+  		mb.buildElement(blockToMerge.GetDataSource(), block, null);
+  		blockIndex++;
+  		block = mainModel.Get(mainBlockName, blockIndex);
+  	}
+  }
+  
+  private void mergeModels(Model mainModel, Model includeModel) throws ModelException {
+  	if ( mainModel== null || includeModel == null ) {
+  		return;
+  	}
+  	List<String> blockNames = includeModel.getBlockNames();
+  	for (String blockName : blockNames) {
+  		ModelBlock includeBlock = includeModel.Get(blockName, 0);
+  		ModelBlock mainBlock = mainModel.Get(blockName, 0);
+  		if ( mainBlock == null ) {
+  			mainModel.getElementBuilder().buildElement(includeModel.GetDataSource(), mainModel, null);
+  		} else {
+  			mergeBlocks(mainModel, blockName, includeBlock);
+  		}  		
+  	}
+  }
+  
+  private void ProcessInclude(ModelElementDataSource aRootDataSource) throws ModelException, SAXException, IOException {
+  	Node rootNode = null;
+    if ( aRootDataSource instanceof ModelAttributeReader ) {
+    	rootNode = ((ModelAttributeReader) aRootDataSource).GetNode();
+    }
+  	Node modelListNode = GetModelListNode( rootNode );
+    if ( modelListNode == null ){
+      return;
+    }
+    NodeList childNodes = modelListNode.getChildNodes();
+    if ( childNodes == null ) {
+    	return;
+    }
+    Node childNode;
+    int i = 0;
+    while ( i < childNodes.getLength() ){
+      childNode = childNodes.item(i);
+      String nodeName = childNode.getNodeName();
+      if ( IncludeModelNodeName.equalsIgnoreCase(nodeName) ) {
+      	ModelAttributeReader attrReader = new ModelAttributeReader(childNode, null);
+      	attrReader.SetNode( childNode );
+      	
+      	String modelFileName = attrReader.GetSubModelFileName();
+      	String toModelName = attrReader.GetToModelName();
+      	ModelExecutionManager mainModel =  ModelExecutionContext.GetManager(toModelName);
+      	if ( mainModel == null ) {
+      		throw new ModelException("Отсутствует модель \"" + toModelName + "\n");
+      	}
+      	ModelXMLReader modelReader = new ModelXMLReader( FElementFactory );
+        modelReader.ReadModel( FPath + FFileSeparator + modelFileName );
+        Model inclModel = (Model)modelReader.GetRootElement();        
+        mergeModels((Model) mainModel, inclModel);
+      }
+      i++;
+    }  
+  	
   }
 
   private void ReadSubModels( ModelElementDataSource aRootDataSource, Model parentModel) throws ModelException, IOException, SAXException {
@@ -108,6 +178,7 @@ public class ModelTreeBuilder {
       }
       i++;
     }//while
+    ProcessInclude(aRootDataSource);
   }
 
   public void ReadModelTree( String aRootModelFileName ) throws ModelException, IOException, SAXException {

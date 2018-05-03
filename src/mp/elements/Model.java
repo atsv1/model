@@ -956,4 +956,8 @@ public class Model extends ModelEventGenerator implements Runnable, ModelExecuti
 		return 0;
 	}
 	
+	public List<String> getBlockNames(){
+		return FBlockList.getClassNames();
+	}
+	
 }

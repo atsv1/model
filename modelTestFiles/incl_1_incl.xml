@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "this name no matter " delay = "500">
+  
+   <Block name = "b1" >
+     <OutParamList>
+       <Param name = "incl_param" type = "integer" initvalue = "15"/>
+     </OutParamList>
+   </Block>
+
+
+</Model>

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "include_MainModel2" delay = "500">
+
+ <BlockList>
+ 
+   <Block name = "b1" count = "1">
+     <OutParamList>
+       <Param name = "param1" type = "integer" initvalue = "0"/>
+     </OutParamList>
+   </Block>
+ 
+ </BlockList>
+
+
+</Model>

@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "this name no matter " delay = "5">
+  
+   <Block name = "b1" >
+     <OutParamList>
+       <Param name = "incl_param" type = "integer" initvalue = "0"/>
+     </OutParamList>
+     
+     
+     <Statechart name = "incl statechart">
+       <State name = "begin">
+         <Transition name = "определение  признака" type = "Timeout" value = "1" nextstate = "begin"  priority = "1">
+            <![CDATA[
+              incl_param := incl_param+1;
+              param1 := param1+1;
+              if ( param1 > 10 ) then
+               begin
+                 StopExecution("include_MainModel3");
+               end;
+              
+             ]]>
+          </Transition>
+       </State>
+     </Statechart>
+   </Block>
+
+
+</Model>

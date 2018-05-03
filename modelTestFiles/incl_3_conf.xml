@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='Windows-1251'?>
+<Model name = "include_ConfModel3" delay = "500">
+  <ModelList>
+    <ParallelModel file = "incl_3_main.xml"/>   
+    <Include file = "incl_3_incl.xml" to_model = "include_MainModel3"/>
+  </ModelList>
+  
+    
+   
+ </Model>

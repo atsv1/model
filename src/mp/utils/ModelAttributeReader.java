@@ -709,6 +709,10 @@ public class ModelAttributeReader implements ModelElementDataSource{
   public String GetSubModelFileName(){
     return GetAttrValue("file");
   }
+  
+  public String GetToModelName() {
+  	return GetAttrValue("to_model");
+  }
 
     
 
